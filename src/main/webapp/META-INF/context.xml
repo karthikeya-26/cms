@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context>
+    <!-- Define the JNDI DataSource with custom parameters -->
+    <Resource name="karthik"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/cms"
+              username="root"
+              password="karthik@sql"
+              maxTotal="50"
+              maxIdle="10"
+              minIdle="5"
+              maxWaitMillis="10000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"
+              testWhileIdle="true"
+              timeBetweenEvictionRunsMillis="5000"
+              minEvictableIdleTimeMillis="30000"
+              removeAbandonedOnBorrow="true"
+              removeAbandonedTimeout="60"
+              logAbandoned="true" />
+
+    <Manager path="session.ser">
+    </Manager>
+</Context>
