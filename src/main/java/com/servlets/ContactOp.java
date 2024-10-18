@@ -2,7 +2,10 @@
 package com.servlets;
 
 import com.dao.Dao;
+import com.models.SessionData;
 import com.models.User;
+import com.session.SessionDataManager;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,8 +15,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 @WebServlet({"/ContactOp"})
 public class ContactOp extends HttpServlet {
    private static final long serialVersionUID = 1L;
@@ -21,14 +22,13 @@ public class ContactOp extends HttpServlet {
    public ContactOp() {
    }
 
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      response.getWriter().append("Served at: ").append(request.getContextPath());
-   }
+   
 
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       String action = request.getParameter("action");
-      HttpSession session = request.getSession(false);
-      User user = (User)session.getAttribute("user");
+      SessionData sessiondata = (SessionData) request.getAttribute("su_data");
+      User user = SessionDataManager.users_data.get(sessiondata.getUser_id());
+      System.out.println("contactOp "+user);
       if (action.equals("deletecontact")) {
          int contact_id = Integer.parseInt(request.getParameter("contact_id"));
 
@@ -51,16 +51,17 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
          String email = request.getParameter("mail");
          Dao.addEmail(user, email);
       }
-
+      
+      if(action.equals("updateContact"))
       try {
          user.setUser_contacts(Dao.getContacts(user));
          user.setGroup_contacts(Dao.getGroupUserContacts(user));
-         user.setOthermails(Dao.getUserEmails(user, user.getMail()));
-         request.getSession().setAttribute("user", user);
+         user.setmails(Dao.getEmails(user));
+//         SessionDataManager.users_data.put(user.getUser_id(), user);
       } catch (SQLException var8) {
+    	  System.out.println("inside catch");
          var8.printStackTrace();
       }
-
       response.sendRedirect("index.jsp");
    }
 }

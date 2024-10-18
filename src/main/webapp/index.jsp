@@ -1,25 +1,18 @@
 
-<%@page import="com.session.SessionData"%>
+<%@page import="com.session.SessionDataManager"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="com.models.*" %>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="com.filters.UserFilter" %>
 
 
 <%
+
 // Check if the user is logged in
-SessionUserData su_data =(SessionUserData) request.getAttribute("su_data");
 
-	
-Cookie[] cookies = request.getCookies();
 
-for(int i=0; i<cookies.length; i++){
-	if (cookies[i].getName().equals("sid")){
-		su_data = SessionData.getUserwithId(cookies[i].getValue());
-	}
-}
-
-User user = su_data.getUser();
+User user = (User)request.getAttribute("user_data");
 
 
 
@@ -87,24 +80,29 @@ i:hover {
 				<%=user.getFirst_name() + " " + user.getLast_name()%></h2>
 			<h3>
 				Email:
-				<%=user.getMail()%></h3>
+				<%=user.getPrimaryEmail()%></h3>
 			<h3>
 				Your account is
 				<%=user.getAccount_type()%></h3>
 
 			<%
-			if (user.getOthermails() != null && user.getOthermails().size() > 0) {
+			if (user.getmails() != null && user.getmails().size() > 0) {
 			%>
 			<h3>Your other emails associated to this account are :</h3>
 			<%
-			for (String email : user.getOthermails()) {
+			for (String email : user.getmails()) {
 			%>
 			<p style="display: inline" class="mt-4"><%=email%> 			</p> 
 			<form action="userOp?action=deleteemail" method="post" class="mt-4"
 				style="display: inline">
 				<input type="hidden" value="<%=email%>" name="emailtodelete">
 				<input type="submit" class="mt-4 btn btn-danger" value="delete this email">
-			</form> <br>
+			</form> 
+			<form action="userOp?action=setprimaryemail" method="post" class="mt-4" style="display:inline">
+				<input type="hidden" value="<%=email %>" name="primaryemail">
+				<input type="submit" value="set this email as primary" class="mt-4 btn btn-primary"> 
+			</form>
+			<br>
 
 			<%
 			}
@@ -180,11 +178,15 @@ i:hover {
  }
  %>
 						</td>
-						<td><a href="userOp?action=editContact&id=<%=contact%>"><i
-								class="bi bi-pencil-square"></i></a>
+						<td>
+						<form action="editContact.jsp" method="post">
+						<input name="contact" type="hidden" value="<%=contact%>">
+						<button type="submit"><i class="bi bi-pencil-square"></i></button>
+						</form>
+						
 							<form action="ContactOp?action=deletecontact" method="post"
 								style="display: inline">
-								<input type="hidden" name="contact_id"
+								<input  type="hidden" name="contact_id"
 									value="<%=contact.getContact_id()%>">
 								<button type="submit">
 									<i class="bi bi-person-x"></i>

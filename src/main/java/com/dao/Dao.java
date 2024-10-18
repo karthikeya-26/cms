@@ -2,16 +2,29 @@
 package com.dao;
 
 import com.dbconn.BCrypt;
+
+
 import com.dbconn.Database;
 import com.models.Contact;
+import com.models.SessionData;
 import com.models.User;
+import com.session.SessionDataManager;
+
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import javax.naming.NamingException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.naming.NamingException;
+import javax.swing.text.html.HTMLDocument.HTMLReader.PreAction;
+import javax.xml.crypto.Data;
 public class Dao {
    public Dao() {
    }
@@ -74,7 +87,7 @@ public class Dao {
 	        return false;
 	        
 	    } finally {
-	        // Close resources
+	    	
 	        try {
 	            if (key_generated != null) key_generated.close();
 	            if (ps1 != null) ps1.close();
@@ -105,7 +118,7 @@ public class Dao {
 	        
 	        // If no user found, return empty User object
 	        if (!rs.next()) {
-	            return u;
+	            return null;
 	        }
 	        
 	        // Verify password using BCrypt
@@ -117,7 +130,6 @@ public class Dao {
 	            u.setLast_name(rs.getString("last_name"));
 	            u.setUser_name(rs.getString("user_name"));
 	            u.setUser_id(rs.getInt("user_id"));
-	            u.setMail(rs.getString("mail"));
 	            return u;
 	        }
 	        
@@ -139,8 +151,35 @@ public class Dao {
 	        }
 	    }
 	}
+   
+   public static User getUser(int user_id) {
+	   User user = new User();
+	   
+	   String statement = "select * from user_details where user_id = ?";
+	   try(Connection c = Database.getConnection()){
+		   
+		   PreparedStatement ps = c.prepareStatement(statement);
+		   ps.setInt(1, user_id);
+		   ResultSet rs = ps.executeQuery();
+		   rs.next();
+		   user.setUser_id(user_id);
+		   user.setFirst_name(rs.getString("first_name"));
+		   user.setLast_name(rs.getString("last_name"));
+		   user.setAccount_type(rs.getString("contact_type"));
+           user.setUser_name(rs.getString("user_name"));
+           user.setGroup_contacts(getGroupUserContacts(user));
+           user.setUser_contacts(getContacts(user));
+           user.setUserGroups(getUserGroups(user));
+           user.setmails(getEmails(user));
+   
+	   }catch(SQLException e) {
+		   e.printStackTrace();
+	   }
+		return user;
+	}
 
-   public static ArrayList<String> getUserEmails(User u, String login_mail) {
+
+   public static ArrayList<String> getEmails(User u) {
 	    ArrayList<String> userMails = new ArrayList<>();
 	    String statement = "SELECT * FROM user_mails WHERE user_id = ?";
 	    
@@ -157,9 +196,11 @@ public class Dao {
 	        
 	        while (rs.next()) {
 	            String email = rs.getString("mail");
-	            // Add email to list if it's not the login mail
-	            if (!email.equals(login_mail)) {
-	                userMails.add(email);
+	            int is_primary = rs.getInt("is_primary");
+	            if (is_primary ==1) {
+	            	u.setPrimaryEmail(email);
+	            }else {
+	            	userMails.add(email);
 	            }
 	        }
 	        
@@ -179,6 +220,44 @@ public class Dao {
 	    }
 	    
 	    return userMails;
+	}
+   public static void setPrimaryEmail(String selected_mail, User user) {
+		// TODO Auto-generated method stub
+	   String statement = "update user_mails set is_primary = 0 where user_id = ?";
+	   String statement2  = "update user_mails set is_primary = 1 where user_id = ? and mail= ?;";
+	   try(Connection c = Database.getConnection()){
+		   
+		   c.setAutoCommit(false);
+		   
+		   PreparedStatement ps = c.prepareStatement(statement);
+		   
+		   ps.setInt(1, user.getUser_id());
+		   System.out.println(ps);
+		   int success = ps.executeUpdate();
+		   if (success >=0) {
+			   PreparedStatement ps1 = c.prepareStatement(statement2);
+			   ps1.setInt(1, user.getUser_id());
+			   ps1.setString(2, selected_mail);
+			   System.out.println(ps1);
+			   
+			   int succes = ps1.executeUpdate();
+			   System.out.println(success);
+			   if(succes >=0) {
+				   c.commit();
+			   }else {
+				   c.rollback();
+				   return ;
+			   }
+		   }else {
+			   c.rollback();
+			   return;
+		   }
+		   
+	   }catch(SQLException e) {
+		   e.printStackTrace();
+		 
+	   }
+		
 	}
 
 
@@ -667,6 +746,111 @@ public class Dao {
 	        System.out.println("Error in deleting email.");
 	        e.printStackTrace();
 	    }
+	}
+
+
+   public static void updateSessionsToDatabase(Map<String, SessionData> sessionData) {
+	   System.out.println("updatin session details to db");
+	   try (Connection connection = Database.getConnection()) {
+           connection.setAutoCommit(false); // Start transaction
+
+           String updateQuery = "UPDATE sessions SET last_accessed_time = ?  WHERE session_id = ? and user_id = ?;";
+
+           try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+               for (String sessionid: sessionData.keySet()) {
+                   SessionData sessiondata = sessionData.get(sessionid);
+                   
+                   if (sessiondata != null) {
+                       // Set the parameters
+                       preparedStatement.setLong(1, sessiondata.getLast_accessed_at());
+                       preparedStatement.setString(2, sessionid);
+                       preparedStatement.setInt(3,sessiondata.getUser_id());
+                       preparedStatement.addBatch();
+                   }
+               }
+
+               preparedStatement.executeBatch();
+               connection.commit(); // Commit the transaction
+           } catch (SQLException e) {
+               connection.rollback(); // Rollback on error
+               e.printStackTrace();
+           }
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
+   }
+   
+
+   public static void insertUsertoSession(String s_id, User u) {
+	// TODO Auto-generated method stub
+	   String statement = "Insert into sessions values (?,?,?,?);";
+	   
+	   try (Connection c = Database.getConnection();
+			   PreparedStatement ps = c.prepareStatement(statement)) {
+		
+		   ps.setString(1,s_id);
+		   ps.setInt(2,u.getUser_id());
+		   ps.setLong(3, System.currentTimeMillis());
+		   ps.setLong(4, System.currentTimeMillis());
+		   
+		   int success = ps.executeUpdate();
+		   
+		   
+	} catch (Exception e) {
+		// TODO: handle exception
+		e.printStackTrace();
+	}
+	
+	}
+
+   public static void inactivateSession(String sid) {
+	   String statement = "delete from sessions where session_id = ?;";
+	   
+	   try(Connection c = Database.getConnection();
+			   PreparedStatement ps = c.prepareStatement(statement)){
+		   ps.setString(1, sid);
+		   int success = ps.executeUpdate();
+	   }catch(SQLException e) {
+		   e.printStackTrace();
+	   }
+	   
+	}
+   
+   public static void fetchSessionsFromDatabase() {
+	   	Map< String, SessionData> sess_map = SessionDataManager.session_data;
+	   	String statement = "Select * from sessions";
+	   	try(Connection c = Database.getConnection();
+	   			PreparedStatement ps = c.prepareStatement(statement)){
+	   		ResultSet rs = ps.executeQuery();
+	   		while(rs.next()) {
+	   			String session_id = rs.getString("session_id");
+	   			int user_id = rs.getInt("user_id");
+	   			long created_at = rs.getLong("created_time");
+	   			long last_accessed_at = rs.getLong("last_accessed_time");
+	   			long expires_at = last_accessed_at + 1800000;
+	   			
+	   			sess_map.put(session_id, new SessionData(user_id,created_at,last_accessed_at,expires_at));
+	   		}
+	   		System.out.println(SessionDataManager.session_data);
+	   		System.out.println("Retrieved sessions from database succesfully");
+	   	}catch(SQLException e) {
+	   		e.printStackTrace();
+	   	}
+   }
+   
+   public static void removeUserfromSessions(String sid) {
+		// TODO Auto-generated method stub
+	   String statement = "delete from sessions where session_id = ?";
+	   try (Connection c = Database.getConnection();
+			  PreparedStatement ps =c.prepareStatement(statement)){
+		   ps.setString(1,sid);
+		   ps.executeUpdate();
+	} catch (SQLException e) {
+		// TODO: handle exception
+		System.out.println("inside dao remove user from session method");
+		e.printStackTrace();
+	}
+		
 	}
 
 }

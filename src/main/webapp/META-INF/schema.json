@@ -1,0 +1,65 @@
+{
+  "cms": {
+    "sessions": {
+      "columns": [
+        { "name": "session_id", "type": "varchar(255)", "null": "NO", "key": "PRI", "default": null, "extra": "" },
+        { "name": "user_id", "type": "int", "null": "NO", "key": "MUL", "default": null, "extra": "" },
+        { "name": "created_time", "type": "bigint", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "last_accessed_time", "type": "bigint", "null": "NO", "key": "", "default": null, "extra": "" }
+      ]
+    },
+    "contacts": {
+      "columns": [
+        { "name": "contact_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "auto_increment" },
+        { "name": "first_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "last_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "user_id", "type": "int", "null": "YES", "key": "MUL", "default": null, "extra": "" },
+        { "name": "address", "type": "varchar(50)", "null": "YES", "key": "", "default": null, "extra": "" },
+        { "name": "created_at", "type": "bigint", "null": "NO", "key": "", "default": null, "extra": "" }
+      ]
+    },
+    "contact_mails": {
+      "columns": [
+        { "name": "contact_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "" },
+        { "name": "mail", "type": "varchar(30)", "null": "NO", "key": "PRI", "default": null, "extra": "" }
+      ]
+    },
+    "contact_mobile_numbers": {
+      "columns": [
+        { "name": "contact_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "" },
+        { "name": "number", "type": "varchar(20)", "null": "NO", "key": "PRI", "default": null, "extra": "" }
+      ]
+    },
+    "user_details": {
+      "columns": [
+        { "name": "user_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "auto_increment" },
+        { "name": "user_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "password", "type": "varchar(72)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "first_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "last_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "contact_type", "type": "varchar(10)", "null": "NO", "key": "", "default": null, "extra": "" }
+      ]
+    },
+    "user_mails": {
+      "columns": [
+        { "name": "mail_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "auto_increment" },
+        { "name": "mail", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "user_id", "type": "int", "null": "YES", "key": "MUL", "default": null, "extra": "" },
+        { "name": "is_primary", "type": "tinyint", "null": "YES", "key": "", "default": null, "extra": "" }
+      ]
+    },
+    "user_groups": {
+      "columns": [
+        { "name": "group_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "auto_increment" },
+        { "name": "group_name", "type": "varchar(30)", "null": "NO", "key": "", "default": null, "extra": "" },
+        { "name": "user_id", "type": "int", "null": "YES", "key": "MUL", "default": null, "extra": "" }
+      ]
+    },
+    "group_contacts": {
+      "columns": [
+        { "name": "group_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "auto_increment" },
+        { "name": "contact_id", "type": "int", "null": "NO", "key": "PRI", "default": null, "extra": "" }
+      ]
+    }
+  }
+}

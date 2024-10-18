@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class User {
    private int user_id;
    private String user_name;
-   private String mailused;
+   private String primaryEmail;
    private String first_name;
    private String last_name;
    private String account_type;
@@ -21,12 +21,11 @@ public class User {
    public User(int user_id, String user_name, String mailusedforlogin, String first_name, String last_name, String account_type, ArrayList<Contact> contacts, ArrayList<Contact> groupContacts, ArrayList<String> othermails) {
       this.user_contacts = contacts;
       this.user_id = user_id;
-      this.mailused = mailusedforlogin;
       this.user_name = user_name;
       this.first_name = first_name;
       this.last_name = last_name;
       this.account_type = account_type;
-      this.setOthermails(othermails);
+      this.setmails(othermails);
       this.setGroup_contacts(groupContacts);
    }
 
@@ -70,14 +69,6 @@ public class User {
       this.user_id = user_id;
    }
 
-   public String getMail() {
-      return this.mailused;
-   }
-
-   public void setMail(String mail) {
-      this.mailused = mail;
-   }
-
    public ArrayList<Contact> getUser_contacts() {
       return this.user_contacts;
    }
@@ -94,11 +85,11 @@ public class User {
       this.group_contacts = group_contacts;
    }
 
-   public ArrayList<String> getOthermails() {
+   public ArrayList<String> getmails() {
       return this.othermails;
    }
 
-   public void setOthermails(ArrayList<String> othermails) {
+   public void setmails(ArrayList<String> othermails) {
       this.othermails = othermails;
    }
 
@@ -109,4 +100,12 @@ public class User {
    public void setUserGroups(ArrayList<String> user_groups) {
       this.user_groups = user_groups;
    }
+
+public String getPrimaryEmail() {
+	return primaryEmail;
+}
+
+public void setPrimaryEmail(String primaryEmail) {
+	this.primaryEmail = primaryEmail;
+}
 }
