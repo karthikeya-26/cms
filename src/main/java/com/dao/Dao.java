@@ -4,27 +4,34 @@ package com.dao;
 import com.dbconn.BCrypt;
 
 
+
 import com.dbconn.Database;
+import com.loggers.AppLogger;
 import com.models.Contact;
 import com.models.SessionData;
 import com.models.User;
+import com.queryLayer.Insert;
+import com.queryLayer.Select;
+import com.queryLayer.Update;
 import com.session.SessionDataManager;
+import com.tables.ContactMails;
+import com.tables.ContactMobileNumbers;
+import com.tables.Contacts;
+import com.tables.GroupContacts;
+import com.tables.Joins;
+import com.tables.Operators;
+import com.tables.Table;
+import com.tables.UserDetails;
+import com.tables.UserGroups;
+import com.tables.UserMails;
 
-import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.naming.NamingException;
-import javax.swing.text.html.HTMLDocument.HTMLReader.PreAction;
-import javax.xml.crypto.Data;
 public class Dao {
    public Dao() {
    }
@@ -37,6 +44,7 @@ public class Dao {
 	    
 	    try {
 	        c = Database.getConnection();
+	        
 	        c.setAutoCommit(false);
 	        
 	        // Insert user details
@@ -100,7 +108,8 @@ public class Dao {
 	}
 
 
-   public static User loginUser(String username, String password) throws NamingException, SQLException {
+   public static User loginUser(String username, String password){
+	   
 	    User u = new User();
 	    Connection c = null;
 	    PreparedStatement ps = null;
@@ -108,9 +117,14 @@ public class Dao {
 
 	    try {
 	        c = Database.getConnection();
+//	        throw new Exception("chumma ");
 	        
 	        // SQL query to get user details
-	        String statement = "SELECT * FROM user_details JOIN user_mails ON user_details.user_id = user_mails.user_id WHERE mail = ?";
+	        Select s = new Select();
+	        s.table(Table.UserDetails).columns(UserDetails.ALL_COLS).join(Joins.InnerJoin, Table.UserDetails, UserDetails.USER_ID, Operators.Equals, Table.UserMails, UserMails.USER_ID).condition(UserMails.MAIL, Operators.Equals, "?");
+	        
+//	        String statement = "SELECT * FROM user_details JOIN user_mails ON user_details.user_id = user_mails.user_id WHERE mail = ?";
+	        String statement = s.build();
 	        ps = c.prepareStatement(statement);
 	        ps.setString(1, username);
 	        
@@ -140,22 +154,34 @@ public class Dao {
 	        e.printStackTrace();
 	        return u;
 	        
-	    } finally {
-	        // Close resources
-	        try {
-	            if (rs != null) rs.close();
-	            if (ps != null) ps.close();
-	            if (c != null) c.close();
-	        } catch (SQLException e) {
-	            System.out.println("Error closing resources: " + e.getMessage());
-	        }
+	    } catch(Exception e){
+	    	e.printStackTrace();
+	    	AppLogger.ApplicationLog(e);
+	    	
 	    }
+//	    	finally {
+//	    
+//	        // Close resources
+//	        try {
+//	            if (rs != null) rs.close();
+//	            if (ps != null) ps.close();
+//	            if (c != null) c.close();
+//	        } catch (SQLException e) {
+//	            System.out.println("Error closing resources: " + e.getMessage());
+//	        }
+//	    }
+		return u;
 	}
-   
+   public static void main(String[] args) {
+	   System.out.println("hi");
+	loginUser("a", "x");
+	
+}
    public static User getUser(int user_id) {
 	   User user = new User();
-	   
-	   String statement = "select * from user_details where user_id = ?";
+	   Select s = new Select().table(Table.UserDetails).column(UserDetails.ALL_COLS).condition(UserDetails.USER_ID, Operators.Equals, "?");
+//	   String statement = "select * from user_details where user_id = ?";
+	   String statement = s.build();
 	   try(Connection c = Database.getConnection()){
 		   
 		   PreparedStatement ps = c.prepareStatement(statement);
@@ -181,8 +207,10 @@ public class Dao {
 
    public static ArrayList<String> getEmails(User u) {
 	    ArrayList<String> userMails = new ArrayList<>();
-	    String statement = "SELECT * FROM user_mails WHERE user_id = ?";
-	    
+	    Select s = new Select();
+	    s.table(Table.UserMails).column(UserMails.ALL_COLS).condition(UserMails.USER_ID, Operators.Equals, "?");
+//	    String statement = "SELECT * FROM user_mails WHERE user_id = ?";
+	    String statement = s.build();
 	    Connection c = null;
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
@@ -220,11 +248,18 @@ public class Dao {
 	    }
 	    
 	    return userMails;
-	}
+   }
+   
    public static void setPrimaryEmail(String selected_mail, User user) {
 		// TODO Auto-generated method stub
+	   Update u = new Update();
+	   u.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("0").condition(UserMails.USER_ID, Operators.Equals, "?");
 	   String statement = "update user_mails set is_primary = 0 where user_id = ?";
+	   String statementx = u.build();
+	   Update u1 = new Update();
+	   u.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("?").condition(UserMails.USER_ID, Operators.Equals, "?").condition(UserMails.MAIL, Operators.Equals, "?");
 	   String statement2  = "update user_mails set is_primary = 1 where user_id = ? and mail= ?;";
+	   String statementy = u1.build();
 	   try(Connection c = Database.getConnection()){
 		   
 		   c.setAutoCommit(false);
@@ -262,7 +297,9 @@ public class Dao {
 
 
    public static boolean checkifMailExists(User user, String email) {
-	    String statement = "SELECT mail FROM user_mails WHERE user_id = ?";
+//	    String statement = "SELECT mail FROM user_mails WHERE user_id = ?";
+	   Select s = new Select().table(Table.UserMails).column(UserMails.MAIL).condition(UserMails.USER_ID, Operators.Equals, "?");
+	    String statement = s.build();
 	    Connection c = null;
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
@@ -305,6 +342,9 @@ public class Dao {
    }
    public static void addEmail(User u, String email) {
 	    String statement = "INSERT INTO user_mails (mail, user_id) VALUES (?, ?)";
+	    Insert i = new Insert();
+	    i.table(Table.UserMails).columns(UserMails.MAIL, UserMails.USER_ID).values("?","?");
+	    String statementx = i.build();
 	    Connection c = null;
 	    PreparedStatement ps = null;
 
@@ -473,7 +513,7 @@ public class Dao {
 	                       "WHERE c.user_id = ? " +
 	                       "GROUP BY c.contact_id " +
 	                       "ORDER BY c.first_name;";
-
+	    
 	    try (Connection c = Database.getConnection(); 
 	         PreparedStatement ps = c.prepareStatement(statement)) {
 
@@ -505,7 +545,7 @@ public class Dao {
 
 
    public static void editContact(Contact contact) throws SQLException {
-      
+      //yet to be implemented
    }
 
    public static ArrayList<Contact> getGroupUserContacts(User u) {
@@ -521,7 +561,18 @@ public class Dao {
 	                       "WHERE c.user_id = ? " +
 	                       "GROUP BY c.contact_id " +
 	                       "ORDER BY c.first_name;";
-	    
+//	    Select s = new Select();
+//	    s.table(Table.Contacts)
+//	    .columns(Contacts.FIRST_NAME, Contacts.LAST_NAME, Contacts.ADDRESS, Contacts.USER_ID)
+//	    .groupConcatAs(ContactMobileNumbers.NUMBER, "mobile_numbers", ",")
+//	    .groupConcatAs(ContactMails.MAIL, "mails", ",")
+//	    .groupConcatAs(UserGroups.GROUP_NAME, "user_groups", ",")
+//	    .join(Joins.LeftJoin, Table.Contacts, Contacts.CONTACT_ID, Operators.Equals, Table.ContactMobileNumbers, ContactMobileNumbers.CONTACT_ID)
+//	    .join(Joins.LeftJoin,Table.ContactMails, ContactMails.CONTACT_ID,Operators.Equals, Table.Contacts, Contacts.CONTACT_ID)
+//	    .join(Joins.InnerJoin, Table.GroupContacts, GroupContacts.CONTACT_ID, Operators.Equals, Table.Contacts, Contacts.CONTACT_ID)
+//	    .join(Joins.InnerJoin, Table.UserGroups, UserGroups.USER_ID, Operators.Equals, Table.GroupContacts,GroupContacts.GROUP_ID)
+//	    .condition(Contacts.USER_ID, Operators.Equals, "?");
+
 	    ArrayList<Contact> groupContacts = new ArrayList<>();
 
 	    try (Connection c = Database.getConnection();

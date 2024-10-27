@@ -37,11 +37,14 @@ public class LoginServlet extends HttpServlet {
       try {
          u = Dao.loginUser(request.getParameter("username"), request.getParameter("password"));
          
-      } catch (NamingException ne) {
-         ne.printStackTrace();
-      } catch (SQLException e) {
-         e.printStackTrace();
+      } catch(Exception e) {
+    	  System.out.println("in login servlet");
       }
+//      catch (NamingException ne) {
+//         ne.printStackTrace();
+//      } catch (SQLException e) {
+//         e.printStackTrace();
+//      }
 
       ArrayList<Contact> user_contacts = null;
       ArrayList<Contact> group_contacts = null;

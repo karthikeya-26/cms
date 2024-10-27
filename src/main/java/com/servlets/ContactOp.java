@@ -26,8 +26,7 @@ public class ContactOp extends HttpServlet {
 
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       String action = request.getParameter("action");
-      SessionData sessiondata = (SessionData) request.getAttribute("su_data");
-      User user = SessionDataManager.users_data.get(sessiondata.getUser_id());
+      User user = (User) request.getAttribute("user_data");
       System.out.println("contactOp "+user);
       if (action.equals("deletecontact")) {
          int contact_id = Integer.parseInt(request.getParameter("contact_id"));

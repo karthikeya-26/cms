@@ -30,7 +30,6 @@ public class UserFilter extends HttpFilter implements Filter {
    }
 
    public void destroy() {
-	   ReqLogger.close();
    }
 
    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -55,9 +54,19 @@ public class UserFilter extends HttpFilter implements Filter {
 	       }
 	   }
 	   
+	   
 	   SessionData sessiondata = isValidUser ? SessionDataManager.getUserwithId(sid) : null;
 	   
-	   
+	   if(sessiondata == null) {
+		   String logMessage = String.format("Request Method: %s, URL: %s, Remote Address: %s, User id: %s, Session id: %s",
+	               httpReq.getMethod(),
+	               httpReq.getRequestURL().toString(),
+	               httpReq.getRemoteAddr(),
+	               "unknown session",
+	               "unknown user");
+	       System.out.println("user filter"+ logMessage);
+	       ReqLogger.AccessLog(logMessage);
+	   }
 	   
 	   // If the user is valid and is trying to access login/signup pages, redirect to index.jsp
 	   if (sessiondata != null && (httpReq.getRequestURI().endsWith("login.jsp") || httpReq.getRequestURI().endsWith("login") || httpReq.getRequestURI().endsWith("signup.jsp") || httpReq.getRequestURI().endsWith("signup"))) {
@@ -94,13 +103,16 @@ public class UserFilter extends HttpFilter implements Filter {
 		        request.setAttribute("user_data", user);
 		        
 		        //logging the request
-		        
-		        String logMessage = String.format("Request Method: %s, URL: %s, Remote Address: %s",
+//		        
+		        String logMessage = String.format("Request Method: %s, URL: %s, Remote Address: %s, User id: %s, Session id: %s",
 		                httpReq.getMethod(),
 		                httpReq.getRequestURL().toString(),
-		                httpReq.getRemoteAddr());
-
-		        ReqLogger.logRequest(logMessage);
+		                httpReq.getRemoteAddr(),
+		                sessiondata.getUser_id(),
+		                sid);
+		        System.out.println("user filter"+ logMessage);
+		        ReqLogger.AccessLog(logMessage);
+//		        ReqLogger.logError("Custom error");
 		       
 		        
 		    }

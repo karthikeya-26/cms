@@ -1,0 +1,40 @@
+Request Method: GET, URL: http://localhost:8080/contacts/index.jsp, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223015434, expires_at :1729223195434
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: GET, URL: http://localhost:8080/contacts/index.css, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223015469, expires_at :1729223195469
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: POST, URL: http://localhost:8080/contacts/ContactOp, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223029246, expires_at :1729223209246
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: GET, URL: http://localhost:8080/contacts/index.jsp, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223043241, expires_at :1729223223241
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: GET, URL: http://localhost:8080/contacts/index.jsp, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223045294, expires_at :1729223225294
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: GET, URL: http://localhost:8080/contacts/index.css, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015429, last_accessed_at :1729223045322, expires_at :1729223225322
+com.models.User@2e052a11
+user object com.models.User@2e052a11
+Request Method: POST, URL: http://localhost:8080/contacts/ContactOp, Remote Address: 127.0.0.1
+Request Method: POST, URL: http://localhost:8080/contacts/ContactOp, Remote Address: 127.0.0.1
+contactOp com.models.User@673cf974
+Mobile numbers deleted
+Emails deleted
+Contact deleted successfully
+session data objectuser_id :13, created_at :1729223015408, last_accessed_at :1729223192695, expires_at :1729223372695
+null
+user object null
+user is null getting use from db
+Request Method: GET, URL: http://localhost:8080/contacts/index.jsp, Remote Address: 127.0.0.1
+session data objectuser_id :13, created_at :1729223015408, last_accessed_at :1729223192745, expires_at :1729223372745
+null
+user object null
+user is null getting use from db
+Request Method: GET, URL: http://localhost:8080/contacts/index.css, Remote Address: 127.0.0.1

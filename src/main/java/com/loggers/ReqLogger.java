@@ -1,40 +1,31 @@
 package com.loggers;
+import java.time.LocalDateTime;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class ReqLogger {
-    private static PrintStream outputStream;
-    private static PrintStream errorStream;
+	
+	private static Logger logger = Logger.getLogger(ReqLogger.class.getName());
+	static FileHandler fh;
 
-    static {
+    static {	
         try {
-            outputStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("sout.txt", true)), true);
-            errorStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("serr.txt", true)), true);
-            
-            System.setOut(outputStream);
-            System.setErr(errorStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        	System.out.println("creating log file");
+            fh = new FileHandler("/home/karthi-pt7680/contact_app_logs/"+LocalDateTime.now().toString()+".log");
+            fh.setFormatter(new SimpleFormatter());
+            logger.addHandler(fh);
+            logger.setUseParentHandlers(false);
+        }catch (Exception e) {
+			// TODO: handle exception
+        	System.out.println("could not initiate the logger file");
+        	
+		}
     }
 
-    public static void logRequest(String message) {
-        System.out.println(message); 
+    public static void AccessLog(String message) {
+    	logger.info(message);
     }
-
-    public static void logError(String message) {
-        System.err.println(message); 
-    }
-
-    public static void close() {
-        if (outputStream != null) {
-            outputStream.close();
-        }
-        if (errorStream != null) {
-            errorStream.close();
-        }
-    }
+    
 }
