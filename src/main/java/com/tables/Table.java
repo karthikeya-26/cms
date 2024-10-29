@@ -7,8 +7,8 @@ public enum Table {
 	Contacts("Contacts"),
 	ContactMobileNumbers("ContactMobileNumbers"),
 	ContactMails("ContactMails"),
-	GroupContacts("GroupContacts");
-	
+	GroupContacts("GroupContacts"),
+	Sessions("Sessions");
 	
 	private String tableName;
 	Table(String tableName) {

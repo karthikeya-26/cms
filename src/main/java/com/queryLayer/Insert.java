@@ -1,19 +1,26 @@
 package com.queryLayer;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dbconn.Database;
+import com.loggers.AppLogger;
 import com.queryBuilder.SqlInsertQueryBuilder;
 import com.tables.Columns;
 import com.tables.Operators;
 import com.tables.Table;
 
-public class Insert extends Query {
+public class Insert extends Query{
 	
 	public String tableName;
 	public List<String> columns;
 	public List<String> values;
 	public List<Condition> conditions;
+	private String query = null;
+	
 	
 	public Insert(){
 		this.columns = new ArrayList<String>();
@@ -28,7 +35,7 @@ public class Insert extends Query {
 	
 	public Insert columns (Columns... columns) {
 		for(Columns col : columns) {
-			this.columns.add(col.toString());
+			this.columns.add(col.value());
 		}
 		return this;
 	}
@@ -45,20 +52,40 @@ public class Insert extends Query {
 		return this;
 	}
 	
-	@Override
 	public String build() {
 		
     	if (prop.getProperty("db.name").equals("mysql")) {
     		try {
-				return new SqlInsertQueryBuilder(this).build();
+				 this.query = new SqlInsertQueryBuilder(this).build();
 			} catch (Exception e) {
 				e.getMessage();
 			}
     	}
     	if(prop.getProperty("db.name").equals("postgres")) {
-    		//pg select query builder
+    		System.out.println("currently no support for postgres");
     	}
-		return "";
+		return this.query;
+	}
+	
+	
+	public int executeUpdate() {
+		if (this.query == null) {
+			this.query = this.build();
+		}
+		return super.executeUpdate(this.query);
+	}
+	
+	public int executeUpdate(boolean returnGeneratedKey) {
+		if(this.query == null) {
+			this.query = this.build();
+		}
+		try {
+			return super.executeUpdate(query, returnGeneratedKey);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 

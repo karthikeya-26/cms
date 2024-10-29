@@ -6,6 +6,7 @@ import com.tables.Operators;
 public class AggregateColumn {
 	public String Aggregate;
 	public String column_name;
+	String tableAlias;
 	
 	public AggregateColumn(Operators agg, Columns col) {
 		this.Aggregate = agg.value();
@@ -14,6 +15,7 @@ public class AggregateColumn {
 	
 	public AggregateColumn(Operators agg, String tableAlias, Columns col) {
 		this.Aggregate = agg.value();
+		this.tableAlias = tableAlias;
 		this.column_name = tableAlias+"."+col;
 		
 	}

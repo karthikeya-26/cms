@@ -56,7 +56,6 @@ public class SqlSelectQueryBuilder implements Builder {
 		query += " FROM "+this.selectObj.table;
 
 		if (!this.selectObj.joins.isEmpty()) {
-			System.out.println("joining tables");
 			StringJoiner joinJoiner = new StringJoiner(" ", " ", "");
 			for (Join join : this.selectObj.joins) {
 				
@@ -82,7 +81,7 @@ public class SqlSelectQueryBuilder implements Builder {
 			StringJoiner conditionsJoiner = new StringJoiner(" AND ");
 			for (Condition condition : this.selectObj.conditions) {
 
-				conditionsJoiner.add(String.format("%s %s %s", condition.column, condition.operator, condition.value));
+				conditionsJoiner.add(String.format("%s %s %s", condition.column, condition.operator, ((CheckDataType.isFloat(condition.value)||CheckDataType.isInt(condition.value)||CheckDataType.isLong(condition.value))?condition.value:"'"+condition.value+"'")));
 			}
 			query += " WHERE " + conditionsJoiner.toString();
 		}

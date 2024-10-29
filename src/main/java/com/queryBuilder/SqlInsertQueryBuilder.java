@@ -6,13 +6,14 @@ import com.queryLayer.Insert;
 
 public class SqlInsertQueryBuilder implements Builder{
 	Insert insertObj;
+	String query = null;
 	
 	public SqlInsertQueryBuilder(Insert insert) {
 		this.insertObj = insert;
 	}
 	
 	public String build() throws Exception {
-		String query = "Insert into ";
+		query = "Insert into ";
 		
 		//table name
 		query += this.insertObj.tableName;
@@ -28,8 +29,7 @@ public class SqlInsertQueryBuilder implements Builder{
 				valueJoiner.add(val);
 			}
 			query += "VALUES "+valueJoiner.toString();
-		}
-		
+		}                                                                                                                                                                                                                                                        
 		else if (!this.insertObj.columns.isEmpty() && !this.insertObj.values.isEmpty()) {
 			if (this.insertObj.columns.size() != this.insertObj.values.size()) {
 				throw new Exception("column and values size didn't match please check your query");
@@ -40,16 +40,13 @@ public class SqlInsertQueryBuilder implements Builder{
 				}
 				StringJoiner valueJoiner = new StringJoiner(",","(",")");
 				for(String val : this.insertObj.values) {
-					valueJoiner.add(val);
+					valueJoiner.add((CheckDataType.isFloat(val)||CheckDataType.isInt(val)||CheckDataType.isLong(val))?val:"'"+val+"'");
 				}
 				query += columnJoiner+" VALUES "+valueJoiner.toString();
 			}
 		}
-		
-		
-		
-		
-		return query;
+		return query+";";
 		
 	}
+	
 }

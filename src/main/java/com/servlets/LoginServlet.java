@@ -40,40 +40,42 @@ public class LoginServlet extends HttpServlet {
       } catch(Exception e) {
     	  System.out.println("in login servlet");
       }
+      
+      
 //      catch (NamingException ne) {
 //         ne.printStackTrace();
 //      } catch (SQLException e) {
 //         e.printStackTrace();
 //      }
 
-      ArrayList<Contact> user_contacts = null;
-      ArrayList<Contact> group_contacts = null;
-      ArrayList<String> othermails = null;
-      ArrayList<String> user_groups = null;
-
-      try {
-         user_contacts = Dao.getContacts(u);
-         group_contacts = Dao.getGroupUserContacts(u);
-         othermails = Dao.getEmails(u);
-         user_groups = Dao.getUserGroups(u);
-      } catch (SQLException var11) {
-         var11.printStackTrace();
-      }
-
-      u.setUser_contacts(user_contacts);
-      u.setGroup_contacts(group_contacts);
-      u.setmails(othermails);
-      u.setUserGroups(user_groups);
-      if (u.getUser_name() != null) {
-         String s_id = Session.getSession();
-         Dao.insertUsertoSession(s_id,u);
-         Cookie cookie = new Cookie("sid", s_id);
-         response.addCookie(cookie);
-         SessionDataManager.addUsertoSession(s_id, u);
-         response.sendRedirect("index.jsp");
-      } else {
-         response.sendRedirect("login.jsp?error=invalid_details");
-      }
+//      ArrayList<Contact> user_contacts = null;
+//      ArrayList<Contact> group_contacts = null;
+//      ArrayList<String> othermails = null;
+//      ArrayList<String> user_groups = null;
+//
+//      try {
+//         user_contacts = Dao.getContacts(u);
+//         group_contacts = Dao.getGroupUserContacts(u);
+//         othermails = Dao.getEmails(u);
+//         user_groups = Dao.getUserGroups(u);
+//      } catch (SQLException var11) {
+//         var11.printStackTrace();
+//      }
+//
+//      u.setUser_contacts(user_contacts);
+//      u.setGroup_contacts(group_contacts);
+//      u.setmails(othermails);
+//      u.setUserGroups(user_groups);
+//      if (u.getUser_name() != null) {
+//         String s_id = Session.getSession();
+//         Dao.insertUsertoSession(s_id,u);
+//         Cookie cookie = new Cookie("sid", s_id);
+//         response.addCookie(cookie);
+//         SessionDataManager.addUsertoSession(s_id, u);
+//         response.sendRedirect("index.jsp");
+//      } else {
+//         response.sendRedirect("login.jsp?error=invalid_details");
+//      }
 
    }
 }

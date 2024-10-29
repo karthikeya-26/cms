@@ -16,11 +16,13 @@ public class Update extends Query {
 	public List<String> columns;
 	public List<String> values;
 	public List<Condition> conditions;
+	private String query;
 
 	public Update() {
 		this.columns = new ArrayList<String>();
 		this.values = new ArrayList<String>();
 		this.conditions = new ArrayList<Condition>();
+		this.query = null;
 	}
 
 	public Update table(Table tableName) {
@@ -47,16 +49,29 @@ public class Update extends Query {
 		return this;
 	}
 	
-	public String build() {
+	public String build()  {
 		//update object will be sent to the specific query builder
 		Properties prop = Database.prop;
     	if (prop.getProperty("db.name").equals("mysql")) {
-    		return new SqlUpdateQueryBuilder(this).build();
+    		
+    		try {
+				this.query =  new SqlUpdateQueryBuilder(this).build();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		return this.query;
     	}
     	if(prop.getProperty("db.name").equals("postgres")) {
     		//pg select query builder
     	}
-		return "";
+		return null;
+	}
+	public int executeUpdate() {
+		if (this.query == null) {
+			this.query = this.build();
+		}
+		return super.executeUpdate(this.query);
 	}
 
 }
