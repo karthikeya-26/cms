@@ -30,7 +30,12 @@ public class SqlUpdateQueryBuilder implements Builder {
 		else {
 			StringJoiner colAndValueJoiner = new StringJoiner(", ");
 			for(int i=0; i<this.updateObj.columns.size(); i++) {
-				colAndValueJoiner.add(this.updateObj.columns.get(i)+"="+this.updateObj.values.get(i));
+				colAndValueJoiner.add(this.updateObj.columns.get(i) + " = " +
+					    (CheckDataType.isFloat(this.updateObj.values.get(i)) || 
+					     CheckDataType.isInt(this.updateObj.values.get(i)) || 
+					     CheckDataType.isLong(this.updateObj.values.get(i)) 
+					     ? this.updateObj.values.get(i) 
+					     : "'" + this.updateObj.values.get(i) + "'"));
 			}
 			query += colAndValueJoiner.toString();
 			
@@ -45,7 +50,7 @@ public class SqlUpdateQueryBuilder implements Builder {
 			
 		}
 		
-		return query;
+		return query+";";
 	}
 
 }

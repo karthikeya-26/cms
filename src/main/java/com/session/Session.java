@@ -10,7 +10,7 @@ public class Session {
    public Session() {
    }
 
-   public static String getSession() {
+   public static String getSessionId() {
       return (new BigInteger(130, sr)).toString(32);
    }
 }

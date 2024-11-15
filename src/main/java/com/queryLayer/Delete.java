@@ -56,7 +56,20 @@ public class Delete extends Query {
 		if (this.query == null) {
 			this.query = this.build();
 		}
-		return super.executeUpdate(this.query);
+		return super.executeUpdate(this);
+	}
+
+	@Override
+	public String toString() {
+		return "Delete [tableName=" + tableName + ", conditions=" + conditions + "]";
+	}
+	
+	public String getTableName() {
+		return this.tableName;
+	}
+	
+	public List<Condition> getConditions(){
+		return this.conditions;
 	}
 	
 }

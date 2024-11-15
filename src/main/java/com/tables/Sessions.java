@@ -3,7 +3,7 @@ package com.tables;
 public enum Sessions implements Columns{
 	SESSION_ID("session_id",String.class),
 	USER_ID("user_id",Integer.class),
-	CREATED_AT("created_at",Long.class),
+	CREATED_TIME("created_time",Long.class),
 	LAST_ACCESSED_TIME("last_accessed_time",Long.class);
 	
 	private final String columnName;

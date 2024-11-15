@@ -130,6 +130,7 @@ public class Dao {
 							UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
 					.condition(UserMails.MAIL, Operators.Equals, username);
 			String statement = getuserfromdb.build();
+			System.out.println(statement);
 			ps = c.prepareStatement(statement);
 //	        ps.setString(1, username);
 
@@ -143,13 +144,16 @@ public class Dao {
 			// Verify password using BCrypt
 			boolean res = BCrypt.checkpw(password, rs.getString("password"));
 			if (res) {
-				// Populate user details if password matches
+				// Populate user details if password matchesSELECT UserDetails.* FROM UserDetails Inner Join UserMails ON UserMails.user_id = UserDetails.user_id WHERE UserMails.mail = 'j@x.com';
+
 				u.setAccount_type(rs.getString("contact_type"));
+				System.out.println(rs.getString("contact_type"));
 				u.setFirst_name(rs.getString("first_name"));
 				u.setLast_name(rs.getString("last_name"));
 				u.setUser_name(rs.getString("user_name"));
 				u.setUser_id(rs.getInt("user_id"));
 				return u;
+				
 			}
 
 			return u; // Return empty user if password check fails
@@ -195,10 +199,10 @@ public class Dao {
 			user.setLast_name(rs.getString("last_name"));
 			user.setAccount_type(rs.getString("contact_type"));
 			user.setUser_name(rs.getString("user_name"));
-			user.setGroup_contacts(getGroupUserContacts(user));
-			user.setUser_contacts(getContacts(user));
-			user.setUserGroups(getUserGroups(user));
-			user.setmails(getEmails(user));
+//			user.setGroup_contacts(getGroupUserContacts(user));
+//			user.setUser_contacts(getContacts(user));
+//			user.setUserGroups(getUserGroups(user));
+//			user.setmails(getEmails(user));
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -814,18 +818,17 @@ public class Dao {
 			String updateQuery = "UPDATE Sessions SET last_accessed_time = ?  WHERE session_id = ? and user_id = ?;";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-				for (String sessionid : sessionData.keySet()) {
-					SessionData sessiondata = sessionData.get(sessionid);
-
-					if (sessiondata != null) {
-						// Set the parameters
-						preparedStatement.setLong(1, sessiondata.getLast_accessed_at());
-						preparedStatement.setString(2, sessionid);
-						preparedStatement.setInt(3, sessiondata.getUser_id());
-						preparedStatement.addBatch();
-					}
+				synchronized(sessionData) {
+				    for (String sessionid : sessionData.keySet()) {
+				        SessionData sessiondata = sessionData.get(sessionid);
+				        if (sessiondata != null) {
+				            preparedStatement.setLong(1, sessiondata.getLast_accessed_time());
+				            preparedStatement.setString(2, sessionid);
+				            preparedStatement.setInt(3, sessiondata.getUser_id());
+				            preparedStatement.addBatch();
+				        }
+				    }
 				}
-
 				preparedStatement.executeBatch();
 				connection.commit(); // Commit the transaction
 			} catch (SQLException e) {

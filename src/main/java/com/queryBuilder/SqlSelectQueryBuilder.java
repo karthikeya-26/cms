@@ -80,7 +80,6 @@ public class SqlSelectQueryBuilder implements Builder {
 		if (!this.selectObj.conditions.isEmpty()) {
 			StringJoiner conditionsJoiner = new StringJoiner(" AND ");
 			for (Condition condition : this.selectObj.conditions) {
-
 				conditionsJoiner.add(String.format("%s %s %s", condition.column, condition.operator, ((CheckDataType.isFloat(condition.value)||CheckDataType.isInt(condition.value)||CheckDataType.isLong(condition.value))?condition.value:"'"+condition.value+"'")));
 			}
 			query += " WHERE " + conditionsJoiner.toString();

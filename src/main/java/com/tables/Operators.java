@@ -3,8 +3,11 @@ package com.tables;
 public enum Operators {
 	
 	Equals("="),
+	NotEquals("!="),
 	LessThan("<"),
+	LessThanOrEqualTo("<="),
 	GreaterThan(">"),
+	GreaterThanOrEqualTo(">="),
 	Max("MAX"),
 	Min("MIN"),
 	Avg("AVG"),

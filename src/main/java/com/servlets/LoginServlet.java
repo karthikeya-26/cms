@@ -1,17 +1,6 @@
-// Source code is decompiled from a .class file using FernFlower decompiler.
 package com.servlets;
 
-import com.dao.Dao;
-
-import com.models.Contact;
-import com.models.User;
-import com.session.Session;
-import com.session.SessionDataManager;
-
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -19,63 +8,61 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet({"/login"})
+import com.dao.NewDao;
+import com.dbObjects.UserDetailsObj;
+import com.handlers.LoginHandler;
+import com.models.SessionData;
+import com.session.Session;
+import com.session.SessionDataManager;
+
+/**
+ * Servlet implementation class LoginServlet
+ */
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+    
+    public LoginServlet() {
+        super();
+    }
 
-   public LoginServlet() {
-   }
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("login.jsp");
+	}
 
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      request.getRequestDispatcher("login.jsp").forward(request, response);
-   }
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      System.out.println(request.getSession(false));
-      User u = null;
+		UserDetailsObj user = LoginHandler.validate_user(request.getParameter("mail"), request.getParameter("password"));
+//		System.out.println(user);
+		if (user == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid login details");
+			return;
+		}
+		
+//		System.out.println("request parameter map :"+request.getParameterMap());
 
-      try {
-         u = Dao.loginUser(request.getParameter("username"), request.getParameter("password"));
-         
-      } catch(Exception e) {
-    	  System.out.println("in login servlet");
-      }
-      
-      
-//      catch (NamingException ne) {
-//         ne.printStackTrace();
-//      } catch (SQLException e) {
-//         e.printStackTrace();
-//      }
+		// Create a new session ID
+		String session_id = Session.getSessionId();
+		Long created_at = System.currentTimeMillis();
+		Long last_accessed_at = created_at;
+		Long expires_at = created_at + 60000*30; // 30 minute expiration
+		NewDao.insertUserInSessions(session_id,user.getUser_id(),created_at,last_accessed_at);
+		// Store session data
+		SessionDataManager.session_data.put(session_id, new SessionData(
+		    user.getUser_id(), 
+		    created_at, 
+		    last_accessed_at,
+		    expires_at 
+		));
+		SessionDataManager.users_data.put(user.getUser_id(), user);
+//		System.out.println(SessionDataManager.session_data);
+//		System.out.println(SessionDataManager.users_data);
+		// Set the session ID in a cookie
+		Cookie sessionCookie = new Cookie("session_id", session_id);
+		sessionCookie.setMaxAge(30 * 60); // 30 minutes
+//		sessionCookie.setPath("/"); // Cookie accessible across the entire application
+		response.addCookie(sessionCookie);
 
-//      ArrayList<Contact> user_contacts = null;
-//      ArrayList<Contact> group_contacts = null;
-//      ArrayList<String> othermails = null;
-//      ArrayList<String> user_groups = null;
-//
-//      try {
-//         user_contacts = Dao.getContacts(u);
-//         group_contacts = Dao.getGroupUserContacts(u);
-//         othermails = Dao.getEmails(u);
-//         user_groups = Dao.getUserGroups(u);
-//      } catch (SQLException var11) {
-//         var11.printStackTrace();
-//      }
-//
-//      u.setUser_contacts(user_contacts);
-//      u.setGroup_contacts(group_contacts);
-//      u.setmails(othermails);
-//      u.setUserGroups(user_groups);
-//      if (u.getUser_name() != null) {
-//         String s_id = Session.getSession();
-//         Dao.insertUsertoSession(s_id,u);
-//         Cookie cookie = new Cookie("sid", s_id);
-//         response.addCookie(cookie);
-//         SessionDataManager.addUsertoSession(s_id, u);
-//         response.sendRedirect("index.jsp");
-//      } else {
-//         response.sendRedirect("login.jsp?error=invalid_details");
-//      }
-
-   }
+		response.sendRedirect("profile.jsp");
+	}
 }

@@ -204,6 +204,11 @@ public class Select extends Query {
 		aggregratecolumns.add(new AggregateColumn(Operators.Count, column));
 		return this;
 	}
+	
+	public Select limit(Integer limit) {
+		this.limit = limit;
+		return this;
+	}
 
 	public String build() {
 
@@ -222,17 +227,14 @@ public class Select extends Query {
 	}
 	
 	public List<ResultObject> executeQuery(Class<? extends ResultObject> clazz) {
-		if (this.query== null) {
-			this.query = this.build();
-		}
-		return super.executeQuery(this.query, clazz);
+		return super.executeQuery(this, clazz);
 	}
 	
 	public List<HashMap<String, Object>> executeQuery(){
 		if (this.query == null) {
 			this.query = this.build();
 		}
-		return super.executeQuery(query, fields);
+		return super.executeQuery(this, fields);
 	}
 
 }

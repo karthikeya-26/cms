@@ -72,7 +72,7 @@ public class Insert extends Query{
 		if (this.query == null) {
 			this.query = this.build();
 		}
-		return super.executeUpdate(this.query);
+		return super.executeUpdate(this);
 	}
 	
 	public int executeUpdate(boolean returnGeneratedKey) {
@@ -80,12 +80,44 @@ public class Insert extends Query{
 			this.query = this.build();
 		}
 		try {
-			return super.executeUpdate(query, returnGeneratedKey);
+			return super.executeUpdate(this, returnGeneratedKey);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return -1;
 		}
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public List<String> getColumns() {
+		return columns;
+	}
+
+	public void setColumns(List<String> columns) {
+		this.columns = columns;
+	}
+
+	public List<String> getValues() {
+		return values;
+	}
+
+	public void setValues(List<String> values) {
+		this.values = values;
+	}
+
+	public List<Condition> getConditions() {
+		return conditions;
+	}
+
+	public void setConditions(List<Condition> conditions) {
+		this.conditions = conditions;
 	}
 	
 

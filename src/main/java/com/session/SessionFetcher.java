@@ -1,12 +1,12 @@
 package com.session;
 
-import com.dao.Dao;
+import com.dao.NewDao;
 
 public class SessionFetcher {
 	
 	public static  void getSessionsFromDatabase() {
 		
-		Dao.fetchSessionsFromDatabase();
+		NewDao.fetchSessionsFromDb();
 	}
 
 }

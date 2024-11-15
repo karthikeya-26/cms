@@ -4,9 +4,13 @@ public class UserDetailsObj  extends ResultObject{
 	private  Integer user_id ;
 	private  String user_name ;
 	private  String password ;
-	private  String first_name ;
+	private String first_name ;
 	private  String last_name ;
 	private  String contact_type ;
+	private Long created_at;
+	private Long modified_at;
+	private Integer pw_version;
+	private Long pw_last_changed_at;
 	
 	@Override
 	public String toString() {
@@ -49,5 +53,30 @@ public class UserDetailsObj  extends ResultObject{
 	public void setContact_type(String contact_type) {
 		this.contact_type = contact_type;
 	}
+	public Long getCreated_at() {
+		return created_at;
+	}
+	public void setCreated_at(Long created_at) {
+		this.created_at = created_at;
+	}
+	public Long getModified_at() {
+		return modified_at;
+	}
+	public void setModified_at(Long modified_at) {
+		this.modified_at = modified_at;
+	}
+	public Integer getPw_version() {
+		return pw_version;
+	}
+	public void setPw_version(Integer pw_version) {
+		this.pw_version = pw_version;
+	}
+	public Long getPw_last_changed_at() {
+		return pw_last_changed_at;
+	}
+	public void setPw_last_changed_at(Long pw_last_changed_at) {
+		this.pw_last_changed_at = pw_last_changed_at;
+	}
+	
 	
 }

@@ -7,7 +7,11 @@ public enum UserDetails implements Columns {
     FIRST_NAME("first_name", String.class),
     LAST_NAME("last_name", String.class),
     CONTACT_TYPE("contact_type", String.class),
-	ALL_COLS("*", null);
+    CREATED_AT("created_at", Long.class),
+    MODIFIED_AT("modified_at",Long.class),
+    PW_VERSION("pw_version", Integer.class),
+    PW_LAST_CHANGED_AT("pw_last_changed_at",Long.class),
+	ALL_COLS("*", null), ;
 
     private final String columnName;
     private  Class<?> dataType =null;

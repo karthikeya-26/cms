@@ -1,28 +1,19 @@
 package com.dao;
 
-import com.dbObjects.ContactMailsObj;
-
-import com.dbObjects.ContactMobileNumbersObj;
-import com.dbObjects.ContactsObj;
-import com.dbObjects.GroupContactsObj;
-import com.dbObjects.ResultObject;
-import com.dbObjects.SessionObj;
-import com.dbObjects.UserDetailsObj;
-import com.dbObjects.UserGroupsObj;
-import com.dbObjects.UserMailsObj;
+import com.dbObjects.*;
 import com.dbconn.*;
+import com.filters.SessionFilter;
 import com.loggers.*;
 import com.models.*;
-import com.mysql.cj.x.protobuf.MysqlxExpr.Operator;
+import com.notifier.SessionmapUpdateNotifier;
 import com.queryLayer.*;
 import com.tables.*;
+import com.tables.UserDetails;
 import com.session.*;
+import com.startup.RegServer;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NewDao {
 	public static boolean signUpUser(String user_name, String first_name, String last_name, String email,
@@ -41,25 +32,29 @@ public class NewDao {
 		return false;
 	}
 
-	public static boolean loginUser(String email, String password) {
+	public static UserDetailsObj loginUser(String email) {
+		UserDetailsObj user = null;
 		Select s = new Select();
 		s.table(Table.UserDetails)
 				.columns(UserDetails.USER_ID, UserDetails.USER_NAME, UserDetails.PASSWORD, UserDetails.FIRST_NAME,
-						UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE)
+						UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE,UserDetails.CREATED_AT, UserDetails.MODIFIED_AT, UserDetails.PW_VERSION)
 				.join(Joins.InnerJoin, Table.UserMails, UserMails.USER_ID, Operators.Equals, Table.UserDetails,
 						UserDetails.USER_ID)
 				.condition(UserMails.MAIL, Operators.Equals, email);
-
-		UserDetailsObj user = (UserDetailsObj) s.executeQuery(UserDetailsObj.class).get(0);
-
-		if (user != null) {
-			if (BCrypt.checkpw(user.getPassword(), password)) {
-				return true;
-			}
+		
+		List<ResultObject> users = (List<ResultObject>)s.executeQuery(UserDetailsObj.class);
+		if(users.size() >0) {
+			user = (UserDetailsObj) users.get(0);
 		}
+		
+		return user;
+	}
+	
+	public static boolean new_loginUser(String email, String password) {
+		
 		return false;
 	}
-
+	
 	public static UserDetailsObj getUser(Integer user_id) {
 		Select s = new Select();
 		s.table(Table.UserDetails).columns(UserDetails.ALL_COLS).condition(UserDetails.USER_ID, Operators.Equals,
@@ -90,26 +85,47 @@ public class NewDao {
 		for(ResultObject group : usergroups) {
 			user_groups.add((UserGroupsObj) group);
 		}
-		
 		return user_groups;
-		
-		
 	}
-
-	public static void setPrimaryMail(Integer mail_id, Integer user_id, String mail) {
-		Update u = new Update();
-		u.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("0").condition(UserMails.USER_ID,
-				Operators.Equals, user_id.toString());
-
-		int success = u.executeUpdate();
-		if (success >= 0) {
-			Update setprimary = new Update();
-			setprimary.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("1")
-					.condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
-					.condition(UserMails.MAIL, Operators.Equals, mail);
-
-			int updated = setprimary.executeUpdate();
+	public static List<ContactsObj> getGroupContacts(Integer group_id) {
+		List<ContactsObj> group_contacts = new ArrayList<ContactsObj>();
+		Select get_group_contacts = new Select();
+		get_group_contacts.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.ADDRESS,Contacts.CREATED_AT)
+		.join(Joins.InnerJoin, Table.GroupContacts, GroupContacts.CONTACT_ID, Operators.Equals, Table.Contacts, Contacts.CONTACT_ID)
+		.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString());
+		List<ResultObject> resultset = get_group_contacts.executeQuery(ContactsObj.class);
+		for(ResultObject contact : resultset) {
+			group_contacts.add((ContactsObj)contact);
 		}
+		return group_contacts;
+	}
+	
+	public static boolean checkifMailbelongstoUser(Integer user_id, String mail_id) {
+		Select checkuserandmail = new Select();
+		checkuserandmail.table(Table.UserMails).condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
+		.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);
+		List<HashMap<String, Object>> res = checkuserandmail.executeQuery();
+		System.out.println(res);
+		return res.size() >0;
+	}
+	
+	public static int setPrimaryMail(Integer user_id, String mail_id) {
+		if(checkifMailbelongstoUser(user_id, mail_id)) {
+			Update u = new Update();
+			u.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("0").condition(UserMails.USER_ID,
+					Operators.Equals, user_id.toString());
+
+			int success = u.executeUpdate();
+			if (success >= 0) {
+				Update setprimary = new Update();
+				setprimary.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("1")
+						.condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
+						.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);
+
+				 return  setprimary.executeUpdate();
+			}
+		}
+		return -1;
 	}
 
 	public static boolean checkIfMailExists(String email) {
@@ -187,22 +203,22 @@ public class NewDao {
 	}
 	
 	public static void deleteContact(Integer contact_id) {
-		if (checkIfContactInGroups(contact_id)) {
-			Delete deleteContactInGroup = new Delete();
-			deleteContactInGroup.table(Table.GroupContacts).condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
-			int deletedcontactfromGroups = deleteContactInGroup.executeUpdate();
-		}
+//		if (checkIfContactInGroups(contact_id)) {
+//			Delete deleteContactInGroup = new Delete();
+//			deleteContactInGroup.table(Table.GroupContacts).condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
+//			int deletedcontactfromGroups = deleteContactInGroup.executeUpdate();
+//		}
 		Delete deleteContact = new Delete();
 		deleteContact.table(Table.Contacts).condition(Contacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 		int deletedContact = deleteContact.executeUpdate();
-		
-		Delete deletecontactmobiles = new Delete();
-		deletecontactmobiles.table(Table.ContactMobileNumbers).condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
-		int deltedcontactmobiles = deletecontactmobiles.executeUpdate();
-		
-		Delete deletecontactmails = new Delete();
-		deletecontactmails.table(Table.ContactMails).condition(ContactMails.CONTACT_ID, Operators.Equals, contact_id.toString());
-		int deletedcontactmails = deletecontactmails.executeUpdate();
+//		
+//		Delete deletecontactmobiles = new Delete();
+//		deletecontactmobiles.table(Table.ContactMobileNumbers).condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
+//		int deltedcontactmobiles = deletecontactmobiles.executeUpdate();
+//		
+//		Delete deletecontactmails = new Delete();
+//		deletecontactmails.table(Table.ContactMails).condition(ContactMails.CONTACT_ID, Operators.Equals, contact_id.toString());
+//		int deletedcontactmails = deletecontactmails.executeUpdate();
 		
 	}
 	
@@ -227,7 +243,6 @@ public class NewDao {
 		Select getMobileNumberswithContactId = new Select();
 		getMobileNumberswithContactId.table(Table.ContactMobileNumbers).columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
 		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
-		
 		List<HashMap<String, Object>> mobileNumbers = getMobileNumberswithContactId.executeQuery();
 		for(HashMap<String, Object> number :mobileNumbers) {
 			ContactMobileNumbersObj n = new ContactMobileNumbersObj();
@@ -250,6 +265,7 @@ public class NewDao {
 			o.setMail((String) mailObj.get("mail"));
 			contact_mails.add(o);
 		}
+		
 		return contact_mails;
 	}
 	
@@ -258,10 +274,11 @@ public class NewDao {
 		Select getGroup_ids = new Select();
 		getGroup_ids.table(Table.GroupContacts).columns(GroupContacts.GROUP_ID)
 		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
+		
 		List<HashMap<String, Object>> resultset = getGroup_ids.executeQuery();
 		if(resultset.size() >0) {
 			for(HashMap<String,Object> row: resultset){
-				Integer group_id =(Integer) row.get("contact_id");
+				Integer group_id =(Integer) row.get("group_id");
 				Select g_name = new Select();
 				g_name.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 				.condition(UserGroups.GROUP_ID, Operators.Equals, group_id.toString());
@@ -272,22 +289,37 @@ public class NewDao {
 		return group_names;
 	}
 	
+	
 	public static boolean checkIfGroupExistsForUser(Integer user_id, String group_name) {
 		Select checkgroupforuser = new Select();
 		checkgroupforuser.table(Table.UserGroups).column(UserGroups.GROUP_NAME)
 		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
 		.condition(UserGroups.GROUP_NAME, Operators.Equals, group_name);
 		List<HashMap<String,Object>> groupsofuser = checkgroupforuser.executeQuery();
+		System.out.println(checkgroupforuser.build());
+		System.out.println(groupsofuser);
 		return groupsofuser.size()>0;
 	}
 	//this can be boolean to show user info about this operation
 	public static void addGroupForUser(Integer user_id, String group_name) {
 		if (!checkIfGroupExistsForUser(user_id, group_name)) {
 			Insert addgroup = new Insert();
-			addgroup.table(Table.UserGroups).columns(UserGroups.GROUP_NAME,UserGroups.USER_ID)
+			addgroup.table(Table.UserGroups).columns(UserGroups.USER_ID,UserGroups.GROUP_NAME)
 			.values(user_id.toString(), group_name);
 			int added = addgroup.executeUpdate();
 		}
+	}
+	
+	public static void deleteGroupForUser(Integer user_id,Integer group_id) {
+		
+			Delete deleteGroup = new Delete();
+			deleteGroup.table(Table.UserGroups)
+			.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
+			.condition(UserGroups.GROUP_ID, Operators.Equals, group_id.toString());
+			deleteGroup.build();
+			int status = deleteGroup.executeUpdate();
+		
+		
 	}
 	
 	public static boolean checkIfContactInGroup(Integer group_id, Integer contact_id) {
@@ -309,36 +341,117 @@ public class NewDao {
 		}
 	}
 	
-	public static void deletContactfromGroup(Integer group_id, Integer contact_id) {
+	public static int deletContactfromGroup(Integer group_id, Integer contact_id) {
 		if(checkIfContactInGroup(group_id, contact_id)) {
 			Delete  deletecontactfromgroup = new Delete();
 			deletecontactfromgroup.table(Table.GroupContacts)
 			.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString())
 			.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 			
-			int deleted  = deletecontactfromgroup.executeUpdate();
+			return deletecontactfromgroup.executeUpdate();
+		}else {
+			return -1;
 		}
+	}
+	
+	public static SessionData fetchSessionFromDb(String session_id) {
+		SessionData session = new SessionData();
+		Select sessionDatafromdb = new Select();
+		sessionDatafromdb.table(Table.Sessions).columns(Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME)
+		.condition(Sessions.SESSION_ID, Operators.Equals, session_id);
+		List<HashMap<String, Object>> session_objects = sessionDatafromdb.executeQuery();
+		if(session_objects.size()==0) return null;
+		HashMap<String,Object> session_object = session_objects.get(0);
+		session.setCreated_time((Long) session_object.get("created_time"));
+		session.setUser_id((Integer) session_object.get("user_id"));
+		session.setLast_accessed_at((Long) session_object.get("last_accessed_time"));
+		return session;
 	}
 	
 	public static void fetchSessionsFromDb() {
 		Map<String, SessionData> sess_map = SessionDataManager.session_data;
 		Select sessionsfromdb = new Select();
-		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_AT,Sessions.LAST_ACCESSED_TIME);
+		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME);
 		
 		List<ResultObject> resultset  = sessionsfromdb.executeQuery(SessionObj.class);
 		
 		if(resultset.size() > 0) {
 			for(ResultObject row : resultset) {
 				SessionObj session = (SessionObj) row;
-				if(session.getLast_accessed_at()+ 1000*60*30 <= session.getLast_accessed_at()) {
+				if(System.currentTimeMillis() <= session.getLast_accessed_at()+ 1000*60*30) {
 					sess_map.put(session.getSession_id(), new SessionData(session.getUser_id(),session.getCreated_at(),session.getLast_accessed_at(),session.getLast_accessed_at()+30*60*1000));
 				}
-				
 			}
 		}
+		System.out.println("retrived sessions from db at startup");
+		System.out.println(sess_map);
+	}
+
+	public static int removeSessionfromDb(String session_id) {
+		Delete deleteSess = new Delete();
+		deleteSess.table(Table.Sessions).condition(Sessions.SESSION_ID, Operators.Equals, session_id);
+		int x =  deleteSess.executeUpdate();
+		return x;
+	}
+
+	public static int insertUserInSessions(String session_id, Integer user_id, Long created_at,Long last_accessed_at) {
+		Insert insertSess = new Insert();
+		insertSess.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME).values(session_id,user_id.toString(),created_at.toString(),last_accessed_at.toString());
+		return insertSess.executeUpdate();
 	}
 	
+	public static void updateSessionsToDatabase(Map<String,SessionData> sessions) {
+		
+		for(Map.Entry<String, SessionData> session : sessions.entrySet()) {
+			String session_id = session.getKey();
+			Update update_session = new Update();
+			update_session.table(Table.Sessions).columns(Sessions.LAST_ACCESSED_TIME).values(session.getValue().getLast_accessed_time().toString())
+			.condition(Sessions.SESSION_ID, Operators.Equals, session_id);
+			update_session.executeUpdate();
+		}
+		System.out.println("Completed updating sessions to database");
+	}
 
+	public static void registerServer(String servername, String port) {
+		Insert insertServerInDatabase = new Insert();
+		insertServerInDatabase.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT).values(servername,port);
+		insertServerInDatabase.executeUpdate();
+	}
 	
+	public static void deregisterServer(String servername, String port) {
+		Delete removeServerInDatabase =  new Delete();
+		removeServerInDatabase.table(Table.Servers).condition(Servers.SERVER_NAME, Operators.Equals, servername)
+		.condition(Servers.PORT, Operators.Equals, port);
+		System.out.println(removeServerInDatabase.build());
+		removeServerInDatabase.executeUpdate();
+	}
+	
+	public static List<HashMap<String, Object>> getRegisteredServers() {
+		Select getservers = new Select();
+		getservers.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT)
+		.condition(Servers.PORT, Operators.NotEquals, RegServer.getServerPort());
+		System.out.println(getservers.build());
+		List<HashMap<String,Object>> resultset = getservers.executeQuery();
+		return resultset;
+	}
+
+	public static void updateUserDetails(String userName, String firstName, String lastName, String contactType) {
+		Update updateUser = new Update();
+		updateUser.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		.values(userName,firstName,lastName,contactType)
+		.condition(UserDetails.USER_ID, Operators.Equals, SessionFilter.user_id.get().toString());
+		int status = updateUser.executeUpdate();
+		
+	}
+
+	public static PasswordsObj getPasswordWithUserId(Integer user_id) {
+		Select passwordObj = new Select();
+		passwordObj.table(Table.Passwords)
+		.condition(Passwords.USER_ID, Operators.Equals, user_id.toString());
+		List<ResultObject> passwords = passwordObj.executeQuery(PasswordsObj.class);
+		PasswordsObj password = (PasswordsObj) passwords.get(0);
+		return password;
+	}
+
 
 }

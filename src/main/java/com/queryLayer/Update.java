@@ -36,6 +36,10 @@ public class Update extends Query {
 		}
 		return this;
 	}
+	public Update values(String value) {
+		this.values.add(value);
+		return this;
+	}
 	
 	public Update values(String... values) {
 		for(String value : values) {
@@ -71,7 +75,39 @@ public class Update extends Query {
 		if (this.query == null) {
 			this.query = this.build();
 		}
-		return super.executeUpdate(this.query);
+		return super.executeUpdate(this);
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public List<String> getColumns() {
+		return columns;
+	}
+
+	public void setColumns(List<String> columns) {
+		this.columns = columns;
+	}
+
+	public List<String> getValues() {
+		return values;
+	}
+
+	public void setValues(List<String> values) {
+		this.values = values;
+	}
+
+	public List<Condition> getConditions() {
+		return conditions;
+	}
+
+	public void setConditions(List<Condition> conditions) {
+		this.conditions = conditions;
 	}
 
 }

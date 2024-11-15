@@ -19,6 +19,36 @@ public class Condition {
 		this.operator = operator.value();
 		this.value = value;
 	}
+
+	public String getColumn() {
+		return this.column;
+	}
+
+	public void setColumn(Columns column) {
+		this.column = column.value();
+	}
+
+	public String getOperator() {
+		return this.operator;
+	}
+
+	public void setOperator(Operators operator) {
+		this.operator = operator.value();
+	}
+
+	public String getValue() {
+		return this.value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "Condition [column=" + column + ", operator=" + operator + ", value=" + value + "]";
+	}
+	
 	
 	
 	

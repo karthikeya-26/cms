@@ -45,10 +45,10 @@ public class Executor {
 	}
 	
 	
-	public int executeUpdate(String statement) {
+	public int executeUpdate(Query query) {
 		
 		try(Connection c = Database.getConnection()){
-			PreparedStatement ps = c.prepareStatement(statement);
+			PreparedStatement ps = c.prepareStatement(query.build());
 			return ps.executeUpdate();
 		}catch(SQLException e) {
 			AppLogger.ApplicationLog(e);
@@ -57,7 +57,37 @@ public class Executor {
 		}
 	}
 	
-	public int executeUpdates(Query... queries) {
+	public int executeUpdate(Query... queries) {
+		try (Connection c = Database.getConnection()){
+			for(Query query : queries) {
+				PreparedStatement ps = c.prepareStatement(query.build());
+				
+			}
+		} catch (SQLException e) {
+			
+		}
+		return -1;
+	}
+	
+	public int executeUpdate( boolean useGeneratedKey, Query... queries) {
+		int number = queries.length;
+		try(Connection c = Database.getConnection()){
+			String query1 = queries[0].build();
+			c.setAutoCommit(false);
+			PreparedStatement ps = c.prepareStatement(query1,PreparedStatement.RETURN_GENERATED_KEYS);
+			ps.executeUpdate();
+			Integer  id  = ps.getGeneratedKeys().getInt(1);
+			
+			if (number >1) {
+				for(int i =1; i<queries.length; i++) {
+					ps = c.prepareStatement(queries[i].values(id.toString()).build());
+				}
+			}
+			
+			
+		}catch(SQLException e) {
+			
+		}
 		return -1;
 	}
 	

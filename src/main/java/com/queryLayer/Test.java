@@ -1,5 +1,7 @@
 package com.queryLayer;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,11 +9,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.dao.ContactDao;
+import com.dao.NewDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
+import com.loggers.AppLogger;
 import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
+import com.models.SessionData;
+import com.notifier.SessionmapUpdateNotifier;
+import com.startup.RegServer;
 import com.tables.*;
+import com.util.PasswordMigration;
 
 public class Test {
 	public static void main(String args[]) {
@@ -124,9 +134,64 @@ public class Test {
 //		.condition(GroupContacts.GROUP_ID, Operators.Equals, "11")
 //		.condition(GroupContacts.CONTACT_ID, Operators.Equals, "2");
 //		System.out.println(deletecontactfromgroup.build());
-		Select sessionsfromdb = new Select();
-		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_AT,Sessions.LAST_ACCESSED_TIME);
-		System.out.println(sessionsfromdb.build());
+//		Select sessionsfromdb = new Select();
+//		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME);
+//		System.out.println(sessionsfromdb.build());
+//		System.out.println(sessionsfromdb.build());
+		
+//		Query query = new Insert().table(Table.UserDetails).columns(UserDetails.CONTACT_TYPE).values("public");
+//		System.out.println(query.build());
+//		Select sessionsfromdb = new Select();
+//		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME);
+//		System.out.println(sessionsfromdb.build());
+//		List<ResultObject> resultset  = sessionsfromdb.executeQuery(SessionObj.class);
+//		System.out.println(resultset);
+//		if(resultset.size() > 0) {
+//			for(ResultObject row : resultset) {
+//				SessionObj session = (SessionObj) row;
+//				if(System.currentTimeMillis() <= session.getLast_accessed_at()+ 1000*60*30) {
+//				}else {
+//				}
+//				
+//			}
+//		}
+//		Update update_session = new Update();
+//		update_session.table(Table.Sessions).columns(Sessions.LAST_ACCESSED_TIME).values("71323423423")
+//		.condition(Sessions.SESSION_ID, Operators.Equals, "xyzzzz");
+//		System.out.println(update_session.build());
+//		NewDao.fetchSessionFromDb("6hkvm3cb36056mmfgnlab6ngq5");
+//		System.out.println(NewDao.getRegisteredServers());
+//		System.out.println(RegServer.getServerName());
+//		SessionmapUpdateNotifier.sendSessionUpdate("a", System.currentTimeMillis());
+//		
+//		Query q = new Select().table(Table.ContactMails);
+//		System.out.println(q.build());
+//		HttpURLConnection connection = null;
+//		try {
+//			List<HashMap<String,Object>> servers = NewDao.getRegisteredServers();
+//			System.out.println(servers);
+//		
+//				URL url = new URL("http://"+"localhost"+":"+"8080"+"/contacts/sru?action=SessionResourceDelete"+"&session_id="+"dadfgsfsdgfdbvbdver3y");
+//				connection = (HttpURLConnection) url.openConnection();
+//				connection.setRequestMethod("POST");
+//				Integer response = connection.getResponseCode();
+//				System.out.println(url.toString());
+//			
+//		}catch(Exception e) {
+//			AppLogger.ApplicationLog(e);
+//			
+//		}
+//		Update updateUser = new Update();
+//		updateUser.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+//		.values("jd","jd","jd","jd").condition(UserDetails.USER_ID, Operators.Equals, "1");
+//		System.out.println(updateUser.build());
+		
+//		System.out.println(ContactDao.getContactById(2));
+//		ContactDao.UpdateContact(2, "Emma", "Watson", "proddatur");
+		
+		PasswordMigration.exportPasswords(13);
+		
+		
 	}
 
 }

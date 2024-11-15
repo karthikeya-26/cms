@@ -67,8 +67,52 @@ public class Database {
         }
         return connection;
     }
+    public static void reloadDatabaseConfig() {
+    	loadDatabaseConfig();
+    }
+    private static void loadDatabaseConfig() {
+    	 try (InputStream input = Database.class.getClassLoader().getResourceAsStream("resources/config.properties")){
+         	if(input == null) {
+         		System.out.println("Unable to fetch properties");
+         		throw new Exception("unable to find properties config");
+         	}
+         	prop.load(input);
+         	
+         	cpds.setDriverClass(prop.getProperty("db.driver"));
+         	cpds.setJdbcUrl(prop.getProperty("db.url"));
+             cpds.setUser(prop.getProperty("db.username"));
+             cpds.setPassword(prop.getProperty("db.password"));
+             
+             // Set connection pool properties
+             cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("db.initialPoolSize")));
+             cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("db.minPoolSize")));
+             cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("db.acquireIncrement")));
+             cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("db.maxPoolSize")));
+             cpds.setMaxStatements(Integer.parseInt(prop.getProperty("db.maxStatements")));
+             cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("db.unreturnedConnectionTimeout")));
+             cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("db.debugUnreturnedConnectionStackTraces")));
+             
+//             cpds.setDriverClass("com.mysql.cj.jdbc.Driver"); 
+//             cpds.setJdbcUrl("jdbc:mysql://localhost:3306/cms");   
+//             cpds.setUser("root");                 
+//             cpds.setPassword("karthik@sql");          
+//             cpds.setInitialPoolSize(10);
+//             cpds.setMinPoolSize(5);
+//             cpds.setAcquireIncrement(5);
+//             cpds.setMaxPoolSize(20);
+//             cpds.setMaxStatements(100);
+//             cpds.setUnreturnedConnectionTimeout(300);
+//             cpds.setDebugUnreturnedConnectionStackTraces(false);
+         } catch ( IOException |PropertyVetoException e) {
+             e.printStackTrace(); 
+         } catch (Exception e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+		
+	}
 
-    public static void closeConnection(Connection connection) {
+	public static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close(); // Returns the connection to the pool
@@ -77,4 +121,12 @@ public class Database {
             }
         }
     }
+	
+	public static void closePool() {
+		if(cpds != null) {
+			System.out.println("closing pool");
+			cpds.close();
+			
+		}
+	}
 }
