@@ -64,7 +64,7 @@ public class PasswordMigration {
 //	}
 	
 	public static void migrate() {
-		
+		//Insert If NOT EXISTS ..................
 	}
 	
 	
