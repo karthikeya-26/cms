@@ -12,35 +12,31 @@ import com.tables.Table;
 
 public class Update extends Query {
 
-	public String tableName;
-	public List<String> columns;
-	public List<String> values;
-	public List<Condition> conditions;
+	private Table tableName;
+	private List<Columns> columns;
+	private List<String> values;
+	private List<Condition> conditions;
 	private String query;
 
 	public Update() {
-		this.columns = new ArrayList<String>();
-		this.values = new ArrayList<String>();
-		this.conditions = new ArrayList<Condition>();
+		this.columns = new ArrayList<>();
+		this.values = new ArrayList<>();
+		this.conditions = new ArrayList<>();
 		this.query = null;
 	}
 
 	public Update table(Table tableName) {
-		this.tableName = tableName.value();
+		this.tableName = tableName;
 		return this;
 	}
 
 	public Update columns(Columns... columns) {
 		for (Columns col : columns) {
-			this.columns.add(col.getClass().getSimpleName()+"."+col.value());
+			this.columns.add(col);
 		}
 		return this;
 	}
-	public Update values(String value) {
-		this.values.add(value);
-		return this;
-	}
-	
+
 	public Update values(String... values) {
 		for(String value : values) {
 			this.values.add(value);
@@ -78,36 +74,20 @@ public class Update extends Query {
 		return super.executeUpdate(this);
 	}
 
-	public String getTableName() {
+	public Table getTableName() {
 		return tableName;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
-	public List<String> getColumns() {
+	public List<Columns> getColumns() {
 		return columns;
-	}
-
-	public void setColumns(List<String> columns) {
-		this.columns = columns;
 	}
 
 	public List<String> getValues() {
 		return values;
 	}
 
-	public void setValues(List<String> values) {
-		this.values = values;
-	}
-
 	public List<Condition> getConditions() {
 		return conditions;
-	}
-
-	public void setConditions(List<Condition> conditions) {
-		this.conditions = conditions;
 	}
 
 }

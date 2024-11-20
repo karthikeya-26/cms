@@ -16,17 +16,17 @@ public class SqlDeleteQueryBuilder {
 		String query = "DELETE FROM ";
 		
 		// tableName
-		query += this.deleteObj.tableName;
+		query += this.deleteObj.getTableName();
 		
 		
 		//conditions
-		if (this.deleteObj.conditions.isEmpty()) {
+		if (this.deleteObj.getConditions().isEmpty()) {
 			throw new Exception("insufficient data to build the delete statement");
 		}
 		else {
 			StringJoiner conditionJoiner = new StringJoiner(" AND ");
-			for (Condition condition : this.deleteObj.conditions) {
-				conditionJoiner.add(String.format("%s %s %s", condition.column, condition.operator, ((CheckDataType.isFloat(condition.value)||CheckDataType.isInt(condition.value)||CheckDataType.isLong(condition.value))?condition.value:"'"+condition.value+"'")));
+			for (Condition condition : this.deleteObj.getConditions()) {
+				conditionJoiner.add(String.format("%s %s %s", condition.column.value(), condition.operator.value(), ((CheckDataType.isFloat(condition.value)||CheckDataType.isInt(condition.value)||CheckDataType.isLong(condition.value))?condition.value:"'"+condition.value+"'")));
 			}
 			query += " WHERE " +conditionJoiner.toString();
 		}

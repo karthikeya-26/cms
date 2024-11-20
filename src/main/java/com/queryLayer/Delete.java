@@ -12,10 +12,10 @@ import com.tables.Operators;
 import com.tables.Table;
 public class Delete extends Query {
 	
-	public String tableName;
+	private Table tableName;
 //	List<String> columns;
 //	List<String> values;
-	public List<Condition> conditions;
+	private List<Condition> conditions;
 	private String query;
 	
 	public Delete() {
@@ -23,7 +23,7 @@ public class Delete extends Query {
 	}
 	
 	public Delete table(Table tableName) {
-		this.tableName = tableName.value();
+		this.tableName = tableName;
 		return this;
 	}
 	
@@ -33,20 +33,22 @@ public class Delete extends Query {
 	}
 
 	public String build() {
-		if (prop.getProperty("db.name").equals("mysql")) {
-			try {
-				this.query = new SqlDeleteQueryBuilder(this).build();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				AppLogger.ApplicationLog(e);
-				e.printStackTrace();
+		if (query == null) {
+			if (prop.getProperty("db.name").equals("mysql")) {
+				try {
+					this.query = new SqlDeleteQueryBuilder(this).build();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					AppLogger.ApplicationLog(e);
+					e.printStackTrace();
+				}
+				return query;
 			}
-			return query;
-		}
-		if (prop.getProperty("db.name").equals("postgres")) {
-			// pg select query builder
-			this.query = new DeleteQueryBuilder(this).build();
-			return query;
+			else if (prop.getProperty("db.name").equals("postgres")) {
+				// pg select query builder
+				this.query = new DeleteQueryBuilder(this).build();
+				return query;
+			}
 		}
 		return query;
 		
@@ -58,13 +60,8 @@ public class Delete extends Query {
 		}
 		return super.executeUpdate(this);
 	}
-
-	@Override
-	public String toString() {
-		return "Delete [tableName=" + tableName + ", conditions=" + conditions + "]";
-	}
 	
-	public String getTableName() {
+	public Table getTableName() {
 		return this.tableName;
 	}
 	

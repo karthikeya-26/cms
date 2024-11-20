@@ -1,6 +1,7 @@
 package com.filters;
 
 import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -18,7 +19,7 @@ import com.dbObjects.UserDetailsObj;
 import com.loggers.AppLogger;
 import com.loggers.ReqLogger;
 import com.models.SessionData;
-import com.notifier.SessionmapUpdateNotifier;
+//import com.notifier.SessionmapUpdateNotifier;
 import com.servlets.ResourceRemover;
 import com.session.Session;
 import com.session.SessionDataManager;
@@ -96,7 +97,7 @@ public class SessionFilter extends HttpFilter implements Filter {
         	if (!(System.currentTimeMillis()<= sessiondata.getLast_accessed_time()+1000*60*30)) {
         		NewDao.removeSessionfromDb(sid);
         		SessionDataManager.session_data.remove(sid);
-        		SessionmapUpdateNotifier.removeSession(sid);
+//        		SessionmapUpdateNotifier.removeSession(sid);
         	}
         	
             // Update session data with new access and expiration times

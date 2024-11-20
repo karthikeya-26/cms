@@ -1,10 +1,10 @@
 package com.queryLayer;
 import java.lang.reflect.Field;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,24 +12,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.crypto.Data;
-
-import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
-
 import com.dbObjects.ResultObject;
 import com.dbconn.Database;
 import com.loggers.AppLogger;
-//import com.notifier.ResourceRemoveNotifier;
-//import com.notifier.SessionmapUpdateNotifier;
-//import com.notifier.UserDetailsUpdateNotifier;
-import com.queryBuilder.*;
-import com.session.SessionDataManager;
-import com.tables.Columns;
-import com.tables.Operators;
-import com.tables.Table;
+import com.tables.*;
 
 public class Query {
 	
+	private static List<Table> tablesWithoutTasks;
+	static {
+		tablesWithoutTasks.add(Table.ChangeLog);
+		tablesWithoutTasks.add(Table.Servers);
+		tablesWithoutTasks.add(Table.Sessions);
+	}
 //	static Builder builder;
 //
 //	public String tableName;
@@ -56,9 +51,9 @@ public class Query {
 //		return this;
 //	}
 //	
-//	public String getTableName() {
-//		return this.tableName;
-//	}
+	public Table getTableName() {
+		return null;
+	}
 //	public List<Columns> getColumns(){
 //		return this.columns;
 //	}
@@ -72,7 +67,10 @@ public class Query {
 //	}
 //	
 	public  List<ResultObject> executeQuery( Query query, Class<? extends ResultObject> clazz ) {
-	
+		if(query instanceof Insert || query instanceof Update || query instanceof Delete) {
+			executeUpdate(query);
+			return null;
+		}
 
 		 List<ResultObject> resultList = new ArrayList<>();
 		
@@ -106,14 +104,17 @@ public class Query {
 	}
 	
 	public List<HashMap<Columns, Object>> executeQuery(Query query, HashMap<Columns, Class<?>> fields) {
+		
+		if(query instanceof Insert || query instanceof Update || query instanceof Delete) {
+			executeUpdate(query);
+			return null;
+		}
+		
 		List<HashMap<Columns,Object>> resultObj = new ArrayList<HashMap<Columns,Object>>();
 		try(Connection c = Database.getConnection();
 			PreparedStatement ps = c.prepareStatement(query.build())){
 			
 			ResultSet resultSet = ps.executeQuery();
-//			System.out.println(fields);
-//			System.out.println(ps);
-//			System.out.println(resultSet);
 			while(resultSet.next()) {
 				HashMap<Columns, Object> row = new HashMap<Columns, Object>();
 				for(Columns colName : fields.keySet()) {
@@ -147,6 +148,11 @@ public class Query {
 	}
 	
 	public int executeUpdate(Query query) {
+		List<HashMap<Columns,Object>> referenceData = null;
+		if(!(tablesWithoutTasks.contains(query.getTableName()))) {
+			
+		}
+		
 		int status = -1;
 		try(Connection c = Database.getConnection()){
 			PreparedStatement ps = c.prepareStatement(query.build());
@@ -155,7 +161,6 @@ public class Query {
 			AppLogger.ApplicationLog(e);
 			e.printStackTrace();
 		}
-//		ResourceRemoveNotifier.sendNotification(query);
 		return status;
 		
 	}

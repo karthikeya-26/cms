@@ -17,34 +17,35 @@ public class SqlUpdateQueryBuilder implements Builder {
 		String query = "UPDATE ";
 		
 		//tableName
-		query += this.updateObj.tableName+ " SET ";	
+		query += this.updateObj.getTableName()+ " SET ";	
 		
 		
 		//columns and values
-		if (this.updateObj.columns.isEmpty() && this.updateObj.values.isEmpty()) {
+		if (this.updateObj.getColumns().isEmpty() && this.updateObj.getValues().isEmpty()) {
 			throw new Exception("insufficient column and values data");
 		}
-		else if (this.updateObj.columns.size() != this.updateObj.values.size()) {
+		else if (this.updateObj.getColumns().size() != this.updateObj.getValues().size()) {
 			throw new Exception("unequal columns and values");
 		}
+		
 		else {
 			StringJoiner colAndValueJoiner = new StringJoiner(", ");
-			for(int i=0; i<this.updateObj.columns.size(); i++) {
-				colAndValueJoiner.add(this.updateObj.columns.get(i) + " = " +
-					    (CheckDataType.isFloat(this.updateObj.values.get(i)) || 
-					     CheckDataType.isInt(this.updateObj.values.get(i)) || 
-					     CheckDataType.isLong(this.updateObj.values.get(i)) 
-					     ? this.updateObj.values.get(i) 
-					     : "'" + this.updateObj.values.get(i) + "'"));
+			for(int i=0; i<this.updateObj.getColumns().size(); i++) {
+				colAndValueJoiner.add(this.updateObj.getColumns().get(i).value() + " = " +
+					    (CheckDataType.isFloat(this.updateObj.getValues().get(i)) || 
+					     CheckDataType.isInt(this.updateObj.getValues().get(i)) || 
+					     CheckDataType.isLong(this.updateObj.getValues().get(i)) 
+					     ? this.updateObj.getValues().get(i) 
+					     : "'" + this.updateObj.getValues().get(i) + "'"));
 			}
 			query += colAndValueJoiner.toString();
 			
 		}
 		
-		if (!this.updateObj.conditions.isEmpty()) {
+		if (!this.updateObj.getConditions().isEmpty()) {
 			StringJoiner conditionJoiner = new StringJoiner(" AND ");
-			for(Condition c : this.updateObj.conditions) {
-				conditionJoiner.add(String.format("%s %s %s", c.column,c.operator,((CheckDataType.isFloat(c.value)||CheckDataType.isInt(c.value)||CheckDataType.isLong(c.value))?c.value:"'"+c.value+"'")));
+			for(Condition c : this.updateObj.getConditions()) {
+				conditionJoiner.add(String.format("%s %s %s", c.column.value(),c.operator.value(),((CheckDataType.isFloat(c.value)||CheckDataType.isInt(c.value)||CheckDataType.isLong(c.value))?c.value:"'"+c.value+"'")));
 			}
 			query += " WHERE "+conditionJoiner.toString();
 			

@@ -1,24 +1,26 @@
 package com.dao;
 
 import com.dbObjects.*;
+
 import com.dbconn.*;
 import com.filters.SessionFilter;
-import com.loggers.*;
 import com.models.*;
-import com.notifier.SessionmapUpdateNotifier;
 import com.queryLayer.*;
 import com.tables.*;
 import com.session.*;
 import com.startup.RegServer;
 
-import java.sql.*;
 import java.util.*;
 
 public class NewDao {
+	
+	
+	// All these are moved to their respective files 
+	@Deprecated
 	public static boolean signUpUser(String user_name, String first_name, String last_name, String email,
 			String password, String account_type) {
 		Insert userDetails = new Insert().table(Table.UserDetails)
-				.columns(UserDetails.USER_NAME, UserDetails.PASSWORD, UserDetails.FIRST_NAME, UserDetails.LAST_NAME,
+				.columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME,
 						UserDetails.CONTACT_TYPE)
 				.values(user_name, BCrypt.hashpw(password, BCrypt.gensalt()), first_name, last_name, account_type);
 		Integer user_id = userDetails.executeUpdate(true);
@@ -30,13 +32,13 @@ public class NewDao {
 		}
 		return false;
 	}
-
+	@Deprecated
 	public static UserDetailsObj loginUser(String email) {
 		UserDetailsObj user = null;
 		Select s = new Select();
 		s.table(Table.UserDetails)
-				.columns(UserDetails.USER_ID, UserDetails.USER_NAME, UserDetails.PASSWORD, UserDetails.FIRST_NAME,
-						UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE,UserDetails.CREATED_AT, UserDetails.MODIFIED_AT, UserDetails.PW_VERSION)
+				.columns(UserDetails.USER_ID, UserDetails.USER_NAME, UserDetails.FIRST_NAME,
+						UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE,UserDetails.CREATED_AT, UserDetails.MODIFIED_AT)
 				.join(Joins.InnerJoin, Table.UserMails, UserMails.USER_ID, Operators.Equals, Table.UserDetails,
 						UserDetails.USER_ID)
 				.condition(UserMails.MAIL, Operators.Equals, email);

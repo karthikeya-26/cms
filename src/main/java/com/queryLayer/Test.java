@@ -82,13 +82,13 @@ public class Test {
 		//Insert 
 		     
 		Insert userdetails = new Insert();
-		userdetails.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.PASSWORD,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		userdetails.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
 		.values("a","a","a","a","a");
 //		System.out.println(userdetails.build());
 		
 		Select use= new Select();
 		use.table(Table.UserDetails)
-		.columns(UserDetails.USER_ID,UserDetails.USER_NAME,UserDetails.PASSWORD,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		.columns(UserDetails.USER_ID,UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
 		.join(Joins.InnerJoin, Table.UserMails,UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
 		.condition(UserMails.MAIL, Operators.Equals,"j@x.com");
 		

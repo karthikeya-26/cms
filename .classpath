@@ -10,5 +10,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/c3p0-0.10.1.jar"/>
+	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/gson-2.11.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

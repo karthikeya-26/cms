@@ -1,6 +1,5 @@
 package com.dao;
 
-import java.time.Instant;
 import java.util.List;
 
 import com.dbObjects.*;
@@ -37,12 +36,11 @@ public class UserDetailsDao {
 	
 	//INSERT
 	public int createUser(String userName, String firstName, String lastName, String contactType){
-		Long createdAt = Instant.now().toEpochMilli();
-		Insert insertUser = new Insert();
-		insertUser.table(Table.UserDetails)
-		.values(userName,firstName,lastName,contactType,createdAt.toString(),createdAt.toString());
-		System.out.println(insertUser.build());
-		return insertUser.executeUpdate();
+		Insert i = new Insert();
+		i.table(Table.UserDetails)
+		.columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		.values(userName,firstName,lastName,contactType);
+		return i.executeUpdate();
 	}
 	
 	//UPDATE
@@ -65,5 +63,14 @@ public class UserDetailsDao {
 		return d.executeUpdate()>0;	
 	}
 	
+	public static void main(String[] args) {
+		System.out.println(new Select().table(Table.UserDetails).condition(UserDetails.USER_ID, Operators.Equals, "1").build());
+		System.out.println(new Insert().table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE).values("username","firstname","lastname","public").build());
+		System.out.println(new Update().table(Table.UserDetails)
+		.columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		.values("userName","firstName","lastName","contactType")
+		.condition(UserDetails.USER_ID, Operators.Equals, "1").build());
+		System.out.println(new Delete().table(Table.UserDetails).condition(UserDetails.USER_ID,Operators.Equals,"1").build());
+	}
 
 }
