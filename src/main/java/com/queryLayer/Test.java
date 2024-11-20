@@ -2,6 +2,7 @@ package com.queryLayer;
 
 import java.net.HttpURLConnection;
 
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,9 +17,9 @@ import com.dao.NewDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
 import com.loggers.AppLogger;
-import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
-import com.models.SessionData;
-import com.notifier.SessionmapUpdateNotifier;
+//import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
+//import com.models.SessionData;
+//import com.notifier.SessionmapUpdateNotifier;
 import com.startup.RegServer;
 import com.tables.*;
 import com.util.PasswordMigration;

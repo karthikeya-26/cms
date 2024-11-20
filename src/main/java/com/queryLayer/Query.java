@@ -1,5 +1,6 @@
 package com.queryLayer;
 import java.lang.reflect.Field;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,10 +19,9 @@ import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import com.dbObjects.ResultObject;
 import com.dbconn.Database;
 import com.loggers.AppLogger;
-import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
-import com.notifier.ResourceRemoveNotifier;
-import com.notifier.SessionmapUpdateNotifier;
-import com.notifier.UserDetailsUpdateNotifier;
+//import com.notifier.ResourceRemoveNotifier;
+//import com.notifier.SessionmapUpdateNotifier;
+//import com.notifier.UserDetailsUpdateNotifier;
 import com.queryBuilder.*;
 import com.session.SessionDataManager;
 import com.tables.Columns;
@@ -155,7 +155,7 @@ public class Query {
 			AppLogger.ApplicationLog(e);
 			e.printStackTrace();
 		}
-		ResourceRemoveNotifier.sendNotification(query);
+//		ResourceRemoveNotifier.sendNotification(query);
 		return status;
 		
 	}

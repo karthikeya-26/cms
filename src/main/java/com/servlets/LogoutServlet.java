@@ -2,6 +2,7 @@ package com.servlets;
 
 import java.io.IOException;
 
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.dao.NewDao;
 import com.loggers.AppLogger;
-import com.notifier.SessionmapUpdateNotifier;
+//import com.notifier.SessionmapUpdateNotifier;
 import com.session.SessionDataManager;
 
 import javax.servlet.http.Cookie;

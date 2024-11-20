@@ -358,12 +358,12 @@ public class NewDao {
 		Select sessionDatafromdb = new Select();
 		sessionDatafromdb.table(Table.Sessions).columns(Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME)
 		.condition(Sessions.SESSION_ID, Operators.Equals, session_id);
-		List<HashMap<String, Object>> session_objects = sessionDatafromdb.executeQuery();
+		List<HashMap<Columns,Object>> session_objects = sessionDatafromdb.executeQuery();
 		if(session_objects.size()==0) return null;
-		HashMap<String,Object> session_object = session_objects.get(0);
-		session.setCreated_time((Long) session_object.get("created_time"));
-		session.setUser_id((Integer) session_object.get("user_id"));
-		session.setLast_accessed_at((Long) session_object.get("last_accessed_time"));
+		HashMap<Columns,Object> session_object = session_objects.get(0);
+		session.setCreated_time((Long) session_object.get(Sessions.CREATED_TIME));
+		session.setUser_id((Integer) session_object.get(Sessions.USER_ID));
+		session.setLast_accessed_at((Long) session_object.get(Sessions.LAST_ACCESSED_TIME));
 		return session;
 	}
 	
@@ -372,11 +372,11 @@ public class NewDao {
 		Select sessionsfromdb = new Select();
 		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME);
 		
-		List<ResultObject> resultset  = sessionsfromdb.executeQuery(SessionObj.class);
+		List<ResultObject> resultset  = sessionsfromdb.executeQuery(SessionsObj.class);
 		
 		if(resultset.size() > 0) {
 			for(ResultObject row : resultset) {
-				SessionObj session = (SessionObj) row;
+				SessionsObj session = (SessionsObj) row;
 				if(System.currentTimeMillis() <= session.getLast_accessed_at()+ 1000*60*30) {
 					sess_map.put(session.getSession_id(), new SessionData(session.getUser_id(),session.getCreated_at(),session.getLast_accessed_at(),session.getLast_accessed_at()+30*60*1000));
 				}
@@ -425,12 +425,12 @@ public class NewDao {
 		removeServerInDatabase.executeUpdate();
 	}
 	
-	public static List<HashMap<String, Object>> getRegisteredServers() {
+	public static List<HashMap<Columns,Object>> getRegisteredServers() {
 		Select getservers = new Select();
 		getservers.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT)
 		.condition(Servers.PORT, Operators.NotEquals, RegServer.getServerPort());
 		System.out.println(getservers.build());
-		List<HashMap<String,Object>> resultset = getservers.executeQuery();
+		List<HashMap<Columns, Object>> resultset = getservers.executeQuery();
 		return resultset;
 	}
 

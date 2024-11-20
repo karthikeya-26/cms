@@ -1,7 +1,5 @@
 package com.models;
 
-import java.time.LocalDateTime;
-
 public class SessionData  {
 	
 	private Integer user_id;
