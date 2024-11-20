@@ -4,19 +4,19 @@ import com.tables.Columns;
 import com.tables.Operators;
 
 public class AggregateColumn {
-	public String Aggregate;
-	public String column_name;
+	public Operators Aggregate;
+	public Columns column_name;
 	String tableAlias;
 	
 	public AggregateColumn(Operators agg, Columns col) {
-		this.Aggregate = agg.value();
-		this.column_name = col.getClass().getSimpleName()+"."+col.value();
+		this.Aggregate = agg;
+		this.column_name = col;
 	}
 	
 	public AggregateColumn(Operators agg, String tableAlias, Columns col) {
-		this.Aggregate = agg.value();
+		this.Aggregate = agg;
 		this.tableAlias = tableAlias;
-		this.column_name = tableAlias+"."+col;
+		this.column_name = col;
 		
 	}
 }

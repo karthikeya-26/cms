@@ -30,47 +30,47 @@ import com.tables.Table;
 
 public class Query {
 	
-	static Builder builder;
-
-	public String tableName;
-	public List<String> columns;
-	public List<String> values;
-	public List<Condition> conditions;
+//	static Builder builder;
+//
+//	public String tableName;
+//	public List<Columns> columns;
+//	public List<String> values;
+//	public List<Condition> conditions;
 	static Properties prop = Database.prop;
 	
-	public Query table(Table tableName) {
-		this.tableName = tableName.value();
-		return this;
-	}
-
+//	public Query table(Table tableName) {
+//		this.tableName = tableName.value();
+//		return this;
+//	}
+//
 	public String build() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public Query values(String string) {
-		// TODO Auto-generated method stub
-		return this;
-	}
-	
-	public Query condition(Columns column, Operators operator, String value) {
-		return this;
-	}
-	
-	public String getTableName() {
-		return this.tableName;
-	}
-	public List<String> getColumns(){
-		return this.columns;
-	}
-	public List<String> getValues(){
-		return this.values;
-	}
-	
-	public List<Condition> getConditions() {
-		// TODO Auto-generated method stub
-		return this.conditions;
-	}
-	
+//	public Query values(String string) {
+//		// TODO Auto-generated method stub
+//		return this;
+//	}
+//	
+//	public Query condition(Columns column, Operators operator, String value) {
+//		return this;
+//	}
+//	
+//	public String getTableName() {
+//		return this.tableName;
+//	}
+//	public List<Columns> getColumns(){
+//		return this.columns;
+//	}
+//	public List<String> getValues(){
+//		return this.values;
+//	}
+//	
+//	public List<Condition> getConditions() {
+//		// TODO Auto-generated method stub
+//		return this.conditions;
+//	}
+//	
 	public  List<ResultObject> executeQuery( Query query, Class<? extends ResultObject> clazz ) {
 	
 
@@ -105,8 +105,8 @@ public class Query {
 		return resultList;
 	}
 	
-	public List<HashMap<String, Object>> executeQuery(Query query, HashMap<String, Class<?>> fields) {
-		List<HashMap<String,Object>> resultObj = new ArrayList<HashMap<String,Object>>();
+	public List<HashMap<Columns, Object>> executeQuery(Query query, HashMap<Columns, Class<?>> fields) {
+		List<HashMap<Columns,Object>> resultObj = new ArrayList<HashMap<Columns,Object>>();
 		try(Connection c = Database.getConnection();
 			PreparedStatement ps = c.prepareStatement(query.build())){
 			
@@ -115,25 +115,25 @@ public class Query {
 //			System.out.println(ps);
 //			System.out.println(resultSet);
 			while(resultSet.next()) {
-				HashMap<String, Object> row = new HashMap<String, Object>();
-				for(String colName : fields.keySet()) {
+				HashMap<Columns, Object> row = new HashMap<Columns, Object>();
+				for(Columns colName : fields.keySet()) {
 					Class<?> fieldType = fields.get(colName);
 					
 					if (fieldType == Integer.class) {
-	                    row.put(colName, resultSet.getInt(colName));
+	                    row.put(colName, resultSet.getInt(colName.value()));
 	                } else if (fieldType == String.class) {
-	                    row.put(colName, resultSet.getString(colName));
+	                    row.put(colName, resultSet.getString(colName.value()));
 	                } else if (fieldType == Boolean.class) {
-	                    row.put(colName, resultSet.getBoolean(colName));
+	                    row.put(colName, resultSet.getBoolean(colName.value()));
 	                } else if (fieldType == Double.class) {
-	                    row.put(colName, resultSet.getDouble(colName));
+	                    row.put(colName, resultSet.getDouble(colName.value()));
 	                } else if (fieldType == Date.class) {
-	                    row.put(colName, resultSet.getDate(colName));
+	                    row.put(colName, resultSet.getDate(colName.value()));
 	                } else if (fieldType == Long.class) {
-	                	row.put(colName, resultSet.getLong(colName));
+	                	row.put(colName, resultSet.getLong(colName.value()));
 	                } else {
 	                
-	                    row.put(colName, resultSet.getObject(colName)); // Handle unknown types
+	                    row.put(colName, resultSet.getObject(colName.value())); // Handle unknown types
 	                }
 				}
 				resultObj.add(row);

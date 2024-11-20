@@ -8,7 +8,6 @@ import com.models.*;
 import com.notifier.SessionmapUpdateNotifier;
 import com.queryLayer.*;
 import com.tables.*;
-import com.tables.UserDetails;
 import com.session.*;
 import com.startup.RegServer;
 
@@ -104,7 +103,7 @@ public class NewDao {
 		Select checkuserandmail = new Select();
 		checkuserandmail.table(Table.UserMails).condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
 		.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);
-		List<HashMap<String, Object>> res = checkuserandmail.executeQuery();
+		List<HashMap<Columns, Object>> res = checkuserandmail.executeQuery();
 		System.out.println(res);
 		return res.size() >0;
 	}
@@ -132,7 +131,7 @@ public class NewDao {
 		Select checkMail = new Select();
 		checkMail.table(Table.UserMails).columns(UserMails.MAIL).condition(UserMails.MAIL, Operators.Equals, email);
 
-		List<HashMap<String, Object>> resultset = checkMail.executeQuery();
+		List<HashMap<Columns, Object>> resultset = checkMail.executeQuery();
 		if (resultset.size() == 0) {
 			return true;
 		} else {
@@ -197,7 +196,7 @@ public class NewDao {
 		.columns(GroupContacts.CONTACT_ID)
 		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 		
-		List<HashMap<String, Object>> resultset = contactIngroup.executeQuery();
+		List<HashMap<Columns, Object>> resultset = contactIngroup.executeQuery();
 		
 		return resultset.size()>0;
 	}
@@ -243,11 +242,11 @@ public class NewDao {
 		Select getMobileNumberswithContactId = new Select();
 		getMobileNumberswithContactId.table(Table.ContactMobileNumbers).columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
 		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
-		List<HashMap<String, Object>> mobileNumbers = getMobileNumberswithContactId.executeQuery();
-		for(HashMap<String, Object> number :mobileNumbers) {
+		List<HashMap<Columns, Object>> mobileNumbers = getMobileNumberswithContactId.executeQuery();
+		for(HashMap<Columns, Object> number :mobileNumbers) {
 			ContactMobileNumbersObj n = new ContactMobileNumbersObj();
-			n.setContact_id((Integer)number.get("contact_id"));
-			n.setNumber((Long)number.get("number"));
+			n.setContact_id((Integer)number.get(ContactMobileNumbers.CONTACT_ID));
+			n.setNumber((Long)number.get(ContactMobileNumbers.CONTACT_ID));
 			contact_numbers.add(n);
 		}
 		return contact_numbers;
@@ -258,11 +257,11 @@ public class NewDao {
 		Select get_contactMails  = new Select();
 		get_contactMails.table(Table.ContactMails).columns(ContactMails.CONTACT_ID,ContactMails.MAIL)
 		.condition(ContactMails.CONTACT_ID, Operators.Equals, contact_id.toString());
-		List<HashMap<String, Object>> mails = get_contactMails.executeQuery();
-		for(HashMap<String,Object> mailObj : mails) {
+		List<HashMap<Columns, Object>> mails = get_contactMails.executeQuery();
+		for(HashMap<Columns,Object> mailObj : mails) {
 			ContactMailsObj o = new ContactMailsObj();
-			o.setContact_id((Integer)mailObj.get("contact_id"));
-			o.setMail((String) mailObj.get("mail"));
+			o.setContact_id((Integer)mailObj.get(ContactMails.CONTACT_ID));
+			o.setMail((String) mailObj.get(ContactMails.MAIL));
 			contact_mails.add(o);
 		}
 		
@@ -275,15 +274,15 @@ public class NewDao {
 		getGroup_ids.table(Table.GroupContacts).columns(GroupContacts.GROUP_ID)
 		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 		
-		List<HashMap<String, Object>> resultset = getGroup_ids.executeQuery();
+		List<HashMap<Columns, Object>> resultset = getGroup_ids.executeQuery();
 		if(resultset.size() >0) {
-			for(HashMap<String,Object> row: resultset){
-				Integer group_id =(Integer) row.get("group_id");
+			for(HashMap<Columns, Object> row: resultset){
+				Integer group_id =(Integer) row.get(GroupContacts.GROUP_ID);
 				Select g_name = new Select();
 				g_name.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 				.condition(UserGroups.GROUP_ID, Operators.Equals, group_id.toString());
-				List<HashMap<String,Object>> name = g_name.executeQuery();
-				group_names.add((String)name.get(0).get("group_name"));
+				List<HashMap<Columns, Object>> name = g_name.executeQuery();
+				group_names.add((String)name.get(0).get(UserGroups.GROUP_NAME));
 			}
 		}
 		return group_names;
@@ -295,7 +294,7 @@ public class NewDao {
 		checkgroupforuser.table(Table.UserGroups).column(UserGroups.GROUP_NAME)
 		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
 		.condition(UserGroups.GROUP_NAME, Operators.Equals, group_name);
-		List<HashMap<String,Object>> groupsofuser = checkgroupforuser.executeQuery();
+		List<HashMap<Columns, Object>> groupsofuser = checkgroupforuser.executeQuery();
 		System.out.println(checkgroupforuser.build());
 		System.out.println(groupsofuser);
 		return groupsofuser.size()>0;

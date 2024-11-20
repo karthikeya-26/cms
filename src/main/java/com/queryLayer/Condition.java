@@ -3,37 +3,37 @@ package com.queryLayer;
 import com.tables.*;
 
 public class Condition {
-	public String column;
-	public String operator;
+	public Columns column;
+	public Operators operator;
 	public String value;
 	
 	
 	public Condition(Columns column, Operators operator, String value) {
-		this.column = column.getClass().getSimpleName()+"."+column.value();
-		this.operator = operator.value();
+		this.column = column;
+		this.operator = operator;
 		this.value = value;
 	}
 	
-	public Condition(String tableAlias, Columns column, Operators operator, String value) {
-		this.column = tableAlias+"."+column.value();
-		this.operator = operator.value();
-		this.value = value;
-	}
+//	public Condition(String tableAlias, Columns column, Operators operator, String value) {
+//		this.column = column;
+//		this.operator = operator;
+//		this.value = value;
+//	}
 
-	public String getColumn() {
+	public Columns getColumn() {
 		return this.column;
 	}
 
 	public void setColumn(Columns column) {
-		this.column = column.value();
+		this.column = column;
 	}
 
-	public String getOperator() {
+	public Operators getOperator() {
 		return this.operator;
 	}
 
 	public void setOperator(Operators operator) {
-		this.operator = operator.value();
+		this.operator = operator;
 	}
 
 	public String getValue() {

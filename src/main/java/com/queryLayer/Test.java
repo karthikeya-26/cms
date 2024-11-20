@@ -1,6 +1,7 @@
 package com.queryLayer;
 
 import java.net.HttpURLConnection;
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dao.ContactDao;
 import com.dao.NewDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
@@ -37,42 +37,46 @@ public class Test {
 //		System.out.println();
 		
 		Select getusermails = new Select();
-		getusermails.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserMails.USER_ID, Operators.Equals, "1");
+		getusermails.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserGroups.USER_ID, Operators.Equals, "1");
 //		System.out.println(getusermails.build());
 //		System.out.println();
 		
 		Select checkifMailExists = new Select();
-		checkifMailExists.table(Table.UserMails).column(UserMails.MAIL).condition(UserMails.USER_ID, Operators.Equals, "1");
+		checkifMailExists.table(Table.UserMails).column(UserMails.MAIL).condition(UserGroups.USER_ID, Operators.Equals, "1");
 //		System.out.println(checkifMailExists.build());
 //		System.out.println();
 		
-		Select userCOntacts = new Select();
-		userCOntacts.table(Table.Contacts, "c").columns("c", Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.ADDRESS)
-		.groupConcatAs("m", ContactMobileNumbers.NUMBER, "mobile_number", ",")
-		.groupConcatAs("cm", ContactMails.MAIL, "emails", ",")
-		.join(Joins.LeftJoin, "m", ContactMobileNumbers.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
-		.join(Joins.LeftJoin, "cm", ContactMails.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
-		.condition("c",Contacts.USER_ID, Operators.Equals, "1")
-		.groupBy("c", Contacts.CONTACT_ID).orderBy("c", Contacts.FIRST_NAME);
+//		Select userCOntacts = new Select();
+//		userCOntacts.table(Table.Contacts).columns("c", Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.ADDRESS)
+//		.groupConcatAs("m", ContactMobileNumbers.NUMBER, "mobile_number", ",")
+//		.groupConcatAs("cm", ContactMails.MAIL, "emails", ",")
+//		.join(Joins.LeftJoin, "m", ContactMobileNumbers.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
+//		.join(Joins.LeftJoin, "cm", ContactMails.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
+//		.condition("c",Contacts.USER_ID, Operators.Equals, "1")
+//		.groupBy("c", Contacts.CONTACT_ID).orderBy("c", Contacts.FIRST_NAME);
 //		System.out.println(userCOntacts.build());
 //		System.out.println();
 		
+		Select s = new Select();
+		s.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserGroups.GROUP_NAME).join(Joins.InnerJoin, Table.UserGroups, UserGroups.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID);
+		System.out.println(s.build());
 		Select getuserGroups = new Select();
 		getuserGroups.table(Table.UserGroups).column(UserGroups.GROUP_NAME).condition(UserGroups.USER_ID, Operators.Equals, "1");
+		System.out.println(getusermails.build());
 //		System.out.println(getuserGroups.build());
 //		System.out.println();
 		
 		Select sa= new Select();
-		     sa.table(Table.Contacts, "c")
-		    .columns("c",Contacts.FIRST_NAME, Contacts.LAST_NAME, Contacts.ADDRESS, Contacts.USER_ID)
-		    .groupConcatAs("cm",ContactMobileNumbers.NUMBER, "mobile_numbers", ",")
-		    .groupConcatAs("ma",ContactMails.MAIL, "mails", ",")
-		    .groupConcatAs("ug",UserGroups.GROUP_NAME, "user_groups", ",")
-		    .join(Joins.LeftJoin, "cm", ContactMobileNumbers.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
-		    .join(Joins.LeftJoin,"ma", ContactMails.CONTACT_ID,Operators.Equals, "c", Contacts.CONTACT_ID)
-		    .join(Joins.InnerJoin, "gc", GroupContacts.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
-		    .join(Joins.InnerJoin, "ug", UserGroups.GROUP_ID, Operators.Equals, "gc",GroupContacts.GROUP_ID)
-		    .condition("c",Contacts.USER_ID, Operators.Equals, "?").groupBy("c",Contacts.CONTACT_ID).orderBy("c", Contacts.FIRST_NAME);
+//		     sa.table(Table.Contacts, "c")
+//		    .columns("c",Contacts.FIRST_NAME, Contacts.LAST_NAME, Contacts.ADDRESS, Contacts.USER_ID)
+//		    .groupConcatAs("cm",ContactMobileNumbers.NUMBER, "mobile_numbers", ",")
+//		    .groupConcatAs("ma",ContactMails.MAIL, "mails", ",")
+//		    .groupConcatAs("ug",UserGroups.GROUP_NAME, "user_groups", ",")
+//		    .join(Joins.LeftJoin, "cm", ContactMobileNumbers.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
+//		    .join(Joins.LeftJoin,"ma", ContactMails.CONTACT_ID,Operators.Equals, "c", Contacts.CONTACT_ID)
+//		    .join(Joins.InnerJoin, "gc", GroupContacts.CONTACT_ID, Operators.Equals, "c", Contacts.CONTACT_ID)
+//		    .join(Joins.InnerJoin, "ug", UserGroups.GROUP_ID, Operators.Equals, "gc",GroupContacts.GROUP_ID)
+//		    .condition("c",Contacts.USER_ID, Operators.Equals, "?").groupBy("c",Contacts.CONTACT_ID).orderBy("c", Contacts.FIRST_NAME);
 		     
 		//Insert 
 		     
@@ -189,7 +193,7 @@ public class Test {
 //		System.out.println(ContactDao.getContactById(2));
 //		ContactDao.UpdateContact(2, "Emma", "Watson", "proddatur");
 		
-		PasswordMigration.exportPasswords(13);
+//		PasswordMigration.exportPasswords(13);	
 		
 		
 	}

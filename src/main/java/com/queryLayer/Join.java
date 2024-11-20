@@ -3,31 +3,34 @@ import com.tables.*;
 
 public class Join {
 	
-	public String table1;
-	public String table2;
-	public String joinType;
-	public String table1col;
-	public String table2col;
-	public String operator;
+	public Table table1;
+//	public String table1Alias;
+	public Table table2;
+//	public String table2Alias;
+	public Joins joinType;
+	public Columns table1col;
+	public Columns table2col;
+	public Operators operator;
 	
 	public Join(Joins type, Table table1, Columns table1col, Operators operator, Table table2, Columns table2col) {
 		// TODO Auto-generated constructor stub
-		this.joinType = type.value();
-		this.table1 = table1.value();
-		this.table1col = table1col.value();
-		this.operator = operator.value();
-		this.table2 = table2.value();
-		this.table2col = table2col.value();
+		// inner join new table on new table. new table col on  old table. old table col
+		this.joinType = type;
+		this.table1 = table1;
+		this.table1col = table1col;
+		this.operator = operator;
+		this.table2 = table2;
+		this.table2col = table2col;
 	}
 	
-	public Join(Joins type, String table1alias, Columns table1col, Operators operator, String table2alias, Columns table2col) {
-		this.joinType = type.value();
-		this.table1 = table1col.getClass().getSimpleName()+" "+table1alias;
-		this.table1col = table1col.value();
-		this.operator = operator.value();
-		this.table2 = table2alias;
-		this.table2col = table2col.value();
-	}
+//	public Join(Joins type, String table1alias, Columns table1col, Operators operator, String table2alias, Columns table2col) {
+//		this.joinType = type;
+//		this.table1Alias = table1alias;
+//		this.table1col = table1col;
+//		this.operator = operator;
+//		this.table2Alias = table2alias;
+//		this.table2col = table2col;
+//	}
 	
 	@Override
 	public String toString() {

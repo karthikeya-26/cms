@@ -78,11 +78,11 @@ public class Executor {
 			ps.executeUpdate();
 			Integer  id  = ps.getGeneratedKeys().getInt(1);
 			
-			if (number >1) {
-				for(int i =1; i<queries.length; i++) {
-					ps = c.prepareStatement(queries[i].values(id.toString()).build());
-				}
-			}
+//			if (number >1) {
+//				for(int i =1; i<queries.length; i++) {
+//					ps = c.prepareStatement(queries[i].values(id.toString()).build());
+//				}
+//			}
 			
 			
 		}catch(SQLException e) {
