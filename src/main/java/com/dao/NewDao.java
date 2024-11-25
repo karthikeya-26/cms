@@ -2,13 +2,14 @@ package com.dao;
 
 import com.dbObjects.*;
 
+
 import com.dbconn.*;
+import com.dto.*;
+import com.enums.*;
 import com.filters.SessionFilter;
-import com.models.*;
 import com.queryLayer.*;
-import com.tables.*;
 import com.session.*;
-import com.startup.RegServer;
+//import com.startup.RegServer;
 
 import java.util.*;
 
@@ -247,8 +248,8 @@ public class NewDao {
 		List<HashMap<Columns, Object>> mobileNumbers = getMobileNumberswithContactId.executeQuery();
 		for(HashMap<Columns, Object> number :mobileNumbers) {
 			ContactMobileNumbersObj n = new ContactMobileNumbersObj();
-			n.setContact_id((Integer)number.get(ContactMobileNumbers.CONTACT_ID));
-			n.setNumber((Long)number.get(ContactMobileNumbers.CONTACT_ID));
+			n.setContactId((Integer)number.get(ContactMobileNumbers.CONTACT_ID));
+			n.setMobileNumber((Long)number.get(ContactMobileNumbers.CONTACT_ID));
 			contact_numbers.add(n);
 		}
 		return contact_numbers;
@@ -262,8 +263,8 @@ public class NewDao {
 		List<HashMap<Columns, Object>> mails = get_contactMails.executeQuery();
 		for(HashMap<Columns,Object> mailObj : mails) {
 			ContactMailsObj o = new ContactMailsObj();
-			o.setContact_id((Integer)mailObj.get(ContactMails.CONTACT_ID));
-			o.setMail((String) mailObj.get(ContactMails.MAIL));
+			o.setContactId((Integer)mailObj.get(ContactMails.CONTACT_ID));
+			o.setEmail((String) mailObj.get(ContactMails.MAIL));
 			contact_mails.add(o);
 		}
 		
@@ -293,7 +294,7 @@ public class NewDao {
 	
 	public static boolean checkIfGroupExistsForUser(Integer user_id, String group_name) {
 		Select checkgroupforuser = new Select();
-		checkgroupforuser.table(Table.UserGroups).column(UserGroups.GROUP_NAME)
+		checkgroupforuser.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
 		.condition(UserGroups.GROUP_NAME, Operators.Equals, group_name);
 		List<HashMap<Columns, Object>> groupsofuser = checkgroupforuser.executeQuery();
@@ -379,8 +380,8 @@ public class NewDao {
 		if(resultset.size() > 0) {
 			for(ResultObject row : resultset) {
 				SessionsObj session = (SessionsObj) row;
-				if(System.currentTimeMillis() <= session.getLast_accessed_at()+ 1000*60*30) {
-					sess_map.put(session.getSession_id(), new SessionData(session.getUser_id(),session.getCreated_at(),session.getLast_accessed_at(),session.getLast_accessed_at()+30*60*1000));
+				if(System.currentTimeMillis() <= session.getLastAccessedTime()+ 1000*60*30) {
+					sess_map.put(session.getSessionId(), new SessionData(session.getUserId(),session.getCreatedTime(),session.getLastAccessedTime(),session.getLastAccessedTime()+30*60*1000));
 				}
 			}
 		}
@@ -427,10 +428,12 @@ public class NewDao {
 		removeServerInDatabase.executeUpdate();
 	}
 	
+	
+	@Deprecated
 	public static List<HashMap<Columns,Object>> getRegisteredServers() {
 		Select getservers = new Select();
 		getservers.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT)
-		.condition(Servers.PORT, Operators.NotEquals, RegServer.getServerPort());
+		.condition(Servers.PORT, Operators.NotEquals, "8080");
 		System.out.println(getservers.build());
 		List<HashMap<Columns, Object>> resultset = getservers.executeQuery();
 		return resultset;

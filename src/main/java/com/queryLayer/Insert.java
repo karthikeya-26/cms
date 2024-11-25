@@ -4,10 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.enums.Columns;
+import com.enums.Operators;
+import com.enums.Table;
 import com.queryBuilder.SqlInsertQueryBuilder;
-import com.tables.Columns;
-import com.tables.Operators;
-import com.tables.Table;
 
 public class Insert extends Query{
 	
@@ -48,16 +48,18 @@ public class Insert extends Query{
 		return this;
 	}
 	
-	public String build() {	
+	public String build() {
     	if(query == null) {
-    		if (prop.getProperty("db.name").equals("mysql")) {
+    		
+    		if (prop.getProperty("database_name").equals("mysql")) {
         		try {
     				 this.query = new SqlInsertQueryBuilder(this).build();
+    				 System.out.println(query);
     			} catch (Exception e) {
-    				e.getMessage();
+    				System.out.println(e);
     			}
         	}
-        	if(prop.getProperty("db.name").equals("postgres")) {
+        	if(prop.getProperty("database_name").equals("postgres")) {
         		System.out.println("currently no support for postgres");
         	}
     	}
@@ -66,9 +68,7 @@ public class Insert extends Query{
 	
 	
 	public int executeUpdate() {
-		if (this.query == null) {
-			this.query = this.build();
-		}
+		
 		return super.executeUpdate(this);
 	}
 	

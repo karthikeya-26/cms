@@ -2,14 +2,13 @@ package com.queryBuilder;
 
 import java.util.StringJoiner;
 
-
+import com.enums.Columns;
+import com.enums.Table;
+import com.enums.UserDetails;
 import com.queryLayer.AggregateColumn;
 import com.queryLayer.Condition;
 import com.queryLayer.Join;
 import com.queryLayer.Select;
-import com.tables.Columns;
-import com.tables.Table;
-import com.tables.UserDetails;
 
 public class SqlSelectQueryBuilder implements Builder {
 	Select selectObj;

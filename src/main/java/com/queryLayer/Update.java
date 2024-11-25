@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Properties;
 
 import com.dbconn.Database;
+import com.enums.Columns;
+import com.enums.Operators;
+import com.enums.Table;
 import com.queryBuilder.SqlUpdateQueryBuilder;
-import com.tables.Columns;
-import com.tables.Operators;
-import com.tables.Table;
 
 public class Update extends Query {
 
@@ -52,7 +52,7 @@ public class Update extends Query {
 	public String build()  {
 		//update object will be sent to the specific query builder
 		Properties prop = Database.prop;
-    	if (prop.getProperty("db.name").equals("mysql")) {
+    	if (prop.getProperty("database_name").equals("mysql")) {
     		
     		try {
 				this.query =  new SqlUpdateQueryBuilder(this).build();
@@ -62,15 +62,13 @@ public class Update extends Query {
 			}
     		return this.query;
     	}
-    	if(prop.getProperty("db.name").equals("postgres")) {
+    	if(prop.getProperty("database_name").equals("postgres")) {
     		//pg select query builder
     	}
 		return null;
 	}
 	public int executeUpdate() {
-		if (this.query == null) {
-			this.query = this.build();
-		}
+		
 		return super.executeUpdate(this);
 	}
 

@@ -56,7 +56,6 @@ public class TableCreator {
 			
 			System.out.println(createTable.toString());
 		}
-		
 	}
 	
 	public static void main(String[] args) {

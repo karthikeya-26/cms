@@ -2,6 +2,7 @@ package com.filters;
 
 import java.io.IOException;
 
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,14 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.dao.NewDao;
 import com.dbObjects.UserDetailsObj;
+import com.dto.SessionData;
 import com.loggers.AppLogger;
 import com.loggers.ReqLogger;
-import com.models.SessionData;
 //import com.notifier.SessionmapUpdateNotifier;
 import com.servlets.ResourceRemover;
 import com.session.Session;
 import com.session.SessionDataManager;
-import com.startup.RegServer;
+//import com.startup.RegServer;
 
 @WebFilter("/*")
 public class SessionFilter extends HttpFilter implements Filter {
@@ -109,16 +110,16 @@ public class SessionFilter extends HttpFilter implements Filter {
                 // Load user details if not already in users_data
                 user = NewDao.getUser(sessiondata.getUser_id());
                 if (user != null) {
-                    SessionDataManager.users_data.put(user.getUser_id(), user);
+                    SessionDataManager.users_data.put(user.getUserId(), user);
                 }
             }
             //thread local
-            user_id.set(user.getUser_id());
+            user_id.set(user.getUserId());
             //request attribute
-            request.setAttribute("user_id", user.getUser_id());
+            request.setAttribute("user_id", user.getUserId());
             //logging the request
             String logMessage = String.format("Server Name: %s, Request Method: %s, URL: %s, Remote Address: %s, User id: %s, Session id: %s",
-            		RegServer.getServerName()+RegServer.getServerPort(),
+//            		RegServer.getServerName()+RegServer.getServerPort(),
 	                httpReq.getMethod(),
 	                httpReq.getRequestURL().toString(),
 	                httpReq.getRemoteAddr(),

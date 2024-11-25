@@ -1,14 +1,14 @@
 package com.session;
 import java.util.Collections;
 
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import com.models.SessionData;
 
 import com.dbObjects.*;
+import com.dto.SessionData;
 
-import com.models.User;
 
 public class SessionDataManager {
 	private static int maxSize = 1000;
@@ -39,12 +39,12 @@ public class SessionDataManager {
 		
 		public synchronized static  boolean addUsertoSession(String session_id,UserDetailsObj u) {
 			SessionData su = new SessionData();
-			su.setUser_id(u.getUser_id());
+			su.setUser_id(u.getUserId());
 			su.setCreated_time(System.currentTimeMillis());
 			su.setLast_accessed_at(System.currentTimeMillis());
 			su.setExpires_at(System.currentTimeMillis()+1800000);
 			session_data.put(session_id,su);                                                                                 
-			users_data.putIfAbsent(u.getUser_id(), u);
+			users_data.putIfAbsent(u.getUserId(), u);
 //			System.out.println(session_data);
 			return false;
 		}
@@ -69,7 +69,9 @@ public class SessionDataManager {
 			Map<String,SessionData> sessions = session_data;
 			session_data = Collections.synchronizedMap(
 		            new LinkedHashMap<String, SessionData>(16, 0.75f, true) {
-		                @Override
+		                private static final long serialVersionUID = 1L;
+
+						@Override
 		                protected boolean removeEldestEntry(Map.Entry<String, SessionData> eldest) {
 		                    return size() > maxSize; // Remove the eldest entry if the size exceeds maxSize
 		                }

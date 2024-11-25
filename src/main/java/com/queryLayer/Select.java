@@ -1,13 +1,10 @@
 package com.queryLayer;
 
-import com.tables.*;
-
-import java.sql.ResultSet;
 import java.util.*;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 
 import com.dbObjects.ResultObject;
+import com.enums.*;
 import com.queryBuilder.SqlSelectQueryBuilder;
 import com.queryBuilder.postgres.SelectQueryBuilder;
 
@@ -94,12 +91,12 @@ public class Select extends Query {
 //		return this;
 //	}
 
-	public Select column(Columns col) {
-		
-		fields.put(col, col.getDataType());
-		columns.add(col);
-		return this;
-	}
+//	public Select column(Columns col) {
+//		
+//		fields.put(col, col.getDataType());
+//		columns.add(col);
+//		return this;
+//	}
 
 //	public Select columns(String tablealias, Columns col) {
 //		
@@ -253,11 +250,11 @@ public class Select extends Query {
 
 		// proxy object to build query based on the db name
 //    	SqlSelectQueryBuilder s = new SqlSelectQueryBuilder(this);
-		if (prop.getProperty("db.name").equals("mysql")) {
+		if (prop.getProperty("database_name").equals("mysql")) {
 			this.query = new SqlSelectQueryBuilder(this).build();
 			return query;
 		}
-		if (prop.getProperty("db.name").equals("postgres")) {
+		if (prop.getProperty("databse_name").equals("postgres")) {
 			// pg select query builder
 			this.query = new SelectQueryBuilder(this).build();
 			return query;

@@ -1,7 +1,7 @@
 package com.queryLayer;
 import java.lang.reflect.Field;
-
-
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,13 +14,16 @@ import java.util.Properties;
 
 import com.dbObjects.ResultObject;
 import com.dbconn.Database;
+import com.enums.*;
 import com.loggers.AppLogger;
-import com.tables.*;
+import com.util.PostExecuteTasks;
+import com.util.PreExecuteTasks;
 
 public class Query {
 	
 	private static List<Table> tablesWithoutTasks;
 	static {
+		tablesWithoutTasks = new ArrayList<Table>();
 		tablesWithoutTasks.add(Table.ChangeLog);
 		tablesWithoutTasks.add(Table.Servers);
 		tablesWithoutTasks.add(Table.Sessions);
@@ -74,8 +77,8 @@ public class Query {
 
 		 List<ResultObject> resultList = new ArrayList<>();
 		
-		try(Connection c = Database.getConnection();
-				PreparedStatement ps = c.prepareStatement(query.build())){
+		try(Connection c = Database.getConnection()){
+				PreparedStatement ps = c.prepareStatement(query.build());
 			ResultSet rs  = ps.executeQuery();
 			
 			
@@ -148,9 +151,22 @@ public class Query {
 	}
 	
 	public int executeUpdate(Query query) {
-		List<HashMap<Columns,Object>> referenceData = null;
-		if(!(tablesWithoutTasks.contains(query.getTableName()))) {
+		System.out.println(query.getTableName());
+		PreExecuteTasks pretasks=null;
+		if(!(query.getTableName().equals(Table.ChangeLog))){
+			pretasks = new PreExecuteTasks();
 			
+			Method[] preexMethods = pretasks.getClass().getDeclaredMethods();
+			for(Method m : preexMethods) {
+				m.setAccessible(true);
+				if(m.getParameterCount() == 1 ) {
+					try {
+						m.invoke(pretasks, query);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						AppLogger.ApplicationLog(e);
+					}
+				}
+			}
 		}
 		
 		int status = -1;
@@ -160,6 +176,25 @@ public class Query {
 		}catch(SQLException e) {
 			AppLogger.ApplicationLog(e);
 			e.printStackTrace();
+		}
+		System.out.println(query.build());
+		if(pretasks!=null) {
+			System.out.println(pretasks.getResultMap());
+		}
+		
+		if(status >=0 && !(query.getTableName().equals(Table.ChangeLog))) {
+			System.out.println("Status :"+status +" "+query.getTableName());
+			PostExecuteTasks posttasks = new PostExecuteTasks();
+			Method[] methods = posttasks.getClass().getDeclaredMethods();
+			for(Method m: methods) {
+				try {
+					m.setAccessible(true);
+					m.invoke(posttasks, query, pretasks.getResultMap());
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					AppLogger.ApplicationLog(e);
+					e.printStackTrace();
+				}
+			}
 		}
 		return status;
 		

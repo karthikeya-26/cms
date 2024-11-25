@@ -22,19 +22,19 @@ public class Database {
         	}
         	prop.load(input);
         	
-        	cpds.setDriverClass(prop.getProperty("db.driver"));
-        	cpds.setJdbcUrl(prop.getProperty("db.url"));
-            cpds.setUser(prop.getProperty("db.username"));
-            cpds.setPassword(prop.getProperty("db.password"));
+        	cpds.setDriverClass(prop.getProperty("database_driver"));
+        	cpds.setJdbcUrl(prop.getProperty("database_url"));
+            cpds.setUser(prop.getProperty("database_username"));
+            cpds.setPassword(prop.getProperty("database_password"));
             
             // Set connection pool properties
-            cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("db.initialPoolSize")));
-            cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("db.minPoolSize")));
-            cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("db.acquireIncrement")));
-            cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("db.maxPoolSize")));
-            cpds.setMaxStatements(Integer.parseInt(prop.getProperty("db.maxStatements")));
-            cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("db.unreturnedConnectionTimeout")));
-            cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("db.debugUnreturnedConnectionStackTraces")));
+            cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("database_initialPoolSize")));
+            cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("database_minPoolSize")));
+            cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("database_acquireIncrement")));
+            cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("database_maxPoolSize")));
+            cpds.setMaxStatements(Integer.parseInt(prop.getProperty("database_maxStatements")));
+            cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("database_unreturnedConnectionTimeout")));
+            cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("database_debugUnreturnedConnectionStackTraces")));
             
 //            cpds.setDriverClass("com.mysql.cj.jdbc.Driver"); 
 //            cpds.setJdbcUrl("jdbc:mysql://localhost:3306/cms");   
@@ -78,19 +78,19 @@ public class Database {
          	}
          	prop.load(input);
          	
-         	cpds.setDriverClass(prop.getProperty("db.driver"));
-         	cpds.setJdbcUrl(prop.getProperty("db.url"));
-             cpds.setUser(prop.getProperty("db.username"));
-             cpds.setPassword(prop.getProperty("db.password"));
+         	cpds.setDriverClass(prop.getProperty("database_driver"));
+         	cpds.setJdbcUrl(prop.getProperty("database_url"));
+             cpds.setUser(prop.getProperty("database_username"));
+             cpds.setPassword(prop.getProperty("database_password"));
              
              // Set connection pool properties
-             cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("db.initialPoolSize")));
-             cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("db.minPoolSize")));
-             cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("db.acquireIncrement")));
-             cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("db.maxPoolSize")));
-             cpds.setMaxStatements(Integer.parseInt(prop.getProperty("db.maxStatements")));
-             cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("db.unreturnedConnectionTimeout")));
-             cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("db.debugUnreturnedConnectionStackTraces")));
+             cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("database_initialPoolSize")));
+             cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("database_minPoolSize")));
+             cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("database_acquireIncrement")));
+             cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("database_maxPoolSize")));
+             cpds.setMaxStatements(Integer.parseInt(prop.getProperty("database_maxStatements")));
+             cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("database_unreturnedConnectionTimeout")));
+             cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("database_debugUnreturnedConnectionStackTraces")));
              
 //             cpds.setDriverClass("com.mysql.cj.jdbc.Driver"); 
 //             cpds.setJdbcUrl("jdbc:mysql://localhost:3306/cms");   

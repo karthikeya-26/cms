@@ -6,14 +6,14 @@ import java.util.List;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.UserGroupsObj;
+import com.enums.Columns;
+import com.enums.Operators;
+import com.enums.Table;
+import com.enums.UserGroups;
 import com.queryLayer.Delete;
 import com.queryLayer.Insert;
 import com.queryLayer.Select;
 import com.queryLayer.Update;
-import com.tables.Columns;
-import com.tables.Operators;
-import com.tables.Table;
-import com.tables.UserGroups;
 
 public class UserGroupsDao {
 	
@@ -61,7 +61,7 @@ public class UserGroupsDao {
 	//TO ADD GROUP
 	public boolean checkifGroupExistForUser(Integer userId,String groupName) {
 		Select s = new Select();
-		s.table(Table.UserGroups).column(UserGroups.GROUP_NAME)
+		s.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 		.condition(UserGroups.USER_ID, Operators.Equals, userId.toString())
 		.condition(UserGroups.GROUP_NAME, Operators.Equals, groupName);
 		List<HashMap<Columns, Object>> groupsofuser = s.executeQuery();

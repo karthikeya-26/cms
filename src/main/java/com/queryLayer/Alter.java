@@ -1,6 +1,6 @@
 package com.queryLayer;
 
-import com.tables.Table;
+import com.enums.Table;
 
 public class Alter {
 	

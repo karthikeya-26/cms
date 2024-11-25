@@ -1,7 +1,7 @@
 package com.queryLayer;
 
-import com.tables.Columns;
-import com.tables.Operators;
+import com.enums.Columns;
+import com.enums.Operators;
 
 public class AggregateColumn {
 	public Operators Aggregate;

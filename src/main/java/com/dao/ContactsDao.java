@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.dbObjects.ContactsObj;
 import com.dbObjects.ResultObject;
+import com.enums.Contacts;
+import com.enums.Operators;
+import com.enums.Table;
 import com.queryLayer.Delete;
 import com.queryLayer.Select;
 import com.queryLayer.Update;
-import com.tables.Contacts;
-import com.tables.Operators;
-import com.tables.Table;
 
 public class ContactsDao {
 	

@@ -2,8 +2,8 @@ package com.queryBuilder;
 
 import java.util.StringJoiner;
 
+import com.enums.Columns;
 import com.queryLayer.Insert;
-import com.tables.Columns;
 
 public class SqlInsertQueryBuilder implements Builder{
 	Insert insertObj;
@@ -18,7 +18,6 @@ public class SqlInsertQueryBuilder implements Builder{
 		
 		//table name
 		query += this.insertObj.getTableName()+" ";
-		 
 		//columns if columns not present then values
 		if (this.insertObj.getColumns().isEmpty()&& this.insertObj.getValues().isEmpty()) {
 			throw new Exception("insufficient data of columns and values");

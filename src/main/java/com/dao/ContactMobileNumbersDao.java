@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.dbObjects.ContactMobileNumbersObj;
 import com.dbObjects.ResultObject;
+import com.enums.ContactMobileNumbers;
+import com.enums.Operators;
+import com.enums.Table;
 import com.queryLayer.*;
-import com.tables.ContactMobileNumbers;
-import com.tables.Operators;
-import com.tables.Table;
 
 public class ContactMobileNumbersDao {
 	

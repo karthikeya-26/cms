@@ -1,6 +1,6 @@
 package com.queryLayer;
 
-import com.tables.*;
+import com.enums.*;
 
 public class Condition {
 	public Columns column;

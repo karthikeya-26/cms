@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import com.enums.Columns;
+import com.enums.Operators;
+import com.enums.Table;
 import com.loggers.AppLogger;
 import com.queryBuilder.SqlDeleteQueryBuilder;
 import com.queryBuilder.postgres.DeleteQueryBuilder;
-import com.tables.Columns;
-import com.tables.Operators;
-import com.tables.Table;
 public class Delete extends Query {
 	
 	private Table tableName;
@@ -34,7 +34,7 @@ public class Delete extends Query {
 
 	public String build() {
 		if (query == null) {
-			if (prop.getProperty("db.name").equals("mysql")) {
+			if (prop.getProperty("database_name").equals("mysql")) {
 				try {
 					this.query = new SqlDeleteQueryBuilder(this).build();
 				} catch (Exception e) {
@@ -44,7 +44,7 @@ public class Delete extends Query {
 				}
 				return query;
 			}
-			else if (prop.getProperty("db.name").equals("postgres")) {
+			else if (prop.getProperty("databse_name").equals("postgres")) {
 				// pg select query builder
 				this.query = new DeleteQueryBuilder(this).build();
 				return query;
@@ -55,9 +55,7 @@ public class Delete extends Query {
 		
 	}
 	public int executeUpdate() {
-		if (this.query == null) {
-			this.query = this.build();
-		}
+		
 		return super.executeUpdate(this);
 	}
 	

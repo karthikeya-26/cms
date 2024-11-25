@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.UserMailsObj;
+import com.enums.*;
 import com.queryLayer.*;
-import com.tables.*;
 
 public class UserMailsDao {
 	// SELECT

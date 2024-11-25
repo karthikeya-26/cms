@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.dbObjects.GroupContactsObj;
 import com.dbObjects.ResultObject;
+import com.enums.GroupContacts;
+import com.enums.Operators;
+import com.enums.Table;
 import com.queryLayer.*;
-import com.tables.GroupContacts;
-import com.tables.Operators;
-import com.tables.Table;
 
 public class GroupContactsDao {
 	//this table doesn't have updates
@@ -21,7 +21,6 @@ public class GroupContactsDao {
 		for(ResultObject contact : resultList) {
 			groupContacts.add((GroupContactsObj) contact);
 		}
-		resultList = null;
 		return groupContacts;
 	}
 	
@@ -32,7 +31,6 @@ public class GroupContactsDao {
 				.columns(GroupContacts.GROUP_ID, GroupContacts.CONTACT_ID)
 				.values(groupId.toString(), contactId.toString());
 		return insertContactIntoGroup.executeUpdate() > 0;
-
 	}
 	// DELETE
 	public boolean deleteContactFromGroup(Integer groupId, Integer contactId) {

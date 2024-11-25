@@ -3,10 +3,10 @@ package com.dao;
 import java.util.List;
 
 import com.dbObjects.*;
+import com.enums.Operators;
+import com.enums.Passwords;
+import com.enums.Table;
 import com.queryLayer.*;
-import com.tables.Operators;
-import com.tables.Passwords;
-import com.tables.Table;
 
 public class PasswordsDao {
 	//SELECT

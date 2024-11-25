@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.UserDetailsObj;
+import com.enums.Operators;
+import com.enums.Passwords;
+import com.enums.Table;
+import com.enums.UserDetails;
 import com.queryLayer.*;
-import com.tables.Operators;
-import com.tables.Passwords;
-import com.tables.Table;
-import com.tables.UserDetails;
 
 public class PasswordMigration {
 

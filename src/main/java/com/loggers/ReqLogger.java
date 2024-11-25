@@ -1,11 +1,12 @@
 package com.loggers;
 import java.time.LocalDateTime;
+
 import java.time.format.DateTimeFormatter;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import com.startup.RegServer;
+import com.dbconn.Database;
 
 public class ReqLogger {
 	
@@ -18,7 +19,7 @@ public class ReqLogger {
         	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String logFileName = "/home/karthi-pt7680/contact_logs/" 
                     + LocalDateTime.now().format(formatter) 
-                    + RegServer.getServerName() + RegServer.getServerPort() + "-request.log";
+                    + Database.prop.getProperty("serve_name")+"-"+Database.prop.getProperty("server_port") + "-request.log";
             fh = new FileHandler(logFileName,true);
             fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);

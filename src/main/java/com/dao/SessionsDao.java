@@ -3,10 +3,10 @@ import java.util.*;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.SessionsObj;
+import com.enums.Operators;
+import com.enums.Sessions;
+import com.enums.Table;
 import com.queryLayer.*;
-import com.tables.Operators;
-import com.tables.Sessions;
-import com.tables.Table;
 
 public class SessionsDao {
 	//SELECT ALL

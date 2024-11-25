@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dbObjects.*;
+import com.enums.Operators;
+import com.enums.Servers;
+import com.enums.Table;
 import com.queryLayer.*;
-import com.tables.Operators;
-import com.tables.Servers;
-import com.tables.Table;
 
 public class ServersDao {
 	//SELECT -> all servers

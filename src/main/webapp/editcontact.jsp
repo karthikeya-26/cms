@@ -9,7 +9,8 @@
 <%@ page import="com.dao.*" %>
 <%@ page import="java.time.*" %>
 
-<% ContactsObj contact = ContactDao.getContactById(Integer.parseInt(request.getParameter("contact_id"))); %>
+<%ContactsDao dao = new ContactsDao();
+ContactsObj contact = dao.getContactWithId(Integer.parseInt(request.getParameter("contact_id"))); %>
 <!DOCTYPE html>
 <html>
 <head>

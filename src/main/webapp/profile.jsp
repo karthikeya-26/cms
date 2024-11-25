@@ -15,17 +15,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<div class="pass-change">
-		<% 
-    long ninetyDaysInMillis = 7776000000L; 
-    if (System.currentTimeMillis() > user.getPw_last_changed_at() + ninetyDaysInMillis) { 
-%>
-    <p>Your password is over 90 days old. Please <a href="changepassword.jsp">change your password</a>.</p>
-<% 
-    } 
-%>
-
-	</div>
+	
 	
 	<div>
 	<h2>Actions</h2>

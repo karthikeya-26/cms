@@ -3,8 +3,8 @@ package com.dao;
 import java.util.List;
 
 import com.dbObjects.*;
+import com.enums.*;
 import com.queryLayer.*;
-import com.tables.*;
 
 public class UserDetailsDao {
 	// SELECT -> User with userId
@@ -13,6 +13,7 @@ public class UserDetailsDao {
 		Select s = new Select();
 		s.table(Table.UserDetails)
 		.condition(UserDetails.USER_ID, Operators.Equals, userId.toString());
+		System.out.println(s.build());
 		List<ResultObject> users = s.executeQuery(UserDetailsObj.class);
 		if(users.size()>0) {
 			user = (UserDetailsObj) users.get(0);
@@ -24,10 +25,11 @@ public class UserDetailsDao {
 	public UserDetailsObj getUserWithMail(String mail) {
 		UserDetailsObj user = null;
 		Select s = new Select();
-		s.table(Table.UserDetails).column(UserDetails.ALL_COLS)
+		s.table(Table.UserDetails).columns(UserDetails.ALL_COLS)
 		.join(Joins.InnerJoin, Table.UserMails, UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
 		.condition(UserMails.MAIL,Operators.Equals,mail);
 		List<ResultObject> users = s.executeQuery(UserDetailsObj.class);
+	
 		if(users.size()>0) {
 			user = (UserDetailsObj) users.get(0);
 		}

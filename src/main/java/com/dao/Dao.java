@@ -4,24 +4,24 @@ package com.dao;
 import com.dbconn.BCrypt;
 
 import com.dbconn.Database;
+import com.dto.Contact;
+import com.dto.SessionData;
+import com.dto.User;
+import com.enums.ContactMails;
+import com.enums.ContactMobileNumbers;
+import com.enums.Contacts;
+import com.enums.GroupContacts;
+import com.enums.Joins;
+import com.enums.Operators;
+import com.enums.Table;
+import com.enums.UserDetails;
+import com.enums.UserGroups;
+import com.enums.UserMails;
 import com.loggers.AppLogger;
-import com.models.Contact;
-import com.models.SessionData;
-import com.models.User;
 import com.queryLayer.Insert;
 import com.queryLayer.Select;
 import com.queryLayer.Update;
 import com.session.SessionDataManager;
-import com.tables.ContactMails;
-import com.tables.ContactMobileNumbers;
-import com.tables.Contacts;
-import com.tables.GroupContacts;
-import com.tables.Joins;
-import com.tables.Operators;
-import com.tables.Table;
-import com.tables.UserDetails;
-import com.tables.UserGroups;
-import com.tables.UserMails;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -126,7 +126,7 @@ public class Dao {
 			c = Database.getConnection();
 			Select getuserfromdb = new Select();
 			getuserfromdb
-					.table(Table.UserDetails).column(UserDetails.ALL_COLS).join(Joins.InnerJoin, Table.UserMails,
+					.table(Table.UserDetails).columns(UserDetails.ALL_COLS).join(Joins.InnerJoin, Table.UserMails,
 							UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
 					.condition(UserMails.MAIL, Operators.Equals, username);
 			String statement = getuserfromdb.build();
@@ -184,7 +184,7 @@ public class Dao {
 
 	public static User getUser(Integer user_id) {
 		User user = new User();
-		Select s = new Select().table(Table.UserDetails).column(UserDetails.ALL_COLS).condition(UserDetails.USER_ID,
+		Select s = new Select().table(Table.UserDetails).columns(UserDetails.ALL_COLS).condition(UserDetails.USER_ID,
 				Operators.Equals, user_id.toString());
 //	   String statement = "select * from user_details where user_id = ?";
 		String statement = s.build();
@@ -213,7 +213,7 @@ public class Dao {
 	public static ArrayList<String> getEmails(User u) {
 		ArrayList<String> userMails = new ArrayList<>();
 		Select s = new Select();
-		s.table(Table.UserMails).column(UserMails.ALL_COLS).condition(UserMails.USER_ID, Operators.Equals, "?");
+		s.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserMails.USER_ID, Operators.Equals, "?");
 //	    String statement = "SELECT * FROM user_mails WHERE user_id = ?";
 		String statement = s.build();
 		Connection c = null;
@@ -308,7 +308,7 @@ public class Dao {
 
 	public static boolean checkifMailExists(User user, String email) {
 //	    String statement = "SELECT mail FROM user_mails WHERE user_id = ?";
-		Select s = new Select().table(Table.UserMails).column(UserMails.MAIL).condition(UserMails.USER_ID,
+		Select s = new Select().table(Table.UserMails).columns(UserMails.MAIL).condition(UserMails.USER_ID,
 				Operators.Equals, "?");
 
 		String statement = s.build();

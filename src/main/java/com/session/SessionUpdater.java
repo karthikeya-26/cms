@@ -6,8 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.dao.NewDao;
+import com.dto.SessionData;
 import com.loggers.AppLogger;
-import com.models.SessionData;
 
 public class SessionUpdater {
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

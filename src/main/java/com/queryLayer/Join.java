@@ -1,5 +1,5 @@
 package com.queryLayer;
-import com.tables.*;
+import com.enums.*;
 
 public class Join {
 	

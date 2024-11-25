@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dbObjects.*;
+import com.enums.ContactMails;
+import com.enums.Operators;
+import com.enums.Table;
+import com.enums.UserMails;
 import com.queryLayer.*;
-import com.tables.ContactMails;
-import com.tables.Operators;
-import com.tables.Table;
-import com.tables.UserMails;
 
 public class ContactMailsDao {
 	

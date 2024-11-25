@@ -1,5 +1,8 @@
 package com.queryLayer;
 
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 
 
@@ -14,15 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.dao.NewDao;
+import com.dao.UserDetailsDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
+import com.enums.*;
+import com.handlers.LoginHandler;
 import com.loggers.AppLogger;
-//import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
-//import com.models.SessionData;
-//import com.notifier.SessionmapUpdateNotifier;
-import com.startup.RegServer;
-import com.tables.*;
 import com.util.PasswordMigration;
+import com.util.PreExecuteTasks;
 
 public class Test {
 	public static void main(String args[]) {
@@ -32,18 +34,18 @@ public class Test {
 //		1.Select queries
 		
 //		login user method
-		Select getuserfromdb = new Select();
-		getuserfromdb.table(Table.UserDetails).column(UserDetails.ALL_COLS).join(Joins.InnerJoin, Table.UserMails, UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID).condition(UserMails.MAIL, Operators.Equals, "?");
+//		Select getuserfromdb = new Select();
+//		getuserfromdb.table(Table.UserDetails).columns(UserDetails.ALL_COLS).join(Joins.InnerJoin, Table.UserMails, UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID).condition(UserMails.MAIL, Operators.Equals, "?");
 //		System.out.println(getuserfromdb.build());
 //		System.out.println();
 		
-		Select getusermails = new Select();
-		getusermails.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserGroups.USER_ID, Operators.Equals, "1");
+//		Select getusermails = new Select();
+//		getusermails.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserGroups.USER_ID, Operators.Equals, "1");
 //		System.out.println(getusermails.build());
 //		System.out.println();
 		
-		Select checkifMailExists = new Select();
-		checkifMailExists.table(Table.UserMails).column(UserMails.MAIL).condition(UserGroups.USER_ID, Operators.Equals, "1");
+//		Select checkifMailExists = new Select();
+//		checkifMailExists.table(Table.UserMails).columns(UserMails.MAIL).condition(UserGroups.USER_ID, Operators.Equals, "1");
 //		System.out.println(checkifMailExists.build());
 //		System.out.println();
 		
@@ -60,10 +62,10 @@ public class Test {
 		
 		Select s = new Select();
 		s.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserGroups.GROUP_NAME).join(Joins.InnerJoin, Table.UserGroups, UserGroups.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID);
-		System.out.println(s.build());
+//		System.out.println(s.build());
 		Select getuserGroups = new Select();
-		getuserGroups.table(Table.UserGroups).column(UserGroups.GROUP_NAME).condition(UserGroups.USER_ID, Operators.Equals, "1");
-		System.out.println(getusermails.build());
+		getuserGroups.table(Table.UserGroups).columns(UserGroups.GROUP_NAME).condition(UserGroups.USER_ID, Operators.Equals, "1");
+//		System.out.println(getusermails.build());
 //		System.out.println(getuserGroups.build());
 //		System.out.println();
 		
@@ -81,16 +83,16 @@ public class Test {
 		     
 		//Insert 
 		     
-		Insert userdetails = new Insert();
-		userdetails.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
-		.values("a","a","a","a","a");
+//		Insert userdetails = new Insert();
+//		userdetails.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+//		.values("a","a","a","a");
 //		System.out.println(userdetails.build());
 		
-		Select use= new Select();
-		use.table(Table.UserDetails)
-		.columns(UserDetails.USER_ID,UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
-		.join(Joins.InnerJoin, Table.UserMails,UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
-		.condition(UserMails.MAIL, Operators.Equals,"j@x.com");
+//		Select use= new Select();
+//		use.table(Table.UserDetails)
+//		.columns(UserDetails.USER_ID,UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+//		.join(Joins.InnerJoin, Table.UserMails,UserMails.USER_ID, Operators.Equals, Table.UserDetails, UserDetails.USER_ID)
+//		.condition(UserMails.MAIL, Operators.Equals,"j@x.com");
 		
 //		List<HashMap<String, Object>> result = use.executeQuery();
 //		System.out.println(result);
@@ -196,6 +198,41 @@ public class Test {
 		
 //		PasswordMigration.exportPasswords(13);	
 		
+//		Update u = new Update();
+//		u.table(Table.UserDetails).columns(UserDetails.USER_NAME).values("karthik_04");
+//		PreExecuteTasks p = new PreExecuteTasks();
+//		Method[] meth = p.getClass().getDeclaredMethods();
+//		
+//		for(Method m: meth) {
+//			System.out.println("Method name :"+m.getName());
+//			try {
+//				Class<?> [] params = m.getParameterTypes();
+//				if(params.length==1 && Query.class.isAssignableFrom(params[0])) {
+//					m.invoke(p, u);
+//				}
+//			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		System.out.println(p.getResultMap());
+//		System.out.println("hi");
+//		System.out.println(LoginHandler.validateUser("j@x.com", "password123"));
+//		UserDetailsDao dao = new UserDetailsDao();
+//		System.out.println(dao.getUserWithMail("j@x.com"));
+//		Update u = new Update();
+//		u.table(Table.UserGroups).columns(UserGroups.GROUP_NAME).values("karthik").condition(UserGroups.GROUP_ID,Operators.Equals,"22");
+//		u.executeUpdate();
+//		Update a = new Update();
+//		a.table(Table.UserDetails).columns(UserDetails.FIRST_NAME).values("sai thar").condition(UserDetails.USER_ID, Operators.Equals, "13");
+//		a.executeUpdate();
+//		Delete d = new Delete();
+//		d.table(Table.UserGroups).condition(UserGroups.GROUP_ID, Operators.Equals, "22");
+//		d.executeUpdate();
+		Insert i = new Insert();
+		i.table(Table.UserMails).columns(UserMails.MAIL,UserMails.USER_ID,UserMails.IS_PRIMARY).values("kart","13","0");
+		i.executeUpdate();
+//		
 		
 	}
 
