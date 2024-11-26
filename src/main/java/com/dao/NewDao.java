@@ -249,7 +249,7 @@ public class NewDao {
 		for(HashMap<Columns, Object> number :mobileNumbers) {
 			ContactMobileNumbersObj n = new ContactMobileNumbersObj();
 			n.setContactId((Integer)number.get(ContactMobileNumbers.CONTACT_ID));
-			n.setMobileNumber((Long)number.get(ContactMobileNumbers.CONTACT_ID));
+			n.setMobileNumber((String)number.get(ContactMobileNumbers.CONTACT_ID));
 			contact_numbers.add(n);
 		}
 		return contact_numbers;

@@ -16,7 +16,7 @@
 	<% List<ContactMailsObj> mails=(List<ContactMailsObj>)request.getAttribute("mails"); %>
 	<% if(mails.size() > 0){ %>
 		<% for (ContactMailsObj mail : mails){ %>
-			<p><%=mail.getMail() %></p>
+			<p><%=mail.getEmail() %></p>
 		<%} %>
 		<button onClick="history_back()">Go back</button>
    	 <script>

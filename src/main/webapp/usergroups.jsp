@@ -12,6 +12,7 @@
 <meta charset="UTF-8">
 <title>User groups</title>
 <% Integer user_id = SessionFilter.user_id.get(); 
+
 	List<UserGroupsObj> user_groups = NewDao.getUserGroups(user_id);
 	List<ContactsObj> user_contacts = NewDao.getUserContacts(user_id);%>
 </head>
@@ -30,14 +31,14 @@
 		<select required id="contact_id" name="contact_id">
 			<option selected="selected" disabled="disabled">click to choose</option>
 			<%for(ContactsObj contact : user_contacts){ %>
-				<option value="<%=contact.getContact_id() %>" ><%=contact.getFirst_name()+" "+contact.getLast_name() %>
+				<option value="<%=contact.getContactId() %>" ><%=contact.getFirstName()+" "+contact.getLastName() %>
 			<%} %>
 		</select>
 		<label for="group_id">Select Group :</label>
 		<select required id="group_id" name="group_id">
 			<option selected="selected" disabled="disabled">Click to choose</option>
 			<%for(UserGroupsObj group : user_groups){ %>
-				<option value="<%=group.getGroup_id()%>"><%=group.getGroup_name() %></option>
+				<option value="<%=group.getGroupId()%>"><%=group.getGroupName() %></option>
 			<%} %>
 		</select>
 		<input type="submit" value="ADD">
@@ -48,13 +49,13 @@
 	<div class="usergroups">
 		<% if(user_groups != null && user_groups.size()>0){ %>
 			<%for(UserGroupsObj user_group : user_groups){ %>
-				<p><%= user_group.getGroup_name() %></p>
+				<p><%= user_group.getGroupName() %></p>
 				<form action="userOp?action=viewGroupContacts" method="post">
-					<input type="hidden" name="group_id" value="<%=user_group.getGroup_id()%>">
+					<input type="hidden" name="group_id" value="<%=user_group.getGroupId()%>">
 					<input type="submit" value="click to view contacts ">
 				</form>
 				<form action="userOp?action=deleteGroup" method="post">
-					<input type="hidden" name="group_id" value="<%=user_group.getGroup_id()%>">
+					<input type="hidden" name="group_id" value="<%=user_group.getGroupId()%>">
 					<input type="submit" value="click to delete this group">
 				</form>
 				

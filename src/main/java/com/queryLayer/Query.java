@@ -89,7 +89,7 @@ public class Query {
 					f.setAccessible(true);
 					String fieldName = f.getName();
 					Object value = rs.getObject(fieldName);
-					
+		
 					if(value != null) {
 						f.set(r, value);
 					}
@@ -177,13 +177,80 @@ public class Query {
 			AppLogger.ApplicationLog(e);
 			e.printStackTrace();
 		}
-		System.out.println(query.build());
+//		System.out.println(query.build());
 		if(pretasks!=null) {
 			System.out.println(pretasks.getResultMap());
 		}
 		
 		if(status >=0 && !(query.getTableName().equals(Table.ChangeLog))) {
 			System.out.println("Status :"+status +" "+query.getTableName());
+			PostExecuteTasks posttasks = new PostExecuteTasks();
+			Method[] methods = posttasks.getClass().getDeclaredMethods();
+			for(Method m: methods) {
+				try {
+					System.out.println(m.getName());
+					System.out.println(m.getParameterCount());
+					m.setAccessible(true);
+					m.invoke(posttasks, query, pretasks.getResultMap());
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					AppLogger.ApplicationLog(e);
+					System.out.println(m.getClass().getSimpleName());
+					System.out.println("Method name:"+m.getName());
+					System.out.println(m.toString());
+					System.out.println("Method param count:"+m.getParameterCount());
+					for(Class<?> claz : m.getParameterTypes()) {
+						System.out.println("param type :"+claz.getName());
+					}
+					
+					e.printStackTrace();
+				}
+			}
+//			try {
+//				posttasks.audit(query, pretasks.getResultMap());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+		}
+		return status;
+		
+	}
+
+	public int executeUpdate(Query query, boolean returnGeneratedKey) throws SQLException {
+		
+		PreExecuteTasks pretasks=null;
+		if(!(query.getTableName().equals(Table.ChangeLog))){
+			pretasks = new PreExecuteTasks();
+			
+			Method[] preexMethods = pretasks.getClass().getDeclaredMethods();
+			for(Method m : preexMethods) {
+				m.setAccessible(true);
+				if(m.getParameterCount() == 1 ) {
+					try {
+						m.invoke(pretasks, query);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						AppLogger.ApplicationLog(e);
+					}
+				}
+			}
+		}
+		int genKey = -1;
+		try(Connection c =Database.getConnection();
+				PreparedStatement ps = c.prepareStatement(query.build(),PreparedStatement.RETURN_GENERATED_KEYS)){
+			int success = ps.executeUpdate();
+			if(success>=0) {
+				ResultSet rs = ps.getGeneratedKeys();
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+			
+		}
+		if(pretasks!=null) {
+			System.out.println(pretasks.getResultMap());
+		}
+		
+		if(genKey >=0 && !(query.getTableName().equals(Table.ChangeLog))) {
+			
 			PostExecuteTasks posttasks = new PostExecuteTasks();
 			Method[] methods = posttasks.getClass().getDeclaredMethods();
 			for(Method m: methods) {
@@ -196,24 +263,7 @@ public class Query {
 				}
 			}
 		}
-		return status;
-		
-	}
-
-	public int executeUpdate(Query query, boolean returnGeneratedKey) throws SQLException {
-		
-		try(Connection c =Database.getConnection();
-				PreparedStatement ps = c.prepareStatement(query.build(),PreparedStatement.RETURN_GENERATED_KEYS)){
-			int success = ps.executeUpdate();
-			if(success>=0) {
-				ResultSet rs = ps.getGeneratedKeys();
-				if (rs.next()) {
-					return rs.getInt(1);
-				}
-			}
-			
-		}
-		return 0;
+		return genKey;
 	}
 
 	

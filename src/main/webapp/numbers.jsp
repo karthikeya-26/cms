@@ -19,7 +19,7 @@
 		if(numbers.size()>0){
 	%>
 		<% for(ContactMobileNumbersObj number : numbers){ %>
-			<p><%=number.getNumber() %></p>
+			<p><%=number.getMobileNumber() %></p>
 			
 		<%} %>
 		<button onClick="history_back()">Go back</button>

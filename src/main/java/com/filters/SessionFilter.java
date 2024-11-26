@@ -119,7 +119,7 @@ public class SessionFilter extends HttpFilter implements Filter {
             request.setAttribute("user_id", user.getUserId());
             //logging the request
             String logMessage = String.format("Server Name: %s, Request Method: %s, URL: %s, Remote Address: %s, User id: %s, Session id: %s",
-//            		RegServer.getServerName()+RegServer.getServerPort(),
+            		"local host 8280",
 	                httpReq.getMethod(),
 	                httpReq.getRequestURL().toString(),
 	                httpReq.getRemoteAddr(),

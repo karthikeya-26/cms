@@ -229,11 +229,19 @@ public class Test {
 //		Delete d = new Delete();
 //		d.table(Table.UserGroups).condition(UserGroups.GROUP_ID, Operators.Equals, "22");
 //		d.executeUpdate();
-		Insert i = new Insert();
-		i.table(Table.UserMails).columns(UserMails.MAIL,UserMails.USER_ID,UserMails.IS_PRIMARY).values("kart","13","0");
-		i.executeUpdate();
+//		Insert i = new Insert();
+//		i.table(Table.UserMails).columns(UserMails.MAIL,UserMails.USER_ID,UserMails.IS_PRIMARY).values("kart","13","0");
+//		i.executeUpdate();
 //		
-		
+//		Update u = new Update();
+//		u.table(Table.UserDetails).columns(UserDetails.USER_NAME).values("jayanth").condition(UserDetails.USER_ID, Operators.Equals, "1");
+//		u.executeUpdate();
+		Update u = new Update();
+		u.table(Table.UserDetails)
+		.columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+		.values("jd","jackie","chan","public")
+		.condition(UserDetails.USER_ID, Operators.Equals,"1" );
+		u.executeUpdate();
 	}
 
 }

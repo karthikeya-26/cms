@@ -28,12 +28,12 @@
 	
 	<div>
 		<h2>Profile Details</h2>
-		<h3>User Name : <%=user.getUser_name() %></h3>
-		<h3>First Name : <%=user.getFirst_name() %></h3>
-		<h3>Last Name : <%=user.getLast_name() %></h3>
-		<h3>Contact type : <%=user.getContact_type() %></h3>
+		<h3>User Name : <%=user.getUserName() %></h3>
+		<h3>First Name : <%=user.getFirstName() %></h3>
+		<h3>Last Name : <%=user.getLastName() %></h3>
+		<h3>Contact type : <%=user.getContactType() %></h3>
 		
-		<h3>Created At : <%=LocalDateTime.ofInstant(Instant.ofEpochMilli(user.getCreated_at()), ZoneId.of("Asia/Kolkata")) %></h3>
+		<h3>Created At : <%=LocalDateTime.ofInstant(Instant.ofEpochMilli(user.getCreatedAt()), ZoneId.of("Asia/Kolkata")) %></h3>
 		<a href="usermails.jsp">VIEW MAILS</a>
 		<a href="editprofile.jsp">EDIT PROFILE</a>
 	</div>

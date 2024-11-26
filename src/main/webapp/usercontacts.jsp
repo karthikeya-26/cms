@@ -9,8 +9,9 @@
 <%@ page import="com.dao.*" %>
 <%@ page import="java.time.*" %>
 
-<% Integer user_id = SessionFilter.user_id.get();
-	List<ContactsObj> contacts = NewDao.getUserContacts(user_id);
+<% Integer userId = SessionFilter.user_id.get();
+	ContactsDao dao = new ContactsDao();
+	List<ContactsObj> contacts = dao.getContactsWithUserId(userId);
 %>
 <!DOCTYPE html>
 <html>
@@ -22,7 +23,7 @@
 	<h2>Contacts</h2>
 	<a href="profile.jsp">Go back to Profile</a>
 	<a href="addcontact.jsp"> Add Contact</a>
-	<%if(contacts.size() >0) {%>
+	<%if(contacts.size() >0 && contacts!=null) {%>
 		<table>
 			<tr>
 				<th>First Name</th>
@@ -37,32 +38,32 @@
 			</tr>
 			<% for(ContactsObj contact : contacts){ %>
 			<tr>
-				<td><%=contact.getFirst_name() %></td>
-				<td><%=contact.getLast_name()%></td>
+				<td><%= contact.getFirstName() %></td>
+				<td><%=contact.getLastName()%></td>
 				<td><%=contact.getAddress() %></td>
-				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreated_at()), ZoneId.of("Asia/Kolkata")) %></td>
+				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreatedAt()), ZoneId.of("Asia/Kolkata")) %></td>
 				<td>
 					<form action="contactOp?action=viewnumbers" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="click to view numbers">
 					</form>
 				</td>
 				<td>
 					<form action="contactOp?action=viewmails" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="view Mails">
 					</form>
 				</td>
 				<td>
 					<form action="contactOp?action=viewGroups" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="view Groups">
 					</form>
 				</td>
 				<td><a>Click to edit</a></td>
 				<td>
 				<form action="contactOp?action=deleteContact">
-					<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+					<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 					<input type="submit" value="click to delete">
 				</form>
 				</td>
@@ -70,7 +71,7 @@
 			<%} %>
 		</table>
 	<%}else{ %>
-		<p>No contacts Found. Create to see here</p>
+	<p>No contacts Found. Create to see here</p>
 	<%} %>
 </body>
 </html>

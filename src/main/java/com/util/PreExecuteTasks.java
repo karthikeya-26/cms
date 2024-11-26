@@ -61,11 +61,12 @@ public class PreExecuteTasks {
 			List<Condition> conditions = updateQuery.getConditions();
 			Select s = new Select();
 			
-			s.table(table).columns(updateQuery.getColumns().subList(0, columns.size()-1).toArray(new Columns[0]));
+			s.table(table).columns(updateQuery.getColumns().toArray(new Columns[0]));
 			for(Condition c : conditions) {
 				s.condition(c.getColumn(), c.getOperator(), c.getValue());
 			}
 			List<HashMap<Columns,Object>> result = s.executeQuery();
+			System.out.println(result);
 			methodResults.put("getRefData", result.get(0));
 			
 		}else if(query instanceof Delete) {

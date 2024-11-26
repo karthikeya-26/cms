@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.startup.SetContextPropertiesRule;
 
+import com.dao.ContactMailsDao;
+import com.dao.ContactMobileNumbersDao;
+import com.dao.ContactsDao;
 import com.dao.NewDao;
 import com.dbObjects.ContactMailsObj;
 import com.dbObjects.ContactMobileNumbersObj;
@@ -46,15 +49,18 @@ public class ContactOp extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		if(action.equals("viewnumbers")) {
+			ContactMobileNumbersDao dao = new ContactMobileNumbersDao();
+			
 
-			List<ContactMobileNumbersObj> numbers = NewDao.getContactMobileNumbers(Integer.parseInt(request.getParameter("contact_id")));
+			List<ContactMobileNumbersObj> numbers = dao.getContactMobileNumbers(Integer.parseInt(request.getParameter("contact_id")));
 			request.setAttribute("numbers", numbers);
 			request.getRequestDispatcher("numbers.jsp").forward(request, response);
 			return;
 		}
 		if(action.equals("viewmails")) {
+			ContactMailsDao dao = new ContactMailsDao();
 			
-			List<ContactMailsObj> mails = NewDao.getContactMails(Integer.parseInt(request.getParameter("contact_id")));
+			List<ContactMailsObj> mails = dao.getMailsWithContactId(Integer.parseInt(request.getParameter("contact_id")));
 			request.setAttribute("mails", mails);
 			request.getRequestDispatcher("mails.jsp").forward(request, response);
 			return;

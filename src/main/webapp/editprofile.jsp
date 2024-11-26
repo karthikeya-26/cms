@@ -17,17 +17,17 @@
 %>
 <body>
 	
-	<h2>HI <%=user.getUser_name() %></h2>
+	<h2>HI <%=user.getUserName() %></h2>
 	<a href="profile.jsp"> Go to Profile</a>
 	<div>
 	<h3>Edit your Profile :</h3>
 	<form action="userOp?action=profileUpdate" method="post">
 		<label for="user_name">User_name :</label>
-		<input type="text" id="user_name" name="user_name" value="<%=user.getUser_name()%>"><br>
+		<input type="text" id="user_name" name="user_name" value="<%=user.getUserName()%>"><br>
 		<label for="first_name">First Name :</label>
-		<input type="text" id="first_name" name="first_name" value="<%=user.getFirst_name()%>"><br>
+		<input type="text" id="first_name" name="first_name" value="<%=user.getFirstName()%>"><br>
 		<label for="last_name">Last Name :</label>
-		<input type="text" id="last_name" name="last_name" value="<%=user.getLast_name()%>"><br>
+		<input type="text" id="last_name" name="last_name" value="<%=user.getLastName()%>"><br>
 		<label for="contactType">Contact Type:</label> <select
 				id="contactType" name="contactType" required>
 				<option selected="selected" value="public">Public</option>

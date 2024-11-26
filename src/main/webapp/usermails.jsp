@@ -17,7 +17,7 @@
 <title></title>
 </head>
 <body>
-	<h2>Hi <%=user.getUser_name() %></h2>
+	<h2>Hi <%=user.getUserName() %></h2>
 	<a href="profile.jsp">Go to profile</a>
 	<h3>Add Mail</h3>
 	<form action="userOp?action=addEmail" method="post">
@@ -30,15 +30,15 @@
 	<%for(UserMailsObj mail : user_mails){%>
 		<p><%=mail.getMail() %>
 		<form style="display:inline" action="userOp?action=setprimarymail" method="post">
-			<input type="hidden" name="mail_id" value="<%=mail.getMail_id()%>">
-			<% if(mail.getIs_primary()==0) {%>
+			<input type="hidden" name="mail_id" value="<%=mail.getMailId()%>">
+			<% if(mail.getIsPrimary()==0) {%>
 				<input type="submit" value="set as Primary">
 			<%}else{ %>
 				<span><p><b>PRIMARY MAIL</b></p></span>
 			<%} %>
 		</form>
 		<form action="userOp?action=deleteMail" method="post">
-			<input type="hidden" name="mail_id" value="<%=mail.getMail_id()%>">
+			<input type="hidden" name="mail_id" value="<%=mail.getMailId()%>">
 			<input type="submit" value="Delete this email"> 
 		</form>
 		</p>

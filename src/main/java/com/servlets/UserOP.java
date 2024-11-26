@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dao.NewDao;
+import com.dao.UserDetailsDao;
 import com.dbObjects.ContactsObj;
 import com.filters.SessionFilter;
 import com.session.SessionDataManager;
@@ -72,7 +73,9 @@ public class UserOP extends HttpServlet {
 			response.sendRedirect("useremails.jsp");
 		}
 		else if(action.equals("profileUpdate")) {
-			NewDao.updateUserDetails(request.getParameter("user_name"),
+			UserDetailsDao dao = new UserDetailsDao();
+			dao.updateUser(SessionFilter.user_id.get(),
+					request.getParameter("user_name"),
 					request.getParameter("first_name"),
 					request.getParameter("last_name"),
 					request.getParameter("contactType"));

@@ -2,7 +2,7 @@ package com.dbObjects;
 
 public class ContactMobileNumbersObj extends ResultObject {
     private Integer contact_id;
-    private Long number;
+    private String number;
     private Long created_at;
     private Long modified_at;
 
@@ -12,10 +12,10 @@ public class ContactMobileNumbersObj extends ResultObject {
     public void setContactId(Integer contactId) {
         this.contact_id = contactId;
     }
-    public Long getMobileNumber() {
+    public String getMobileNumber() {
         return number;
     }
-    public void setMobileNumber(Long mobileNumber) {
+    public void setMobileNumber(String mobileNumber) {
         this.number = mobileNumber;
     }
     public Long getCreatedAt() {

@@ -28,16 +28,21 @@ public class ContactsDao {
 	public List<ContactsObj> getContactsWithUserId(Integer userId){
 		List<ContactsObj> userContacts = new ArrayList<ContactsObj>();
 		Select s = new Select();
-		s.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.ADDRESS, Contacts.CREATED_AT,Contacts.USER_ID)
+		s.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.ADDRESS, Contacts.CREATED_AT,Contacts.USER_ID,Contacts.MODIFIED_AT)
 		.condition(Contacts.USER_ID, Operators.Equals,userId.toString());
 
 		List<ResultObject> contacts = s.executeQuery(ContactsObj.class);
-
+		System.out.println(contacts);
 		for (ResultObject res : contacts) {
 			ContactsObj c = (ContactsObj) res;
 			userContacts.add(c);
 		}
 		return userContacts;
+	}
+	
+	public static void main(String[] args) {
+		ContactsDao dao = new ContactsDao();
+		System.out.println(dao.getContactsWithUserId(1));
 	}
 	
 	//UPDATE

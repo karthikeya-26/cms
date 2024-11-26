@@ -17,13 +17,15 @@ public class ContactMailsDao {
 		List<ContactMailsObj> mails = new ArrayList<ContactMailsObj>();
 		Select s = new Select();
 		s.table(Table.ContactMails)
-		.condition(UserMails.USER_ID, Operators.Equals, contactId.toString());
-		List<ResultObject> resultList = s.executeQuery(UserMailsObj.class);
+		.condition(ContactMails.CONTACT_ID, Operators.Equals, contactId.toString());
+		System.out.println(s.build());
+		List<ResultObject> resultList = s.executeQuery(ContactMailsObj.class);
 		for(ResultObject mail : resultList) {
 			mails.add((ContactMailsObj) mail);
 		}
 		return mails;
 	}
+	
 	
 	//INSERT
 	public boolean addMailToContact(Integer contactId, String mail) {
