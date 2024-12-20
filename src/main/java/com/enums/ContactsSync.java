@@ -7,6 +7,7 @@ import java.util.Map;
 
 public enum ContactsSync implements Columns {
 	USER_ID("user_id",Integer.class),
+	ACCOUNT_ID("account_id", String.class),
 	REFRESH_TOKEN("refresh_token",String.class),
 	PROVIDER("provider",String.class);
 	

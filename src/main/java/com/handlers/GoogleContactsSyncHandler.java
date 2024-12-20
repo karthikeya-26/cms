@@ -40,7 +40,7 @@ public class GoogleContactsSyncHandler {
 			+ " https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/contacts";
 	private static final String redirectUri = "http://localhost:8280/contacts/goauth";
 	private static String peopleContactsEndpoint = "https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers,emailAddresses,photos,metadata";
-
+	private static final String peopleAccountEndpoint = "https://people.googleapis.com/v1/people/me";
 	public static String getClientid() {
 		return clientId;
 	}
@@ -71,6 +71,191 @@ public class GoogleContactsSyncHandler {
 				+ "&prompt=consent";
 
 		return authUrl;
+	}
+	
+	
+	public boolean checkAccountExists(String refreshToken, String accessToken) {
+//		{
+//			  "phoneNumbers": [
+//			    {
+//			      "canonicalForm": "+917032555311", 
+//			      "formattedType": "Mobile", 
+//			      "type": "mobile", 
+//			      "value": "+917032555311", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "memberships": [
+//			    {
+//			      "contactGroupMembership": {
+//			        "contactGroupId": "myContacts", 
+//			        "contactGroupResourceName": "contactGroups/myContacts"
+//			      }, 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }
+//			      }
+//			    }
+//			  ], 
+//			  "photos": [
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/a/ACg8ocJmhwSCdhs26Yo7WJBNApuaEMK6JVtaEJy3f_ppSHsRNdsMEZm7bw=s100", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }, 
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/contacts/AG6tpzHyuSYx9Sa3dMapq5ajr18oxwse_AEKMwY9OHFY-VMe6aKpmQmF=s100", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }
+//			      }
+//			    }
+//			  ], 
+//			  "etag": "%EiEBAgMEBQYHCAkKCwwNDg8QERITFBUXGSIlLjQ1Nz0+P0AaBAECBQciDE9TYldFbU80Q3FRPQ==", 
+//			  "names": [
+//			    {
+//			      "displayNameLastFirst": "_26, Karthikeya", 
+//			      "displayName": "Karthikeya _26", 
+//			      "familyName": "_26", 
+//			      "unstructuredName": "Karthikeya _26", 
+//			      "givenName": "Karthikeya", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }, 
+//			    {
+//			      "unstructuredName": "Karthikeya", 
+//			      "givenName": "Karthikeya", 
+//			      "displayName": "Karthikeya", 
+//			      "displayNameLastFirst": "Karthikeya", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "genders": [
+//			    {
+//			      "formattedValue": "Male", 
+//			      "value": "male", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }
+//			  ], 
+//			  "resourceName": "people/100549746507535747515", 
+//			  "emailAddresses": [
+//			    {
+//			      "value": "karthikeya.00004@gmail.com", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "ACCOUNT", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "verified": true, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "coverPhotos": [
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/c5dqxl-2uHZ82ah9p7yxrVF1ZssrJNSV_15Nu0TUZwzCWqmtoLxCUJgEzLGtxsrJ6-v6R6rKU_-FYm881TTiMCJ_=s1600", 
+//			      "default": true, 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }
+//			  ], 
+//			  "metadata": {
+//			    "sources": [
+//			      {
+//			        "updateTime": "2024-12-11T13:05:54.535295Z", 
+//			        "etag": "#+HdgwnYWm4o=", 
+//			        "type": "PROFILE", 
+//			        "id": "100549746507535747515", 
+//			        "profileMetadata": {
+//			          "userTypes": [
+//			            "GOOGLE_USER"
+//			          ], 
+//			          "objectType": "PERSON"
+//			        }
+//			      }, 
+//			      {
+//			        "updateTime": "2024-11-28T04:01:01.889332Z", 
+//			        "etag": "#OSbWEmO4CqQ=", 
+//			        "type": "CONTACT", 
+//			        "id": "5bc2a4cb08416dfc"
+//			      }
+//			    ], 
+//			    "objectType": "PERSON"
+//			  }
+//			}
+		
+		HttpURLConnection conn;
+		
+		try {
+			URL url = new URL(peopleAccountEndpoint);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+			conn.setRequestProperty("Accept", "application/json");
+			
+			JsonObject jsonResponse = new JsonObject();
+			int responseCode = conn.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(
+						new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+				StringBuffer res = new StringBuffer();
+				String line;
+				while ((line = in.readLine()) != null) {
+					res.append(line);
+				}
+
+				jsonResponse = JsonParser.parseString(res.toString()).getAsJsonObject();
+				
+				String accountId  = jsonResponse.get("resourceName").getAsString();
+				
+			}
+			
+			
+		}catch (Exception e) {
+			AppLogger.ApplicationLog(e.toString());
+			return false;
+		}
+		return false;
 	}
 
 	public boolean getAndCreateContacts(String refreshToken, String accesstoken, String nextPageToken) {
@@ -438,7 +623,6 @@ public class GoogleContactsSyncHandler {
 		}
 	}
 	
-
 	
 
 }

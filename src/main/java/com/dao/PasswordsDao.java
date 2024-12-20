@@ -10,7 +10,7 @@ import com.queryLayer.*;
 
 public class PasswordsDao {
 	//SELECT
-	public PasswordsObj getPasswordObjWithUserId(Integer userId) {
+	public PasswordsObj getPasswordObjWithUserId(Integer userId) throws Exception {
 		PasswordsObj password = null;
 		Select s = new Select();
 		s.table(Table.Passwords)
@@ -23,7 +23,7 @@ public class PasswordsDao {
 	}
 	
 	@Deprecated
-	public String getPassword(Integer userId) {
+	public String getPassword(Integer userId) throws Exception {
 		PasswordsObj password= getPasswordObjWithUserId(userId);
 		return password.getPassword();
 	}

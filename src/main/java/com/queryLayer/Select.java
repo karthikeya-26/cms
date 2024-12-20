@@ -1,5 +1,6 @@
 package com.queryLayer;
 
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -262,11 +263,11 @@ public class Select extends Query {
 		return query;
 	}
 	
-	public List<ResultObject> executeQuery(Class<? extends ResultObject> clazz) {
+	public List<ResultObject> executeQuery(Class<? extends ResultObject> clazz) throws Exception {
 		return super.executeQuery(this, clazz);
 	}
 	
-	public List<HashMap<Columns, Object>> executeQuery(){
+	public List<HashMap<Columns, Object>> executeQuery() throws SQLException{
 		if (this.query == null) {
 			this.query = this.build();
 		}

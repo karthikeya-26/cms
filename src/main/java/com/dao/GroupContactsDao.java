@@ -12,7 +12,7 @@ import com.queryLayer.*;
 
 public class GroupContactsDao {
 	//this table doesn't have updates
-	public List<GroupContactsObj> getGroupContactIds(Integer groupId){
+	public List<GroupContactsObj> getGroupContactIds(Integer groupId) throws Exception{
 		List<GroupContactsObj> groupContacts = new ArrayList<GroupContactsObj>();
 		Select s = new Select();
 		s.table(Table.GroupContacts)
@@ -41,7 +41,7 @@ public class GroupContactsDao {
 	}
 	
 	//VALIDATION
-	public boolean isContactInGroup(Integer groupId, Integer contactId) {
+	public boolean isContactInGroup(Integer groupId, Integer contactId) throws Exception {
 		Select s = new Select();
 		s.table(Table.GroupContacts)
 		.condition(GroupContacts.GROUP_ID, Operators.Equals, groupId.toString())

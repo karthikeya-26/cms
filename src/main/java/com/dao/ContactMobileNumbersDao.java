@@ -1,6 +1,7 @@
 package com.dao;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import com.queryLayer.*;
 public class ContactMobileNumbersDao {
 	
 	//SELECT
-	public List<ContactMobileNumbersObj> getContactMobileNumbers(Integer contactId){
+	public List<ContactMobileNumbersObj> getContactMobileNumbers(Integer contactId) throws Exception{
 		List<ContactMobileNumbersObj> numbers = new ArrayList<ContactMobileNumbersObj>();
 		Select s = new Select();
 		s.table(Table.ContactMobileNumbers)
@@ -27,10 +28,11 @@ public class ContactMobileNumbersDao {
 		System.out.println(s.build());
 		return numbers;
 	}
-	public static void main(String[] args) {
-		ContactMobileNumbersDao d = new ContactMobileNumbersDao();
-		System.out.println(d.getContactMobileNumbers(2));
-	}
+	
+//	public static void main(String[] args) {
+//		ContactMobileNumbersDao d = new ContactMobileNumbersDao();
+//		System.out.println(d.getContactMobileNumbers(2));
+//	}
 	
 	//INSERT 
 	public boolean addNumbertoContactId(Integer ContactId, String number) {
@@ -62,7 +64,7 @@ public class ContactMobileNumbersDao {
 	}
 	
 	//VALIDATION (NOT NEEDED BUT..)
-	public boolean checkNumberWithCotactId(Integer contactId, String number) {
+	public boolean checkNumberWithCotactId(Integer contactId, String number) throws SQLException {
 		Select s = new Select();
 		s.table(Table.ContactMobileNumbers).columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
 		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString())

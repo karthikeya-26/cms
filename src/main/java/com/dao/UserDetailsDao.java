@@ -8,7 +8,7 @@ import com.queryLayer.*;
 
 public class UserDetailsDao {
 	// SELECT -> User with userId
-	public UserDetailsObj getUserWithId(Integer userId) {
+	public UserDetailsObj getUserWithId(Integer userId) throws Exception {
 		UserDetailsObj user = null;
 		Select s = new Select();
 		s.table(Table.UserDetails)
@@ -22,7 +22,7 @@ public class UserDetailsDao {
 	}
 	
 	// SELECT -> User with mail
-	public UserDetailsObj getUserWithMail(String mail) {
+	public UserDetailsObj getUserWithMail(String mail) throws Exception {
 		UserDetailsObj user = null;
 		Select s = new Select();
 		s.table(Table.UserDetails).columns(UserDetails.ALL_COLS)

@@ -13,7 +13,7 @@ import com.queryLayer.*;
 public class ContactMailsDao {
 	
 	//SELECT 
-	public List<ContactMailsObj> getMailsWithContactId(Integer contactId){
+	public List<ContactMailsObj> getMailsWithContactId(Integer contactId) throws Exception{
 		List<ContactMailsObj> mails = new ArrayList<ContactMailsObj>();
 		Select s = new Select();
 		s.table(Table.ContactMails)
@@ -56,7 +56,7 @@ public class ContactMailsDao {
 	}
 	
 	//VALIDATION 
-	public boolean checkIfMailExistsForContact(Integer contactId, String mail) {
+	public boolean checkIfMailExistsForContact(Integer contactId, String mail) throws Exception {
 		Select s = new Select();
 		s.table(Table.ContactMails)
 		.condition(ContactMails.CONTACT_ID, Operators.Equals, contactId.toString())

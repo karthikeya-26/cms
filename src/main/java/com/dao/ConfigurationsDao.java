@@ -17,14 +17,14 @@ import com.queryLayer.Update;
 public class ConfigurationsDao {
 	
 	//Select
-	public List<ResultObject> getAppConfig(){
+	public List<ResultObject> getAppConfig() throws Exception{
 		Select s = new Select();
 		s.table(Table.Configurations);
 		List<ResultObject> result = s.executeQuery(ConfigurationsObj.class);
 		return result;
 	}
 	
-	public ConfigurationsObj getConfigWithId(Integer id) {
+	public ConfigurationsObj getConfigWithId(Integer id) throws Exception {
 		Select s = new Select();
 		s.table(Table.Configurations).condition(Configurations.ID, Operators.Equals,id.toString());
 		return (ConfigurationsObj) s.executeQuery(ConfigurationsObj.class).get(0);

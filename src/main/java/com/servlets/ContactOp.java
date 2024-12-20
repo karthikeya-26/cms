@@ -55,6 +55,7 @@ public class ContactOp extends HttpServlet {
 			List<ContactMobileNumbersObj> numbers = dao.getContactMobileNumbers(Integer.parseInt(request.getParameter("contact_id")));
 			request.setAttribute("numbers", numbers);
 			request.getRequestDispatcher("numbers.jsp").forward(request, response);
+		
 			return;
 		}
 		if(action.equals("viewmails")) {
@@ -70,6 +71,7 @@ public class ContactOp extends HttpServlet {
 			List<String> groupnames = NewDao.getContactGroups(Integer.parseInt(request.getParameter("contact_id")));
 			request.setAttribute("groupnames", groupnames);
 			request.getRequestDispatcher("groups.jsp").forward(request, response);
+			
 			return;
 		}
 		if(action.equals("deleteContact")) {

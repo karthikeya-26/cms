@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import com.queryLayer.Update;
 public class UserGroupsDao {
 	
 	//SELECT -> Groups with userId
-	public List<UserGroupsObj> getUserGroups(Integer user_id){
+	public List<UserGroupsObj> getUserGroups(Integer user_id) throws Exception{
 		List<UserGroupsObj> user_groups = new ArrayList<>() ;
 		Select select_user_groups = new Select();
 		select_user_groups.table(Table.UserGroups)
@@ -64,12 +65,17 @@ public class UserGroupsDao {
 		s.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 		.condition(UserGroups.USER_ID, Operators.Equals, userId.toString())
 		.condition(UserGroups.GROUP_NAME, Operators.Equals, groupName);
-		List<HashMap<Columns, Object>> groupsofuser = s.executeQuery();
+		List<HashMap<Columns, Object>> groupsofuser = null;
+		try {
+			groupsofuser = s.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return groupsofuser.size()>0;
 	}
 	
 	//TO CHECK IF GROUP ACTUALLY BELONG TO USER wHILE UPDATION
-	public static boolean checkIfGroupBelongsToUser(Integer userId, Integer groupId) {
+	public static boolean checkIfGroupBelongsToUser(Integer userId, Integer groupId) throws SQLException {
 		Select s = new Select();
 		s.table(Table.UserGroups)
 		.columns(UserGroups.GROUP_NAME)

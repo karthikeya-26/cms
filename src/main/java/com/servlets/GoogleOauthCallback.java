@@ -92,9 +92,11 @@ public class GoogleOauthCallback extends HttpServlet {
 				String refreshToken = jsonResponse.get("refresh_token").getAsString();
 				System.out.println("access token from google:"+accessToken);
 				System.out.println("refresh token from google:"+refreshToken);
+				
+				String accountId = getAccountId(accessToken);
 				ContactsSyncDao dao = new ContactsSyncDao();
-				dao.addRefreshTokenToUser(SessionFilter.user_id.get(), refreshToken, "GOOGLE");
-				h.getAndCreateContacts(refreshToken, accessToken, null);
+//				dao.addRefreshTokenToUser(SessionFilter.user_id.get(), refreshToken, "GOOGLE");
+//				h.getAndCreateContacts(refreshToken, accessToken, null);
 				response.sendRedirect("usercontacts.jsp");
 			}else {
 				response.sendRedirect("usercontacts.jsp?error=something_went_wrong_please_try_again_later");
@@ -105,6 +107,11 @@ public class GoogleOauthCallback extends HttpServlet {
 		}	
 
 		
+	}
+
+	private String getAccountId(String accessToken) {
+		GoogleContactsSyncHandler h = new GoogleContactsSyncHandler();
+		return null;
 	}
 
 	/**

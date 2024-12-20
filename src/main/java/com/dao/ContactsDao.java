@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import com.queryLayer.Update;
 public class ContactsDao {
 	
 	//SELECT -> Contact with its ID
-	public ContactsObj getContactWithId(Integer contact_id) {
+	public ContactsObj getContactWithId(Integer contact_id) throws Exception {
 		Select getContact = new Select();
 		getContact.table(Table.Contacts)
 		.condition(Contacts.CONTACT_ID, Operators.Equals, contact_id.toString());
@@ -27,7 +28,7 @@ public class ContactsDao {
 		return contact;
 	}
 	
-	public ContactsObj getContactwithRefId( String refId) {
+	public ContactsObj getContactwithRefId( String refId) throws Exception {
 		Select s = new Select();
 		s.table(Table.Contacts)
 		.condition(Contacts.REF_ID, Operators.Equals, refId );
@@ -36,7 +37,7 @@ public class ContactsDao {
 		return contact;
 	}
 	//SELECT -> ALL Contacts with userID
-	public List<ContactsObj> getContactsWithUserId(Integer userId){
+	public List<ContactsObj> getContactsWithUserId(Integer userId) throws Exception{
 		List<ContactsObj> userContacts = new ArrayList<ContactsObj>();
 		Select s = new Select();
 		s.table(Table.Contacts)
@@ -50,6 +51,26 @@ public class ContactsDao {
 		}
 		return userContacts;
 	}
+	
+	public List<ContactsObj> getContactsWithUserIdSorted(Integer userId) throws Exception{
+		List<ContactsObj> userContacts = new ArrayList<ContactsObj>();
+		Select s = new Select();
+		s.table(Table.Contacts)
+		.condition(Contacts.USER_ID, Operators.Equals,userId.toString()).orderBy(Contacts.FIRST_NAME,Contacts.LAST_NAME);
+		System.out.println(s.build());
+		List<ResultObject> contacts = s.executeQuery(ContactsObj.class);
+		System.out.println(contacts);
+		for (ResultObject res : contacts) {
+			ContactsObj c = (ContactsObj) res;
+			userContacts.add(c);
+		}
+		return userContacts;	
+	}
+	
+ public static void main(String[] args) {
+	ContactsDao c = new ContactsDao();
+//	c.getContactsWithUserIdSorted(1);
+}
 	
 	//INSERT
 	
@@ -67,11 +88,7 @@ public class ContactsDao {
 		.values(firstName,lastName,userId.toString(),refId,modifiedAt.toString());
 		return i.executeUpdate(true);
 	}
-	
-	public static void main(String[] args) {
-		ContactsDao dao = new ContactsDao();
-		System.out.println(dao.getContactsWithUserId(1));
-	}
+
 	
 	//UPDATE
 	public boolean UpdateContact(Integer contactId, String firstName, String lastName ) {
@@ -92,15 +109,20 @@ public class ContactsDao {
 	}
 	
 	//VALIDATION 
-	public boolean checkIfContactIsUsers(Integer contactId, Integer userId) {
+	public boolean checkIfContactIsUsers(Integer contactId, Integer userId) throws Exception {
 		Select s = new Select();
 		s.table(Table.Contacts)
 		.condition(Contacts.CONTACT_ID, Operators.Equals, contactId.toString())
 		.condition(Contacts.USER_ID,Operators.Equals,userId.toString());
 		return s.executeQuery(ContactsObj.class).size()>0;
 	}
+	
+	public boolean checkIfContactsAreUsers(Integer userId, Integer... contactIds) {
+		
+		return false;
+	}
 
-	public HashMap<String, Long> getExistingContacts(Integer userId, String refreshToken) {
+	public HashMap<String, Long> getExistingContacts(Integer userId, String refreshToken) throws SQLException {
 		HashMap<String, Long> refIdsandModifiedTimes = new HashMap<String, Long>();
 		Select s = new Select();
 		s.table(Table.Contacts)

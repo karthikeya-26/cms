@@ -10,7 +10,7 @@ import com.queryLayer.*;
 
 public class SessionsDao {
 	//SELECT ALL
-	public List<SessionsObj> getSessions(){
+	public List<SessionsObj> getSessions() throws Exception{
 		List<SessionsObj> sessions= new ArrayList<SessionsObj>();
 		Select s = new Select();
 		s.table(Table.Sessions);
@@ -22,7 +22,7 @@ public class SessionsDao {
 	}
 	
 	//SELECT ONE WITH ID
-	public SessionsObj getSessionWithId(String sessionId) {
+	public SessionsObj getSessionWithId(String sessionId) throws Exception {
 		Select s = new Select();
 		s.table(Table.Sessions)
 		.condition(Sessions.SESSION_ID, Operators.Equals, sessionId);

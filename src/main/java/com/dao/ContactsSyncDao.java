@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ContactsSyncDao {
 	
 	//Select refresh tokens of a user
 	
-	public List<ContactsSyncObj> getUserSyncTokens(Integer userId){
+	public List<ContactsSyncObj> getUserSyncTokens(Integer userId) throws Exception{
 		List<ContactsSyncObj> tokens = new ArrayList<ContactsSyncObj>();
 		Select s = new Select();
 		s.table(Table.ContactsSync).condition(ContactsSync.USER_ID, Operators.Equals, userId.toString());
@@ -47,4 +48,15 @@ public class ContactsSyncDao {
 		.condition(ContactsSync.REFRESH_TOKEN, Operators.Equals, refreshToken);
 		return d.executeUpdate()>0;
 	}
+	
+	//VALIDATION 
+	public boolean checkUserExists(String accountId) throws SQLException {
+		Select s = new Select();
+		s.table(Table.ContactsSync)
+		.columns(ContactsSync.ACCOUNT_ID)
+		.condition(ContactsSync.ACCOUNT_ID, Operators.Equals, accountId);
+		System.out.println(s.build());
+		return s.executeQuery().size()>0;
+	}
+	
 }

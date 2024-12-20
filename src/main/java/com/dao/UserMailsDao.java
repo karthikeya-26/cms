@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import com.queryLayer.*;
 
 public class UserMailsDao {
 	// SELECT
-	public List<UserMailsObj> getUserMails(Integer userId) {
+	public List<UserMailsObj> getUserMails(Integer userId) throws Exception {
 		List<UserMailsObj> mails = new ArrayList<UserMailsObj>();
 		Select s = new Select();
 		s.table(Table.UserMails).condition(UserMails.USER_ID, Operators.Equals, userId.toString());
@@ -69,7 +70,7 @@ public class UserMailsDao {
 	
 	
 	//VALIDATION
-	public boolean checkifMailbelongstoUser(Integer user_id, String mail_id) {
+	public boolean checkifMailbelongstoUser(Integer user_id, String mail_id) throws SQLException {
 		Select checkuserandmail = new Select();
 		checkuserandmail.table(Table.UserMails).condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
 		.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);

@@ -11,7 +11,7 @@ import com.queryLayer.*;
 
 public class ServersDao {
 	//SELECT -> all servers
-	public List<ServersObj> getServers(){
+	public List<ServersObj> getServers() throws Exception{
 		List<ServersObj> servers = new ArrayList<ServersObj>();
 		Select s = new Select();
 		s.table(Table.Servers);

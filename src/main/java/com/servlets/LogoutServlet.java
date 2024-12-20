@@ -46,7 +46,6 @@ public class LogoutServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		Cookie[] cookies = request.getCookies();
 		String session_id=null;
-		
 		for(Cookie c : cookies) {
 			if(c.getName().equals("session_id")) session_id = c.getValue();
 		}

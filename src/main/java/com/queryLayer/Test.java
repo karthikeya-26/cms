@@ -331,6 +331,8 @@ public class Test {
 //
 //			// photos to be processed later
 //		}
+		ContactsDao xx = new ContactsDao();
+		System.out.println(xx.getContactsWithUserIdSorted(1));
 	}
 
 }
