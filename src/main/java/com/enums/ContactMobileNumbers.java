@@ -7,7 +7,7 @@ import java.util.Map;
 
 public enum ContactMobileNumbers implements Columns {
     CONTACT_ID("contact_id", Integer.class),
-    NUMBER("number", Long.class),
+    NUMBER("number", String.class),
     CREATED_AT("created_at", Long.class),
     MODIFIED_AT("modified_at", Long.class),
     ALL_COLS("*", null);

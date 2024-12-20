@@ -55,16 +55,15 @@ public class PostExecuteTasks {
 //			if(!(auditTables.contains(query.getTableName()))) {
 //				return;
 //			}
-			System.out.println("Inside  audit update");
 			Update updateQuery = (Update) query;
 			String table = query.getTableName().value();
 			List<Columns> cols = updateQuery.getColumns();
 			List<String> vals = updateQuery.getValues();
 			List<Condition> conditions = updateQuery.getConditions();
-			System.out.println("columns :"+cols+" vals :"+vals+" conditions :"+conditions);
+
 			@SuppressWarnings("unchecked")
 			HashMap<Columns, Object> refData = (HashMap<Columns, Object>) resultMap.get("getRefData");
-			System.out.println(refData);
+
 			// create old data Json from refData
 			com.google.gson.JsonObject oldData = new JsonObject();
 
@@ -73,17 +72,16 @@ public class PostExecuteTasks {
 			    Object value = row.getValue();
 
 			    if (value != null) {
-			    	System.out.println(key+"->"+value);
 			        oldData.addProperty(key, value.toString());
 			    } else {
 			        oldData.addProperty(key, (String) "0");
 			    }
 			}
-			System.out.println(oldData);
+
 			for (Condition c : conditions) {
 				oldData.addProperty(c.getColumn().value(), c.getValue());
 			}
-			System.out.println(oldData);
+
 
 			// newData Json
 			JsonObject newData = new JsonObject();

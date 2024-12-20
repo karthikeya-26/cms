@@ -12,9 +12,11 @@
 <meta charset="UTF-8">
 <title>User groups</title>
 <% Integer user_id = SessionFilter.user_id.get(); 
-
-	List<UserGroupsObj> user_groups = NewDao.getUserGroups(user_id);
-	List<ContactsObj> user_contacts = NewDao.getUserContacts(user_id);%>
+	UserGroupsDao ugdao = new UserGroupsDao();
+	ContactsDao cdao = new ContactsDao();
+	
+	List<UserGroupsObj> user_groups = ugdao.getUserGroups(user_id);
+	List<ContactsObj> user_contacts = cdao.getContactsWithUserId(user_id);%>
 </head>
 <body>
 	<a href="profile.jsp"> GO to Profile</a>
@@ -24,7 +26,7 @@
 		<input type="text" name="group_name" id="group_name">
 		<input type="submit" value="add group">
 	</form>
-	<%if (user_contacts.size()>0 && user_groups.size()>0){ %>
+	<%if (user_contacts.size()>0 && user_groups.size()>0 && user_groups != null && user_contacts!= null){ %>
 	<h3>Add Contact to group</h3>
 	<form action="userOp?action=addContactToGroup">
 		<label for="contact_id">Select contact :</label>

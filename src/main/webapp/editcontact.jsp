@@ -21,7 +21,7 @@ ContactsObj contact = dao.getContactWithId(Integer.parseInt(request.getParameter
 	<div class="form-contaier">
 		<form action="contactOp?action=updateContact">
 			<label for="first-name">First Name</label>
-			<input type="text" value="<%=contact.getFirst_name()%>">
+			<input type="text" value="<%=contact.getFirstName()%>">
 		</form>	
 	</div>
 </body>

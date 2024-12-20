@@ -28,25 +28,24 @@
 			</tr>
 			<% for(ContactsObj contact : contacts){ %>
 			<tr>
-				<td><%=contact.getFirst_name() %></td>
-				<td><%=contact.getLast_name()%></td>
-				<td><%=contact.getAddress() %></td>
-				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreated_at()), ZoneId.of("Asia/Kolkata")) %></td>
+				<td><%=contact.getFirstName() %></td>
+				<td><%=contact.getLastName()%></td>
+				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreatedAt()), ZoneId.of("Asia/Kolkata")) %></td>
 				<td>
 					<form action="contactOp?action=viewnumbers" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="click to view numbers">
 					</form>
 				</td>
 				<td>
 					<form action="contactOp?action=viewmails" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="view Mails">
 					</form>
 				</td>
 				<td>
 					<form action="contactOp?action=viewGroups" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContact_id()%>">
+						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
 						<input type="submit" value="view Groups">
 					</form>
 				</td>

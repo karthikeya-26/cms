@@ -20,9 +20,12 @@ public class PreExecuteTasks {
 	
 	public void addTimeToQueries(Query query) throws Exception {
 		if(query instanceof Insert) {
-			System.out.println("Inside if");
 			Insert insertQuery = (Insert) query;
+			
 			Table table = insertQuery.getTableName();
+			
+			List<Columns> cols = insertQuery.getColumns();
+			
 			System.out.println("Table :" +table.value());
 			Class<?> columnClass = table.getColumnClass();
 			System.out.println(columnClass +" col class");
@@ -32,6 +35,10 @@ public class PreExecuteTasks {
 			@SuppressWarnings("unchecked")
 			HashMap<String, Columns> columnMap = (HashMap<String, Columns>) columnMapField.get(null);
 			System.out.println(columnMap);
+			if(cols.contains(columnMap.get("created_at"))) {
+				System.out.println("QUery already has time, so returning");
+				return;
+			}
 			Long time = Instant.now().toEpochMilli();
 			if(columnMap.containsKey("created_at")) {
 				insertQuery.columns(columnMap.get("created_at")).values(time.toString());
@@ -53,7 +60,7 @@ public class PreExecuteTasks {
 	}
 	
 	public void getRefData(Query query) throws Exception{
-//		addTimeToQueries(query);
+		
 		if(query instanceof Update) {
 			Update updateQuery = (Update) query;
 			Table table = updateQuery.getTableName();

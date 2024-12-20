@@ -33,35 +33,36 @@ public class ContactMobileNumbersDao {
 	}
 	
 	//INSERT 
-	public boolean addNumbertoContactId(Integer ContactId, Long number) {
+	public boolean addNumbertoContactId(Integer ContactId, String number) {
 		Insert i = new Insert();
 		i.table(Table.ContactMobileNumbers)
 		.columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
-		.values(ContactId.toString(),number.toString());
+		.values(ContactId.toString(),number);
 		return i.executeUpdate()>0;
 	}
 	
 	//UPDATE
-	public boolean updateNumberWithContactId(Integer contactId, Long number) {
+	public boolean updateNumberWithContactId(Integer contactId, String oldNumber, String newNumber) {
 		Update u = new Update();
 		u.table(Table.ContactMobileNumbers)
 		.columns(ContactMobileNumbers.NUMBER)
-		.values(number.toString())
-		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString());
+		.values(newNumber)
+		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString())
+		.condition(ContactMobileNumbers.NUMBER, Operators.Equals, oldNumber);
 		return u.executeUpdate()==0;
 	}
 	
 	//DELETE 
-	public boolean deleteNumberWithContactId(Integer contactId, Long number) {
+	public boolean deleteNumberWithContactId(Integer contactId, String number) {
 		Delete d = new Delete();
 		d.table(Table.ContactMobileNumbers)
 		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString())
-		.condition(ContactMobileNumbers.NUMBER, Operators.Equals, number.toString());
+		.condition(ContactMobileNumbers.NUMBER, Operators.Equals, number);
 		return d.executeUpdate() >0;
 	}
 	
 	//VALIDATION (NOT NEEDED BUT..)
-	public boolean checkNumberWithCotactId(Integer contactId, Long number) {
+	public boolean checkNumberWithCotactId(Integer contactId, String number) {
 		Select s = new Select();
 		s.table(Table.ContactMobileNumbers).columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
 		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString())

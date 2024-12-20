@@ -92,7 +92,7 @@ public class NewDao {
 	public static List<ContactsObj> getGroupContacts(Integer group_id) {
 		List<ContactsObj> group_contacts = new ArrayList<ContactsObj>();
 		Select get_group_contacts = new Select();
-		get_group_contacts.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.ADDRESS,Contacts.CREATED_AT)
+		get_group_contacts.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.CREATED_AT)
 		.join(Joins.InnerJoin, Table.GroupContacts, GroupContacts.CONTACT_ID, Operators.Equals, Table.Contacts, Contacts.CONTACT_ID)
 		.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString());
 		List<ResultObject> resultset = get_group_contacts.executeQuery(ContactsObj.class);
@@ -161,7 +161,7 @@ public class NewDao {
 		Insert addcontact = new Insert();
 		Long currenttimeinmillis = System.currentTimeMillis();
 		addcontact.table(Table.Contacts)
-				.columns(Contacts.USER_ID, Contacts.FIRST_NAME, Contacts.LAST_NAME, Contacts.ADDRESS,
+				.columns(Contacts.USER_ID, Contacts.FIRST_NAME, Contacts.LAST_NAME,
 						Contacts.CREATED_AT)
 				.values(user_id.toString(), first_name, last_name, address, currenttimeinmillis.toString());
 		Integer contact_id = addcontact.executeUpdate(true);
@@ -227,7 +227,7 @@ public class NewDao {
 	public static List<ContactsObj> getUserContacts(Integer user_id) {
 		List<ContactsObj> user_contacts = new ArrayList<ContactsObj>();
 		Select s = new Select();
-		s.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.ADDRESS, Contacts.CREATED_AT,Contacts.USER_ID)
+		s.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME, Contacts.CREATED_AT,Contacts.USER_ID)
 		.condition(Contacts.USER_ID, Operators.Equals,user_id.toString());
 
 		List<ResultObject> contacts = s.executeQuery(ContactsObj.class);

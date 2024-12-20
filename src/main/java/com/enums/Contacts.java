@@ -10,9 +10,10 @@ public enum Contacts implements Columns {
     FIRST_NAME("first_name", String.class),
     LAST_NAME("last_name", String.class),
     USER_ID("user_id", Integer.class),
-    ADDRESS("address", String.class),
     CREATED_AT("created_at", Long.class),
     MODIFIED_AT("modified_at", Long.class),
+    REF_ID("ref_id", String.class),
+    REFRESH_TOKEN("refresh_token", String.class),
     ALL_COLS("*", null);
 
     private static final Map<String, Contacts> LOOKUP_MAP = new HashMap<>();

@@ -15,6 +15,8 @@
 </head>
 <body>
 	<h2>Your Contacts</h2>
+	
+	<h3>Sync your Contacts from Google</h3>
 	<table>
 		<tr>
 			<th>First Name</th>
@@ -28,14 +30,13 @@
 		<% if(!contacts.isEmpty()){
 			for (ContactsObj contact : contacts){%>
 				<tr>
-					<td><%= contact.getFirst_name() %> </td>
-					<td><%= contact.getLast_name() %> </td>
-					<td><%= contact.getAddress() %> </td>
-					<td><%= contact.getCreated_at() %> </td>
+					<td><%= contact.getFirstName() %> </td>
+					<td><%= contact.getLastName() %> </td>
+					<td><%= contact.getCreatedAt() %> </td>
 					<td><form action=""></form></td>
 					<td><form action="userOp?action=delete">
 							<h3>Delete</h3>
-							<input type="hidden" value="<%=contact.getContact_id()%>">
+							<input type="hidden" value="<%=contact.getContactId()%>">
 						</form>
 					</td>
 					

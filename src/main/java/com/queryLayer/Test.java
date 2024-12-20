@@ -11,16 +11,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dao.ContactMailsDao;
+import com.dao.ContactMobileNumbersDao;
+import com.dao.ContactsDao;
 import com.dao.NewDao;
 import com.dao.UserDetailsDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
 import com.enums.*;
+import com.filters.SessionFilter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.handlers.LoginHandler;
 import com.loggers.AppLogger;
 import com.util.PasswordMigration;
@@ -236,12 +244,93 @@ public class Test {
 //		Update u = new Update();
 //		u.table(Table.UserDetails).columns(UserDetails.USER_NAME).values("jayanth").condition(UserDetails.USER_ID, Operators.Equals, "1");
 //		u.executeUpdate();
-		Update u = new Update();
-		u.table(Table.UserDetails)
-		.columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
-		.values("jd","jackie","chan","public")
-		.condition(UserDetails.USER_ID, Operators.Equals,"1" );
-		u.executeUpdate();
+//		Update u = new Update();handleNumbers
+//		u.table(Table.UserDetails)
+//		.columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
+//		.values("jd","jackie","chan","public")
+//		.condition(UserDetails.USER_ID, Operators.Equals,"1" );
+//		u.executeUpdate();
+		ContactsDao dao = new ContactsDao();
+//		System.out.println(dao.getExistingContacts(1));
+		PreExecuteTasks p = new PreExecuteTasks();
+		Insert i = new Insert();
+		i.table(Table.Contacts).columns(Contacts.CREATED_AT).values("qe34241");
+		try {
+			p.addTimeToQueries(i);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		private void createContact(JsonObject contact) {
+//			String resourceName = contact.get("resourceName").getAsString();
+////			String etag = contact.get("etag").getAsString();
+//			JsonArray names = null;
+//			if (contact.get("names") != null) {
+//				names = contact.get("names").getAsJsonArray();
+//			}
+//			JsonArray phoneNumbers = null;
+//			if (contact.get("phoneNumbers") != null) {
+//				phoneNumbers = contact.get("phoneNumbers").getAsJsonArray();
+//			}
+//			JsonArray emailAddresses = null;
+//			if (contact.get("emailAddresses") != null) {
+//				emailAddresses = contact.get("emailAddresses").getAsJsonArray();
+//			}
+//			JsonArray photos = null;
+//			if (contact.get("photos") != null) {
+//				photos = contact.get("photos").getAsJsonArray();
+//			}
+//			System.out.println(resourceName);
+//			System.out.println(names);
+//
+//			JsonObject name = (names != null && names.size() > 0 && names.get(0).isJsonObject())
+//					? names.get(0).getAsJsonObject()
+//					: new JsonObject();
+//
+//			String displayName = name.get("displayName") != null ? name.get("displayName").getAsString() : "No name";
+//
+//			// Split displayName by spaces into an array
+//			String[] nameParts = displayName.split(" ");
+//
+//			// Get the first name as the first part
+//			String firstName = nameParts[0];
+//
+//			// Set last name as the second part if present, otherwise use firstName as
+//			// lastName
+//			String lastName = nameParts.length > 2 ? nameParts[2] : firstName;
+//
+//			JsonObject metaData = (JsonObject) contact.get("metadata");
+//
+//			JsonArray sources = metaData.get("sources").getAsJsonArray();
+//
+//			String modifiedTimeString = ((JsonObject) sources.get(0)).get("updateTime").getAsString();
+//
+//			OffsetDateTime modifiedTime = OffsetDateTime.parse(modifiedTimeString);
+//			ContactsDao contactDao = new ContactsDao();
+//			int contactId = contactDao.syncAddContact(firstName, lastName, SessionFilter.user_id.get(), resourceName,
+//					modifiedTime.toInstant().toEpochMilli());
+//
+//			if (phoneNumbers != null && phoneNumbers.size() > 0) {
+//				ContactMobileNumbersDao mobileDao = new ContactMobileNumbersDao();
+//				for (JsonElement element : phoneNumbers) {
+//					JsonObject number = (JsonObject) element;
+//
+//					mobileDao.addNumbertoContactId(contactId, number.get("value").getAsString());
+//				}
+//			}
+//
+//			if (emailAddresses != null && emailAddresses.size() > 0) {
+//				ContactMailsDao mailDao = new ContactMailsDao();
+//				for (JsonElement element : emailAddresses) {
+//					JsonObject mail = (JsonObject) element;
+//					mailDao.addMailToContact(contactId, mail.get("value").getAsString());
+////					addEmail(contactId, mail.get("value").getAsString());
+//				}
+//			}
+//
+//			// photos to be processed later
+//		}
 	}
 
 }

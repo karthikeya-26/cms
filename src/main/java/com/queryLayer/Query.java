@@ -183,21 +183,21 @@ public class Query {
 		}
 		
 		if(status >=0 && !(query.getTableName().equals(Table.ChangeLog))) {
-			System.out.println("Status :"+status +" "+query.getTableName());
+//			System.out.println("Status :"+status +" "+query.getTableName());
 			PostExecuteTasks posttasks = new PostExecuteTasks();
 			Method[] methods = posttasks.getClass().getDeclaredMethods();
 			for(Method m: methods) {
 				try {
-					System.out.println(m.getName());
-					System.out.println(m.getParameterCount());
+//					System.out.println(m.getName());
+//					System.out.println(m.getParameterCount());
 					m.setAccessible(true);
 					m.invoke(posttasks, query, pretasks.getResultMap());
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					AppLogger.ApplicationLog(e);
-					System.out.println(m.getClass().getSimpleName());
-					System.out.println("Method name:"+m.getName());
-					System.out.println(m.toString());
-					System.out.println("Method param count:"+m.getParameterCount());
+//					System.out.println(m.getClass().getSimpleName());
+//					System.out.println("Method name:"+m.getName());
+//					System.out.println(m.toString());
+//					System.out.println("Method param count:"+m.getParameterCount());
 					for(Class<?> claz : m.getParameterTypes()) {
 						System.out.println("param type :"+claz.getName());
 					}
@@ -235,12 +235,13 @@ public class Query {
 		}
 		int genKey = -1;
 		try(Connection c =Database.getConnection();
-				PreparedStatement ps = c.prepareStatement(query.build(),PreparedStatement.RETURN_GENERATED_KEYS)){
+			PreparedStatement ps = c.prepareStatement(query.build(),PreparedStatement.RETURN_GENERATED_KEYS)){
+//			System.out.println(query.build());
 			int success = ps.executeUpdate();
 			if(success>=0) {
 				ResultSet rs = ps.getGeneratedKeys();
 				if (rs.next()) {
-					return rs.getInt(1);
+					genKey= rs.getInt(1);
 				}
 			}
 			

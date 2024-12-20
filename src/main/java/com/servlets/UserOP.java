@@ -4,16 +4,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dao.ContactsDao;
+import com.dao.GroupContactsDao;
 import com.dao.NewDao;
 import com.dao.UserDetailsDao;
 import com.dbObjects.ContactsObj;
+import com.dbObjects.GroupContactsObj;
 import com.filters.SessionFilter;
+import com.handlers.GoogleContactsSyncHandler;
 import com.session.SessionDataManager;
 
 /**
@@ -34,10 +39,13 @@ public class UserOP extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-//	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
-//	}
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("HI MOWA");
+		
+		String action = request.getParameter("action");
+		System.out.println(action);
+		
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -53,9 +61,14 @@ public class UserOP extends HttpServlet {
 			response.sendRedirect("usermails.jsp");
 		}
 		else if(action.equals("viewGroupContacts")) {
-			List<ContactsObj> group_contacts = NewDao.getGroupContacts(Integer.parseInt(request.getParameter("group_id")));
-			System.out.println(group_contacts);
-			request.setAttribute("contacts", group_contacts);
+			GroupContactsDao dao = new GroupContactsDao();
+			ContactsDao cdao = new ContactsDao();
+			List<GroupContactsObj> group_contact_ids = dao.getGroupContactIds(Integer.parseInt(request.getParameter("group_id")));
+			List<ContactsObj> contacts = new ArrayList<ContactsObj>();
+			for(GroupContactsObj gc: group_contact_ids) {
+				contacts.add(cdao.getContactWithId(gc.getContactId()));
+			}
+			request.setAttribute("contacts", contacts);
 			request.getRequestDispatcher("groupcontacts.jsp").forward(request, response);
 			return;
 		}
@@ -91,6 +104,19 @@ public class UserOP extends HttpServlet {
 			NewDao.addGroupForUser(SessionFilter.user_id.get(), request.getParameter("group_name"));
 			response.sendRedirect("usergroups.jsp");
 		}
+		else if("syncContacts".equals(action)) {
+			//auth token 
+			GoogleContactsSyncHandler h = new GoogleContactsSyncHandler();
+			System.out.println(h.getAuthUrl());
+			response.sendRedirect(h.getAuthUrl());
+		}
+		else if("selSyncProvider".equals(action)) {
+			RequestDispatcher rd = request.getRequestDispatcher("syncproviders.jsp");
+			rd.forward(request, response);
+			return;
+		}
+		
+		
 	}
 
 }

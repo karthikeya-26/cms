@@ -17,6 +17,12 @@
 		<button type="submit">Login</button>
 		
 		<h2>New User ? <a href="signup.jsp">Sign up here</a></h2>
+		
+		
+	</form>
+	
+	<form action="login?action=googleLogin" method="post">
+		<input type="submit" value="Login with Google">
 	</form>
 	</div>
 </body>

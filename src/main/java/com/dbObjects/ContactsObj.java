@@ -5,9 +5,10 @@ public class ContactsObj extends ResultObject {
 	private String first_name ;
 	private String last_name ;
 	private Integer user_id ;
-	private String address ;
 	private Long created_at ;
 	private Long modified_at;
+	private String ref_id;
+	private String refresh_token;
 	
 	public Integer getContactId() {
 		return contact_id;
@@ -33,12 +34,6 @@ public class ContactsObj extends ResultObject {
 	public void setUserId(Integer userId) {
 		this.user_id = userId;
 	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
 	public Long getCreatedAt() {
 		return created_at;
 	}
@@ -51,11 +46,18 @@ public class ContactsObj extends ResultObject {
 	public void setModifiedAt(Long modifiedAt) {
 		this.modified_at = modifiedAt;
 	}
+	public String getRefId() {
+		return ref_id;
+	}
+	public String getRefreshToken() {
+		return refresh_token;
+	}
 	@Override
 	public String toString() {
 		return "ContactsObj [contact_id=" + contact_id + ", first_name=" + first_name + ", last_name=" + last_name
-				+ ", user_id=" + user_id + ", address=" + address + ", created_at=" + created_at + ", modified_at="
-				+ modified_at + "]";
+				+ ", user_id=" + user_id  + ", created_at=" + created_at + ", modified_at="
+				+ modified_at + ", ref_id=" + ref_id + ", refresh_token=" + refresh_token + "]";
 	}
+	
 	
 }

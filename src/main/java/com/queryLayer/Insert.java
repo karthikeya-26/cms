@@ -73,9 +73,7 @@ public class Insert extends Query{
 	}
 	
 	public int executeUpdate(boolean returnGeneratedKey) {
-		if(this.query == null) {
-			this.query = this.build();
-		}
+		
 		try {
 			return super.executeUpdate(this, returnGeneratedKey);
 		} catch (SQLException e) {
@@ -83,6 +81,7 @@ public class Insert extends Query{
 			e.printStackTrace();
 			return -1;
 		}
+		
 	}
 
 	public Table getTableName() {

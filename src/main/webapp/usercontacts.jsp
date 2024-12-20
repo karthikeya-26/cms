@@ -23,12 +23,18 @@
 	<h2>Contacts</h2>
 	<a href="profile.jsp">Go back to Profile</a>
 	<a href="addcontact.jsp"> Add Contact</a>
+	
+	<a href="fixcontacts.jsp">Fix your contacts</a>
+	<form action="syncContacts" method="post">
+		
+		<input type="hidden" name="provider" value="google">
+		<input type="submit" value="Sync contacts from Google">
+	</form>
 	<%if(contacts.size() >0 && contacts!=null) {%>
 		<table>
 			<tr>
 				<th>First Name</th>
 				<th>Last Name</th>
-				<th>Address</th>
 				<th>Created At</th>
 				<th>View Numbers</th>
 				<th>View Mails</th>
@@ -40,7 +46,6 @@
 			<tr>
 				<td><%= contact.getFirstName() %></td>
 				<td><%=contact.getLastName()%></td>
-				<td><%=contact.getAddress() %></td>
 				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreatedAt()), ZoneId.of("Asia/Kolkata")) %></td>
 				<td>
 					<form action="contactOp?action=viewnumbers" method="post">

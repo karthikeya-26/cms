@@ -28,20 +28,21 @@
 	
 	<h2>Your Emails :</h2>
 	<%for(UserMailsObj mail : user_mails){%>
-		<p><%=mail.getMail() %>
+		<p><%=mail.getMail() %></p>
 		<form style="display:inline" action="userOp?action=setprimarymail" method="post">
 			<input type="hidden" name="mail_id" value="<%=mail.getMailId()%>">
 			<% if(mail.getIsPrimary()==0) {%>
 				<input type="submit" value="set as Primary">
 			<%}else{ %>
-				<span><p><b>PRIMARY MAIL</b></p></span>
+				<span><b>PRIMARY MAIL</b></span>
 			<%} %>
 		</form>
 		<form action="userOp?action=deleteMail" method="post">
 			<input type="hidden" name="mail_id" value="<%=mail.getMailId()%>">
 			<input type="submit" value="Delete this email"> 
 		</form>
-		</p>
+		
+		
 	<% }%>
 	<a href="profile.jsp">go to profile</a>
 </body>

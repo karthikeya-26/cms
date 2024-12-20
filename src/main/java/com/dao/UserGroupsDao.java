@@ -21,7 +21,7 @@ public class UserGroupsDao {
 	public List<UserGroupsObj> getUserGroups(Integer user_id){
 		List<UserGroupsObj> user_groups = new ArrayList<>() ;
 		Select select_user_groups = new Select();
-		select_user_groups.table(Table.UserGroups).columns(UserGroups.GROUP_ID,UserGroups.GROUP_NAME,UserGroups.USER_ID)
+		select_user_groups.table(Table.UserGroups)
 		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString());
 		List<ResultObject>  usergroups =  select_user_groups.executeQuery(UserGroupsObj.class);
 		for(ResultObject group : usergroups) {
