@@ -38,6 +38,10 @@ public enum Passwords implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
+    
+    public String getPrimaryKey() {
+    	return USER_ID.value();
+    }
 
     public static Passwords getCol(String colName) {
         Passwords password = LOOKUP_MAP.get(colName);

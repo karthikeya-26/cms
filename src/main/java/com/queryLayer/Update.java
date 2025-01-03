@@ -67,7 +67,7 @@ public class Update extends Query {
     	}
 		return null;
 	}
-	public int executeUpdate() {
+	public int executeUpdate() throws QueryException {
 		
 		return super.executeUpdate(this);
 	}

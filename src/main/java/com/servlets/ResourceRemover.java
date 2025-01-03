@@ -1,7 +1,6 @@
 package com.servlets;
 
 import java.io.IOException;
-import java.nio.channels.NetworkChannel;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dto.SessionData;
+import com.dbObjects.SessionsObj;
 import com.session.SessionDataManager;
 
 /**
@@ -83,15 +82,14 @@ public class ResourceRemover extends HttpServlet {
 	            response.getWriter().write("Error: last_accessed_time must be a valid number.");
 	            return;
 	        }
-	        SessionData sessiondata = SessionDataManager.session_data.get(session_id);
+	        SessionsObj sessiondata = SessionDataManager.session_data.get(session_id);
 	        Long last_accessed_time_from_network = Long.parseLong(lastAccessedTimeStr);
 	        
 	        System.out.println("Before Updating :"+SessionDataManager.session_data);
 	        
-	        if (sessiondata!=null &&  sessiondata.getLast_accessed_time() < last_accessed_time)  {
+	        if (sessiondata!=null &&  sessiondata.getLastAccessedTime() < last_accessed_time)  {
 	        	System.out.println("setting last accessed time");
-	        	sessiondata.setLast_accessed_at(last_accessed_time_from_network);
-	        	sessiondata.setExpires_at(last_accessed_time_from_network+30*60*1000);
+	        	sessiondata.setLastAccessedTime(last_accessed_time_from_network);
 	        }
 	        System.out.println("AFter Updating :"+SessionDataManager.session_data);
 	        return ;

@@ -37,6 +37,10 @@ public enum GroupContacts implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
+    
+    public String getPrimaryKey() {
+    	return GROUP_ID.value();
+    }
 
     public static GroupContacts getCol(String colName) {
         GroupContacts groupContact = LOOKUP_MAP.get(colName);

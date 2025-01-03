@@ -42,6 +42,10 @@ public enum UserDetails implements Columns {
         return dataType;
     }
     
+    public Columns getPrimaryKey() {
+    	return USER_ID;
+    }
+    
     public static UserDetails getCol(String colName) {
         UserDetails userDetail = LOOKUP_MAP.get(colName);
         if (userDetail == null) {

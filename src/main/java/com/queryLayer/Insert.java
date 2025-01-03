@@ -1,6 +1,5 @@
 package com.queryLayer;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,21 +66,13 @@ public class Insert extends Query{
 	}
 	
 	
-	public int executeUpdate() {
+	public int executeUpdate() throws QueryException {
 		
 		return super.executeUpdate(this);
 	}
 	
-	public int executeUpdate(boolean returnGeneratedKey) {
-		
-		try {
+	public int executeUpdate(boolean returnGeneratedKey) throws QueryException{
 			return super.executeUpdate(this, returnGeneratedKey);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return -1;
-		}
-		
 	}
 
 	public Table getTableName() {

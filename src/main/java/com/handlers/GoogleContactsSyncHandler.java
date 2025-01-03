@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -17,6 +18,7 @@ import java.util.Map;
 import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
 import com.dao.ContactsDao;
+import com.dao.DaoException;
 import com.dbObjects.ContactMailsObj;
 import com.dbObjects.ContactMobileNumbersObj;
 import com.dbObjects.ContactsObj;
@@ -30,6 +32,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.loggers.AppLogger;
 import com.queryLayer.Delete;
+import com.queryLayer.QueryException;
 import com.session.Session;
 
 public class GoogleContactsSyncHandler {
@@ -60,13 +63,17 @@ public class GoogleContactsSyncHandler {
 	public static String getState() {
 		return state;
 	}
+	
+	public String getAccountEndpoint() {
+		return peopleAccountEndpoint;
+	}
 
 	private static final String state = Session.getSessionId();
 
 	public String getAuthUrl() {
 
 		// auth endpoint of google -> https://accounts.google.com/o/oauth2/auth
-		String authUrl = "https://accounts.google.com/o/oauth2/auth" + "?client_id=" + clientId + "&redirect_uri="
+		String authUrl = "https://accounts.google.com/o/oauth2/v2/auth" + "?client_id=" + clientId + "&redirect_uri="
 				+ redirectUri + "&response_type=code" + "&scope=" + scope + "&access_type=offline" + "&state=" + state
 				+ "&prompt=consent";
 
@@ -444,7 +451,12 @@ public class GoogleContactsSyncHandler {
 			for (JsonElement element : phoneNumbers) {
 				JsonObject number = (JsonObject) element;
 
-				mobileDao.addNumbertoContactId(contactId, number.get("value").getAsString());
+				try {
+					mobileDao.addNumberToContactId(contactId, number.get("value").getAsString());
+				} catch (DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -452,7 +464,12 @@ public class GoogleContactsSyncHandler {
 			ContactMailsDao mailDao = new ContactMailsDao();
 			for (JsonElement element : emailAddresses) {
 				JsonObject mail = (JsonObject) element;
-				mailDao.addMailToContact(contactId, mail.get("value").getAsString());
+				try {
+					mailDao.addMailToContact(contactId, mail.get("value").getAsString());
+				} catch (DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 //				addEmail(contactId, mail.get("value").getAsString());
 			}
 		}
@@ -471,16 +488,34 @@ public class GoogleContactsSyncHandler {
 		}
 		
 		ContactsDao cdao = new ContactsDao();
-		ContactsObj refContact = cdao.getContactwithRefId(refId);
+		ContactsObj refContact = null;
+		try {
+			refContact = cdao.getContactWithRefId(refId);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		String refFirstName = refContact.getFirstName();
 		String refLastName = refContact.getLastName();
 		
 		ContactMobileNumbersDao ndao = new ContactMobileNumbersDao();
-		List<ContactMobileNumbersObj> numbers  = ndao.getContactMobileNumbers(refContact.getContactId()); 
+		List<ContactMobileNumbersObj> numbers = null;
+		try {
+			numbers = ndao.getContactMobileNumbers(refContact.getContactId());
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		
 		ContactMailsDao mdao = new ContactMailsDao();
-		List<ContactMailsObj> mails = mdao.getMailsWithContactId(refContact.getContactId());
+		List<ContactMailsObj> mails = null;
+		try {
+			mails = mdao.getMailsWithContactId(refContact.getContactId());
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		JsonArray phoneNumbers = null;
 		if (contact.get("phoneNumbers") != null) {
 			phoneNumbers = contact.get("phoneNumbers").getAsJsonArray();
@@ -500,7 +535,12 @@ public class GoogleContactsSyncHandler {
 		
 		String firstName = nameParts[0];
 		String lastName = nameParts.length >= 2 ? nameParts[1] : firstName;
-		cdao.UpdateContact(refContact.getContactId(),firstName, lastName);
+		try {
+			cdao.updateContact(refContact.getContactId(),firstName, lastName);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//phone numbers
 		if (phoneNumbers != null && phoneNumbers.size() > 0) {
 			handleNumbers(numbers, emailAddresses);
@@ -595,31 +635,52 @@ public class GoogleContactsSyncHandler {
 	
 	private void addNumber(Integer contactId,String number) {
 		ContactMobileNumbersDao dao  = new ContactMobileNumbersDao();
-		dao.addNumbertoContactId(contactId, number);
+		try {
+			dao.addNumberToContactId(contactId, number);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void deleteNumber(Integer contactId, String number) {
 		ContactMobileNumbersDao dao  = new ContactMobileNumbersDao();
-		dao.deleteNumberWithContactId(contactId, number);
+		try {
+			dao.deleteNumberWithContactId(contactId, number);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void addEmail(Integer contactId, String email) {
 		ContactMailsDao dao = new ContactMailsDao();
-		dao.addMailToContact(contactId, email);
+		try {
+			dao.addMailToContact(contactId, email);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void deleteEmail(Integer contactId, String email) {
 		ContactMailsDao dao = new ContactMailsDao();
-		dao.deleteMailForContact(contactId, email);
+		try {
+			dao.deleteMailForContact(contactId, email);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
 
-	private void deleteContact(HashMap<String, Long> deletedContacts) {
+	private void deleteContact(HashMap<String, Long> deletedContacts) throws QueryException {
 		for (Map.Entry<String, Long> contact : deletedContacts.entrySet()) {
 			Delete d = new Delete();
 			d.table(Table.Contacts).condition(Contacts.REF_ID, Operators.Equals, contact.getKey());
 			d.executeUpdate();
+			
 		}
 	}
 	

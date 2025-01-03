@@ -7,6 +7,17 @@ public class SessionsObj extends ResultObject {
     private Long created_time;
     private Long last_accessed_time;
     
+    public SessionsObj() {
+    	
+    }
+    
+    public  SessionsObj(String sessionId, Integer userId, Long createdTime, Long lastAccessedTime) {
+		this.session_id = sessionId;
+		this.user_id = userId;
+		this.created_time = createdTime;
+		this.last_accessed_time = lastAccessedTime;
+	}
+    
     public String getSessionId() {
         return session_id;
     }

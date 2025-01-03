@@ -1,6 +1,7 @@
 package com.servlets;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dao.ContactsDao;
+import com.dao.DaoException;
 import com.dao.GroupContactsDao;
-import com.dao.NewDao;
 import com.dao.UserDetailsDao;
+import com.dao.UserGroupsDao;
+import com.dao.UserMailsDao;
 import com.dbObjects.ContactsObj;
 import com.dbObjects.GroupContactsObj;
 import com.filters.SessionFilter;
 import com.handlers.GoogleContactsSyncHandler;
+import com.loggers.AppLogger;
 import com.session.SessionDataManager;
 
 /**
@@ -40,11 +44,8 @@ public class UserOP extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("HI MOWA");
-		
 		String action = request.getParameter("action");
 		System.out.println(action);
-		
 	}
 
 	/**
@@ -57,16 +58,36 @@ public class UserOP extends HttpServlet {
 		}
 		
 		if(action.equals("setprimarymail")) {
-			NewDao.setPrimaryMail(SessionFilter.user_id.get(), request.getParameter("mail_id"));
+			UserMailsDao dao = new UserMailsDao();
+			try {
+				dao.setPrimaryMail(SessionFilter.user_id.get(), request.getParameter("mail_id"));
+			} catch (DaoException e) {
+				response.sendError(400, e.getMessage());
+			}
 			response.sendRedirect("usermails.jsp");
 		}
 		else if(action.equals("viewGroupContacts")) {
 			GroupContactsDao dao = new GroupContactsDao();
 			ContactsDao cdao = new ContactsDao();
-			List<GroupContactsObj> group_contact_ids = dao.getGroupContactIds(Integer.parseInt(request.getParameter("group_id")));
+			List<GroupContactsObj> group_contact_ids = null;
+			try {
+				group_contact_ids = dao.getGroupContactIds(Integer.parseInt(request.getParameter("group_id")));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DaoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			List<ContactsObj> contacts = new ArrayList<ContactsObj>();
 			for(GroupContactsObj gc: group_contact_ids) {
-				contacts.add(cdao.getContactWithId(gc.getContactId()));
+				try {
+					contacts.add(cdao.getContactWithId(gc.getContactId()));
+				} catch (DaoException e) {
+					e.printStackTrace();
+					AppLogger.ApplicationLog(e.getMessage());
+					AppLogger.ApplicationLog(e);
+				}
 			}
 			request.setAttribute("contacts", contacts);
 			request.getRequestDispatcher("groupcontacts.jsp").forward(request, response);
@@ -78,36 +99,68 @@ public class UserOP extends HttpServlet {
 			ArrayList<String> mails = new ArrayList<String>();
 			mails.add(request.getParameter("email"));
 			
-			NewDao.addContact(SessionFilter.user_id.get(), request.getParameter("firstName"), request.getParameter("lastName"), request.getParameter("address"), numbers, mails);
+			ContactsDao dao = new ContactsDao();
+			try {
+				dao.addContact(request.getParameter("firstName"), request.getParameter("lastName"), SessionFilter.user_id.get());
+			} catch (DaoException e) {
+				AppLogger.ApplicationLog(e.getMessage());
+				e.printStackTrace();
+			}
+			
 			response.sendRedirect("usercontacts.jsp");
 		}
 		else if("addEmail".equals(action)) {
-			NewDao.addEmail(SessionFilter.user_id.get(), request.getParameter("email"));
+			UserMailsDao dao = new UserMailsDao();
+			try {
+				dao.addMailForUser(SessionFilter.user_id.get(), request.getParameter("email"));
+			} catch (DaoException e) {
+				AppLogger.ApplicationLog(e.getMessage());
+				e.printStackTrace();
+			}
 			response.sendRedirect("useremails.jsp");
 		}
 		else if(action.equals("profileUpdate")) {
 			UserDetailsDao dao = new UserDetailsDao();
-			dao.updateUser(SessionFilter.user_id.get(),
-					request.getParameter("user_name"),
-					request.getParameter("first_name"),
-					request.getParameter("last_name"),
-					request.getParameter("contactType"));
+			try {
+				dao.updateUser(SessionFilter.user_id.get(),
+						request.getParameter("user_name"),
+						request.getParameter("first_name"),
+						request.getParameter("last_name"),
+						request.getParameter("contactType"));
+			} catch (DaoException e) {
+				e.printStackTrace();
+				AppLogger.ApplicationLog("Failed to update profile");
+				AppLogger.ApplicationLog(e);
+;			}
 			SessionDataManager.users_data.remove(SessionFilter.user_id.get());
 			response.sendRedirect("profile.jsp");
+			Integer i = 2;
+			int j = i;
 			return;
 		}
 		else if("deleteGroup".equals(action)) {
-			NewDao.deleteGroupForUser(SessionFilter.user_id.get(),Integer.parseInt(request.getParameter("group_id")));
+			UserGroupsDao dao = new UserGroupsDao();
+			Integer groupId = Integer.parseInt(request.getParameter("group_id"));
+			try {
+				dao.deleteGroupForUser(groupId);
+			} catch (DaoException e) {	
+				response.sendError(500, e.getMessage());
+			}
+
 			response.sendRedirect("usergroups.jsp");
 		}
 		else if("addGroup".equals(action)) {
-			NewDao.addGroupForUser(SessionFilter.user_id.get(), request.getParameter("group_name"));
+			UserGroupsDao dao = new UserGroupsDao();
+			try {
+				dao.addGroupToUser(SessionFilter.user_id.get(), request.getParameter("group_name"));
+			} catch (DaoException e) {
+				response.sendError(404, e.getMessage());
+			}
 			response.sendRedirect("usergroups.jsp");
 		}
 		else if("syncContacts".equals(action)) {
 			//auth token 
 			GoogleContactsSyncHandler h = new GoogleContactsSyncHandler();
-			System.out.println(h.getAuthUrl());
 			response.sendRedirect(h.getAuthUrl());
 		}
 		else if("selSyncProvider".equals(action)) {
@@ -115,8 +168,7 @@ public class UserOP extends HttpServlet {
 			rd.forward(request, response);
 			return;
 		}
-		
-		
+	
 	}
 
 }

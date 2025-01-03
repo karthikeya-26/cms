@@ -2,6 +2,7 @@ package com.listeners;
 
 import java.sql.Connection;
 
+
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -9,9 +10,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import com.dao.NewDao;
+import com.dao.DaoException;
+import com.dao.SessionsDao;
+import com.dbObjects.SessionsObj;
 import com.dbconn.Database;
-import com.dto.SessionData;
 import com.loggers.AppLogger;
 import com.loggers.ReqLogger;
 import com.session.SessionDataManager;
@@ -42,8 +44,17 @@ public class UpdateSessionDetails implements ServletContextListener {
     	System.out.println("shutting down");
     	
 //    	Dao.updateSessionsToDatabase(SessionDataManager.session_data);
-    	Map<String,SessionData> session_map = SessionDataManager.getSessionMapforUpdate();
-    	NewDao.updateSessionsToDatabase(session_map);
+    	Map<String,SessionsObj> session_map = SessionDataManager.getSessionMapforUpdate();
+    	SessionsDao dao = new SessionsDao();
+    	for(Map.Entry<String, SessionsObj> session : session_map.entrySet()) {
+    		try {
+				dao.updateSession(session.getKey(), session.getValue().getLastAccessedTime());
+			} catch (DaoException e) {
+				e.printStackTrace();
+				AppLogger.ApplicationLog("updating session in database failed, session object"+session.getValue());
+			}
+    	}
+//    	NewDao.updateSessionsToDatabase(session_map);
 //    	RegServer.deregister_server_in_db();
     	Database.closePool();
     	ReqLogger.closeFileHandler();

@@ -1,7 +1,7 @@
 package com.filters;
 
 import java.io.IOException;
-
+import java.time.Instant;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -15,7 +15,10 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dao.NewDao;
+import com.dao.DaoException;
+import com.dao.SessionsDao;
+import com.dao.UserDetailsDao;
+import com.dbObjects.SessionsObj;
 import com.dbObjects.UserDetailsObj;
 import com.dto.SessionData;
 import com.loggers.AppLogger;
@@ -67,16 +70,24 @@ public class SessionFilter extends HttpFilter implements Filter {
         
         if(sid != null && !SessionDataManager.session_data.containsKey(sid)) {
         	//check in db
-        	System.out.println("checking in db");
-        	SessionData session = NewDao.fetchSessionFromDb(sid);
-        	if (session != null && session.getUser_id()!= null && System.currentTimeMillis() <= session.getLast_accessed_time()+1000*60*30 ) {
+        	SessionsDao dao = new SessionsDao();
+        	SessionsObj session = null;
+			try {
+				session = dao.getSessionWithId(sid);
+			} catch (DaoException e) {
+				httpRes.sendError(400,"");
+			}
+        	if (session != null && session.getUserId()!= null && System.currentTimeMillis() <= session.getLastAccessedTime()+1000*60*30 ) {
         		
-        		session.setLast_accessed_at(System.currentTimeMillis());
-        		session.setExpires_at(System.currentTimeMillis()+30*60*1000);
+        		session.setLastAccessedTime(Instant.now().toEpochMilli());
         		SessionDataManager.session_data.put(sid, session);
         	}else {
-        		NewDao.removeSessionfromDb(sid);
-        		sid = null;
+        		try {
+					dao.deleteSession(sid);
+				} catch (DaoException e) {
+					AppLogger.ApplicationLog("Failed to delete session :"+sid);
+					AppLogger.ApplicationLog(e);
+				}
         	}
         }
         
@@ -92,23 +103,32 @@ public class SessionFilter extends HttpFilter implements Filter {
         }
 
         // Retrieve session data
-        SessionData sessiondata = SessionDataManager.session_data.get(sid);
+        SessionsObj sessiondata = SessionDataManager.session_data.get(sid);
         if (sessiondata != null) {
         	
-        	if (!(System.currentTimeMillis()<= sessiondata.getLast_accessed_time()+1000*60*30)) {
-        		NewDao.removeSessionfromDb(sid);
+        	if (!(System.currentTimeMillis()<= sessiondata.getLastAccessedTime()+1000*60*30)) {
+        		SessionsDao dao = new SessionsDao();
+        		try {
+					dao.deleteSession(sid);
+				} catch (DaoException e) {
+					AppLogger.ApplicationLog(e);
+				}
         		SessionDataManager.session_data.remove(sid);
-//        		SessionmapUpdateNotifier.removeSession(sid);
         	}
         	
             // Update session data with new access and expiration times
-            sessiondata.setLast_accessed_at(System.currentTimeMillis());
-            sessiondata.setExpires_at(System.currentTimeMillis() + 30 * 60000); // 30 minutes from now
+            sessiondata.setLastAccessedTime(Instant.now().toEpochMilli());
             // Retrieve the user details associated with this session
-            UserDetailsObj user = SessionDataManager.users_data.get(sessiondata.getUser_id());
+            UserDetailsObj user = SessionDataManager.users_data.get(sessiondata.getUserId());
             if (user == null) {
                 // Load user details if not already in users_data
-                user = NewDao.getUser(sessiondata.getUser_id());
+            	UserDetailsDao dao = new UserDetailsDao();
+            	try {
+					user = dao.getUserWithId(sessiondata.getUserId());
+				} catch (DaoException e) {
+					AppLogger.ApplicationLog("Failed to get user");
+					AppLogger.ApplicationLog(e);
+				}
                 if (user != null) {
                     SessionDataManager.users_data.put(user.getUserId(), user);
                 }
@@ -123,13 +143,12 @@ public class SessionFilter extends HttpFilter implements Filter {
 	                httpReq.getMethod(),
 	                httpReq.getRequestURL().toString(),
 	                httpReq.getRemoteAddr(),
-	                sessiondata.getUser_id(),
+	                sessiondata.getUserId(),
 	                sid);
             ReqLogger.AccessLog(logMessage);
           
             chain.doFilter(request, response);
         } else {
-            // If session data is invalid, redirect to login
             httpRes.sendRedirect("login.jsp");
         }
     }

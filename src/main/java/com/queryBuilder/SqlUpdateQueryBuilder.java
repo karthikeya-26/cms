@@ -13,7 +13,7 @@ public class SqlUpdateQueryBuilder implements Builder {
 		this.updateObj = update;
 	}
 	
-	public String build() throws Exception{
+	public String build() throws BuildException{
 		String query = "UPDATE ";
 		
 		//tableName
@@ -22,10 +22,10 @@ public class SqlUpdateQueryBuilder implements Builder {
 		
 		//columns and values
 		if (this.updateObj.getColumns().isEmpty() && this.updateObj.getValues().isEmpty()) {
-			throw new Exception("insufficient column and values data");
+			throw new BuildException("insufficient column and values data");
 		}
 		else if (this.updateObj.getColumns().size() != this.updateObj.getValues().size()) {
-			throw new Exception("unequal columns and values");
+			throw new BuildException("unequal columns and values");
 		}
 		
 		else {

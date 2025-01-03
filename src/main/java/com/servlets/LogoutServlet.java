@@ -3,13 +3,15 @@ package com.servlets;
 import java.io.IOException;
 
 
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dao.NewDao;
+import com.dao.DaoException;
+import com.dao.SessionsDao;
 import com.loggers.AppLogger;
 //import com.notifier.SessionmapUpdateNotifier;
 import com.session.SessionDataManager;
@@ -50,11 +52,17 @@ public class LogoutServlet extends HttpServlet {
 			if(c.getName().equals("session_id")) session_id = c.getValue();
 		}
 		
-		Integer user_id = SessionDataManager.session_data.get(session_id).getUser_id();
+		Integer user_id = SessionDataManager.session_data.get(session_id).getUserId();
 		SessionDataManager.session_data.remove(session_id);
 		
 		SessionDataManager.users_data.remove(user_id);
-		NewDao.removeSessionfromDb(session_id);
+		SessionsDao dao = new SessionsDao();
+		try {
+			dao.deleteSession(session_id);
+		} catch (DaoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		AppLogger.ApplicationLog(SessionDataManager.session_data.toString());
 		Cookie invalidate = new Cookie("session_id", "");
 		invalidate.setMaxAge(0);

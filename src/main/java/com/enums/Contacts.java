@@ -42,7 +42,11 @@ public enum Contacts implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
-
+    
+    public String getPrimaryKey() {
+    	return CONTACT_ID.value();
+    }
+    
     public static Contacts getCol(String colName) {
         Contacts contact = LOOKUP_MAP.get(colName);
         if (contact == null) {

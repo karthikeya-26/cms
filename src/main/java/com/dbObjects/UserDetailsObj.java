@@ -1,7 +1,7 @@
 package com.dbObjects;
 
 public class UserDetailsObj extends ResultObject {
-    
+   
     private Integer user_id;
     private String user_name;
     private String first_name;
@@ -58,5 +58,10 @@ public class UserDetailsObj extends ResultObject {
 		return "UserDetailsObj [user_id=" + user_id + ", user_name=" + user_name + ", first_name=" + first_name
 				+ ", last_name=" + last_name + ", contact_type=" + contact_type + ", created_at=" + created_at
 				+ ", modified_at=" + modified_at + "]";
+	}
+	public static void main(String[] args) {
+		UserDetailsObj a = new UserDetailsObj();
+		System.out.println(a);
+		
 	}
 }

@@ -12,7 +12,7 @@ public class SqlDeleteQueryBuilder {
 		this.deleteObj = delete;
 	}
 
-	public String build()  throws Exception{
+	public String build()  throws BuildException{
 		String query = "DELETE FROM ";
 		
 		// tableName
@@ -21,7 +21,7 @@ public class SqlDeleteQueryBuilder {
 		
 		//conditions
 		if (this.deleteObj.getConditions().isEmpty()) {
-			throw new Exception("insufficient data to build the delete statement");
+			throw new BuildException("insufficient data to build the delete statement");
 		}
 		else {
 			StringJoiner conditionJoiner = new StringJoiner(" AND ");

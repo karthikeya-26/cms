@@ -1,19 +1,11 @@
 package com.notifier;
 
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.dao.NewDao;
 import com.dao.ServersDao;
 import com.dbObjects.ServersObj;
 import com.dbconn.Database;
-import com.enums.Columns;
-import com.enums.Servers;
 import com.loggers.AppLogger;
 import com.session.SessionDataManager;
 
@@ -63,9 +55,11 @@ public class SessionmapUpdateNotifier {
 	public static void removeSession(String sid) {
 		HttpURLConnection connection = null;
 		try {
-			List<HashMap<Columns,Object>> servers = NewDao.getRegisteredServers();
-			for(Map<Columns,Object> server : servers) {
-				URL url = new URL("http://"+server.get(Servers.SERVER_NAME)+":"+server.get(Servers.PORT)+"/contacts/sru?action=SessionResourceDelete"+"&session_id="+sid);
+			ServersDao dao = new ServersDao();
+			
+			List<ServersObj> servers = dao.getServers();
+			for(ServersObj server : servers) {
+				URL url = new URL("http://"+server.getName()+":"+server.getPort()+"/contacts/sru?action=SessionResourceDelete"+"&session_id="+sid);
 				connection = (HttpURLConnection) url.openConnection();
 				connection.setRequestMethod("POST");
 				Integer response = connection.getResponseCode();

@@ -7,7 +7,8 @@
 <%@ page import="com.dao.*" %>
 <%   
 	Integer user_id = SessionFilter.user_id.get();
-	List<UserMailsObj> user_mails = NewDao.getUserMails(user_id);
+	UserMailsDao dao = new UserMailsDao();
+	List<UserMailsObj> user_mails = dao.getUserMails(user_id);
 	UserDetailsObj user = SessionDataManager.users_data.get(user_id);
 %>
 <!DOCTYPE html>

@@ -40,6 +40,10 @@ public enum UserMails implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
+    
+    public String getPrimaryKey() {
+    	return MAIL_ID.value();
+    }
 
     public static UserMails getCol(String colName) {
         UserMails userMail = LOOKUP_MAP.get(colName);

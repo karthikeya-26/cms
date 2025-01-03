@@ -35,6 +35,10 @@ public enum Servers implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
+    
+    public String getPrimaryKey() {
+    	return SERVER_NAME.value();
+    }
 
     public static Servers getCol(String colName) {
         Servers server = LOOKUP_MAP.get(colName);

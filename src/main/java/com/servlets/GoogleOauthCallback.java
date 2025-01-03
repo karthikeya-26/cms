@@ -104,13 +104,27 @@ public class GoogleOauthCallback extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			AppLogger.ApplicationLog(e);
-		}	
-
-		
+		}
 	}
 
 	private String getAccountId(String accessToken) {
 		GoogleContactsSyncHandler h = new GoogleContactsSyncHandler();
+		HttpURLConnection conn;
+		try {
+			URL url = new URL(h.getAccountEndpoint());
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Authorization", "Bearer "+accessToken);
+			conn.setRequestProperty("Accept", "application/json");
+			
+			JsonObject response = new JsonObject();
+			int responseCode = conn.getResponseCode();
+			if(responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			}
+		}catch(Exception e) {
+			
+		}
 		return null;
 	}
 

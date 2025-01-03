@@ -3,22 +3,19 @@ package com.queryBuilder;
 import java.util.StringJoiner;
 
 import com.enums.Columns;
-import com.enums.Table;
-import com.enums.UserDetails;
 import com.queryLayer.AggregateColumn;
 import com.queryLayer.Condition;
 import com.queryLayer.Join;
 import com.queryLayer.Select;
 
-public class SqlSelectQueryBuilder implements Builder {
+public class SqlSelectQueryBuilder  {
 	Select selectObj;
 
 	public SqlSelectQueryBuilder(Select select) {
-		// TODO Auto-generated constructor stub
 		this.selectObj = select;
 	}
 
-	public String build() {
+	public String build() throws BuildException{
 
 		String query = "SELECT ";
 		
@@ -106,11 +103,6 @@ public class SqlSelectQueryBuilder implements Builder {
 
 		return query + ";";
 
-	}
-
-	public static void main(String[] args) {
-		String s = new Select().table(Table.UserDetails).columns(UserDetails.USER_ID, UserDetails.LAST_NAME).build();
-		System.out.println(s);
 	}
 
 }

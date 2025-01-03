@@ -7,7 +7,7 @@ import java.util.List;
 import com.enums.Columns;
 import com.enums.Operators;
 import com.enums.Table;
-import com.loggers.AppLogger;
+import com.queryBuilder.BuildException;
 import com.queryBuilder.SqlDeleteQueryBuilder;
 import com.queryBuilder.postgres.DeleteQueryBuilder;
 public class Delete extends Query {
@@ -32,16 +32,11 @@ public class Delete extends Query {
 		return this;
 	}
 
-	public String build() {
+	public String build() throws BuildException{
 		if (query == null) {
 			if (prop.getProperty("database_name").equals("mysql")) {
-				try {
-					this.query = new SqlDeleteQueryBuilder(this).build();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					AppLogger.ApplicationLog(e);
-					e.printStackTrace();
-				}
+				
+				this.query = new SqlDeleteQueryBuilder(this).build();
 				return query;
 			}
 			else if (prop.getProperty("databse_name").equals("postgres")) {
@@ -54,7 +49,7 @@ public class Delete extends Query {
 		
 		
 	}
-	public int executeUpdate() {
+	public int executeUpdate() throws QueryException {
 		
 		return super.executeUpdate(this);
 	}

@@ -11,6 +11,7 @@
 //import com.session.*;
 ////import com.startup.RegServer;
 //
+//import java.sql.SQLException;
 //import java.util.*;
 //
 //public class NewDao {
@@ -19,7 +20,7 @@
 //	// All these are moved to their respective files 
 //	@Deprecated
 //	public static boolean signUpUser(String user_name, String first_name, String last_name, String email,
-//			String password, String account_type) {
+//			String password, String account_type) throws DaoException {
 //		Insert userDetails = new Insert().table(Table.UserDetails)
 //				.columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME,
 //						UserDetails.CONTACT_TYPE)
@@ -27,7 +28,14 @@
 //		Integer user_id = userDetails.executeUpdate(true);
 //		Insert userMail = new Insert().table(Table.UserMails).columns(UserMails.MAIL, UserMails.USER_ID).values(email,
 //				user_id.toString());
-//		int success = userMail.executeUpdate();
+//		int success;
+//		try {
+//			success = userMail.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			throw new DaoException(e.getMessage());
+//		}
 //		if (success >= 0) {
 //			return true;
 //		}
@@ -44,7 +52,13 @@
 //						UserDetails.USER_ID)
 //				.condition(UserMails.MAIL, Operators.Equals, email);
 //		
-//		List<ResultObject> users = (List<ResultObject>)s.executeQuery(UserDetailsObj.class);
+//		List<ResultObject> users = null;
+//		try {
+//			users = (List<ResultObject>)s.executeQuery(UserDetailsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		if(users.size() >0) {
 //			user = (UserDetailsObj) users.get(0);
 //		}
@@ -61,7 +75,13 @@
 //		Select s = new Select();
 //		s.table(Table.UserDetails).columns(UserDetails.ALL_COLS).condition(UserDetails.USER_ID, Operators.Equals,
 //				user_id.toString());
-//		List<ResultObject> users = s.executeQuery(UserDetailsObj.class);
+//		List<ResultObject> users = null;
+//		try {
+//			users = s.executeQuery(UserDetailsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		UserDetailsObj user = (UserDetailsObj) users.get(0);
 //		return user;
 //	}
@@ -70,7 +90,13 @@
 //		Select s = new Select();
 //		s.table(Table.UserMails).columns(UserMails.ALL_COLS).condition(UserMails.USER_ID, Operators.Equals,
 //				user_id.toString());
-//		List<ResultObject> mails = s.executeQuery(UserMailsObj.class);
+//		List<ResultObject> mails = null;
+//		try {
+//			mails = s.executeQuery(UserMailsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		List<UserMailsObj> user_mails = new ArrayList<UserMailsObj>();
 //		for (ResultObject mail : mails) {
 //			user_mails.add((UserMailsObj) mail);
@@ -83,7 +109,13 @@
 //		Select select_user_groups = new Select();
 //		select_user_groups.table(Table.UserGroups).columns(UserGroups.GROUP_ID,UserGroups.GROUP_NAME,UserGroups.USER_ID)
 //		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString());
-//		List<ResultObject>  usergroups =  select_user_groups.executeQuery(UserGroupsObj.class);
+//		List<ResultObject> usergroups = null;
+//		try {
+//			usergroups = select_user_groups.executeQuery(UserGroupsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		for(ResultObject group : usergroups) {
 //			user_groups.add((UserGroupsObj) group);
 //		}
@@ -95,7 +127,13 @@
 //		get_group_contacts.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID,Contacts.CREATED_AT)
 //		.join(Joins.InnerJoin, Table.GroupContacts, GroupContacts.CONTACT_ID, Operators.Equals, Table.Contacts, Contacts.CONTACT_ID)
 //		.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString());
-//		List<ResultObject> resultset = get_group_contacts.executeQuery(ContactsObj.class);
+//		List<ResultObject> resultset = null;
+//		try {
+//			resultset = get_group_contacts.executeQuery(ContactsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		for(ResultObject contact : resultset) {
 //			group_contacts.add((ContactsObj)contact);
 //		}
@@ -106,7 +144,13 @@
 //		Select checkuserandmail = new Select();
 //		checkuserandmail.table(Table.UserMails).condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
 //		.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);
-//		List<HashMap<Columns, Object>> res = checkuserandmail.executeQuery();
+//		List<HashMap<Columns, Object>> res = null;
+//		try {
+//			res = checkuserandmail.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		System.out.println(res);
 //		return res.size() >0;
 //	}
@@ -117,14 +161,25 @@
 //			u.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("0").condition(UserMails.USER_ID,
 //					Operators.Equals, user_id.toString());
 //
-//			int success = u.executeUpdate();
+//			int success = 0;
+//			try {
+//				success = u.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //			if (success >= 0) {
 //				Update setprimary = new Update();
 //				setprimary.table(Table.UserMails).columns(UserMails.IS_PRIMARY).values("1")
 //						.condition(UserMails.USER_ID, Operators.Equals, user_id.toString())
 //						.condition(UserMails.MAIL_ID, Operators.Equals, mail_id);
 //
-//				 return  setprimary.executeUpdate();
+//				 try {
+//					return  setprimary.executeUpdate();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 //			}
 //		}
 //		return -1;
@@ -134,7 +189,13 @@
 //		Select checkMail = new Select();
 //		checkMail.table(Table.UserMails).columns(UserMails.MAIL).condition(UserMails.MAIL, Operators.Equals, email);
 //
-//		List<HashMap<Columns, Object>> resultset = checkMail.executeQuery();
+//		List<HashMap<Columns, Object>> resultset = null;
+//		try {
+//			resultset = checkMail.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		if (resultset.size() == 0) {
 //			return true;
 //		} else {
@@ -152,7 +213,12 @@
 //		if (!checkIfMailExists(mail)) {
 //			Insert addmail = new Insert();
 //			addmail.table(Table.UserMails).columns(UserMails.USER_ID, UserMails.MAIL).values(user_id.toString(), mail);
-//			int addedmail = addmail.executeUpdate();
+//			try {
+//				int addedmail = addmail.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}
 //	}
 //
@@ -170,7 +236,13 @@
 //			addmobilenumber.table(Table.ContactMobileNumbers)
 //					.columns(ContactMobileNumbers.CONTACT_ID, ContactMobileNumbers.NUMBER)
 //					.values(contact_id.toString(), mobile.toString());
-//			int addednumber = addmobilenumber.executeUpdate();
+//			int addednumber = 0;
+//			try {
+//				addednumber = addmobilenumber.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //			if (addednumber > 0) {
 //				continue;
 //			} else {
@@ -183,7 +255,13 @@
 //				addmail.table(Table.ContactMails).columns(ContactMails.CONTACT_ID, ContactMails.MAIL)
 //						.values(contact_id.toString(), mail);
 //
-//				int addedmail = addmail.executeUpdate();
+//				int addedmail = 0;
+//				try {
+//					addedmail = addmail.executeUpdate();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 //				if (addedmail > 0) {
 //					continue;
 //				} else {
@@ -199,7 +277,13 @@
 //		.columns(GroupContacts.CONTACT_ID)
 //		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 //		
-//		List<HashMap<Columns, Object>> resultset = contactIngroup.executeQuery();
+//		List<HashMap<Columns, Object>> resultset = null;
+//		try {
+//			resultset = contactIngroup.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		
 //		return resultset.size()>0;
 //	}
@@ -212,7 +296,12 @@
 ////		}
 //		Delete deleteContact = new Delete();
 //		deleteContact.table(Table.Contacts).condition(Contacts.CONTACT_ID, Operators.Equals, contact_id.toString());
-//		int deletedContact = deleteContact.executeUpdate();
+//		try {
+//			int deletedContact = deleteContact.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 ////		
 ////		Delete deletecontactmobiles = new Delete();
 ////		deletecontactmobiles.table(Table.ContactMobileNumbers).condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
@@ -230,7 +319,13 @@
 //		s.table(Table.Contacts).columns(Contacts.CONTACT_ID,Contacts.FIRST_NAME,Contacts.LAST_NAME, Contacts.CREATED_AT,Contacts.USER_ID)
 //		.condition(Contacts.USER_ID, Operators.Equals,user_id.toString());
 //
-//		List<ResultObject> contacts = s.executeQuery(ContactsObj.class);
+//		List<ResultObject> contacts = null;
+//		try {
+//			contacts = s.executeQuery(ContactsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //
 //		for (ResultObject res : contacts) {
 //			ContactsObj c = (ContactsObj) res;
@@ -245,7 +340,13 @@
 //		Select getMobileNumberswithContactId = new Select();
 //		getMobileNumberswithContactId.table(Table.ContactMobileNumbers).columns(ContactMobileNumbers.CONTACT_ID,ContactMobileNumbers.NUMBER)
 //		.condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contact_id.toString());
-//		List<HashMap<Columns, Object>> mobileNumbers = getMobileNumberswithContactId.executeQuery();
+//		List<HashMap<Columns, Object>> mobileNumbers = null;
+//		try {
+//			mobileNumbers = getMobileNumberswithContactId.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		for(HashMap<Columns, Object> number :mobileNumbers) {
 //			ContactMobileNumbersObj n = new ContactMobileNumbersObj();
 //			n.setContactId((Integer)number.get(ContactMobileNumbers.CONTACT_ID));
@@ -260,7 +361,13 @@
 //		Select get_contactMails  = new Select();
 //		get_contactMails.table(Table.ContactMails).columns(ContactMails.CONTACT_ID,ContactMails.MAIL)
 //		.condition(ContactMails.CONTACT_ID, Operators.Equals, contact_id.toString());
-//		List<HashMap<Columns, Object>> mails = get_contactMails.executeQuery();
+//		List<HashMap<Columns, Object>> mails = null;
+//		try {
+//			mails = get_contactMails.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		for(HashMap<Columns,Object> mailObj : mails) {
 //			ContactMailsObj o = new ContactMailsObj();
 //			o.setContactId((Integer)mailObj.get(ContactMails.CONTACT_ID));
@@ -277,14 +384,26 @@
 //		getGroup_ids.table(Table.GroupContacts).columns(GroupContacts.GROUP_ID)
 //		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 //		
-//		List<HashMap<Columns, Object>> resultset = getGroup_ids.executeQuery();
+//		List<HashMap<Columns, Object>> resultset = null;
+//		try {
+//			resultset = getGroup_ids.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		if(resultset.size() >0) {
 //			for(HashMap<Columns, Object> row: resultset){
 //				Integer group_id =(Integer) row.get(GroupContacts.GROUP_ID);
 //				Select g_name = new Select();
 //				g_name.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 //				.condition(UserGroups.GROUP_ID, Operators.Equals, group_id.toString());
-//				List<HashMap<Columns, Object>> name = g_name.executeQuery();
+//				List<HashMap<Columns, Object>> name = null;
+//				try {
+//					name = g_name.executeQuery();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 //				group_names.add((String)name.get(0).get(UserGroups.GROUP_NAME));
 //			}
 //		}
@@ -297,7 +416,13 @@
 //		checkgroupforuser.table(Table.UserGroups).columns(UserGroups.GROUP_NAME)
 //		.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
 //		.condition(UserGroups.GROUP_NAME, Operators.Equals, group_name);
-//		List<HashMap<Columns, Object>> groupsofuser = checkgroupforuser.executeQuery();
+//		List<HashMap<Columns, Object>> groupsofuser = null;
+//		try {
+//			groupsofuser = checkgroupforuser.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		System.out.println(checkgroupforuser.build());
 //		System.out.println(groupsofuser);
 //		return groupsofuser.size()>0;
@@ -308,7 +433,12 @@
 //			Insert addgroup = new Insert();
 //			addgroup.table(Table.UserGroups).columns(UserGroups.USER_ID,UserGroups.GROUP_NAME)
 //			.values(user_id.toString(), group_name);
-//			int added = addgroup.executeUpdate();
+//			try {
+//				int added = addgroup.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}
 //	}
 //	
@@ -319,7 +449,12 @@
 //			.condition(UserGroups.USER_ID, Operators.Equals, user_id.toString())
 //			.condition(UserGroups.GROUP_ID, Operators.Equals, group_id.toString());
 //			deleteGroup.build();
-//			int status = deleteGroup.executeUpdate();
+//			try {
+//				int status = deleteGroup.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		
 //		
 //	}
@@ -329,8 +464,14 @@
 //		group_contact.table(Table.GroupContacts).columns(GroupContacts.GROUP_ID,GroupContacts.CONTACT_ID)
 //		.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString())
 //		.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
-//		List<ResultObject> resultset = group_contact.executeQuery(GroupContactsObj.class);
-//		return resultset.size() > 0;
+//		List<ResultObject> resultset = null;
+//		try {
+//			resultset = group_contact.executeQuery(GroupContactsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return resultset!= null && resultset.size() > 0;
 //	}
 //	//can return boolean or String indcating the status of operation
 //	public static void addContacttoGroup(Integer group_id, Integer contact_id) {
@@ -339,7 +480,12 @@
 //			insertContactIntoGroup.table(Table.GroupContacts).columns(GroupContacts.GROUP_ID,GroupContacts.CONTACT_ID)
 //			.values(group_id.toString(),contact_id.toString());
 //			
-//			int added = insertContactIntoGroup.executeUpdate();
+//			try {
+//				int added = insertContactIntoGroup.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}
 //	}
 //	
@@ -350,10 +496,16 @@
 //			.condition(GroupContacts.GROUP_ID, Operators.Equals, group_id.toString())
 //			.condition(GroupContacts.CONTACT_ID, Operators.Equals, contact_id.toString());
 //			
-//			return deletecontactfromgroup.executeUpdate();
+//			try {
+//				return deletecontactfromgroup.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}else {
 //			return -1;
 //		}
+//		return -1;
 //	}
 //	
 //	public static SessionData fetchSessionFromDb(String session_id) {
@@ -361,7 +513,13 @@
 //		Select sessionDatafromdb = new Select();
 //		sessionDatafromdb.table(Table.Sessions).columns(Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME)
 //		.condition(Sessions.SESSION_ID, Operators.Equals, session_id);
-//		List<HashMap<Columns,Object>> session_objects = sessionDatafromdb.executeQuery();
+//		List<HashMap<Columns, Object>> session_objects = null;
+//		try {
+//			session_objects = sessionDatafromdb.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		if(session_objects.size()==0) return null;
 //		HashMap<Columns,Object> session_object = session_objects.get(0);
 //		session.setCreated_time((Long) session_object.get(Sessions.CREATED_TIME));
@@ -375,7 +533,13 @@
 //		Select sessionsfromdb = new Select();
 //		sessionsfromdb.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME);
 //		
-//		List<ResultObject> resultset  = sessionsfromdb.executeQuery(SessionsObj.class);
+//		List<ResultObject> resultset = null;
+//		try {
+//			resultset = sessionsfromdb.executeQuery(SessionsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		
 //		if(resultset.size() > 0) {
 //			for(ResultObject row : resultset) {
@@ -392,14 +556,26 @@
 //	public static int removeSessionfromDb(String session_id) {
 //		Delete deleteSess = new Delete();
 //		deleteSess.table(Table.Sessions).condition(Sessions.SESSION_ID, Operators.Equals, session_id);
-//		int x =  deleteSess.executeUpdate();
-//		return x;
+//		int x;
+//		try {
+//			x = deleteSess.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return -1;
 //	}
 //
 //	public static int insertUserInSessions(String session_id, Integer user_id, Long created_at,Long last_accessed_at) {
 //		Insert insertSess = new Insert();
 //		insertSess.table(Table.Sessions).columns(Sessions.SESSION_ID,Sessions.USER_ID,Sessions.CREATED_TIME,Sessions.LAST_ACCESSED_TIME).values(session_id,user_id.toString(),created_at.toString(),last_accessed_at.toString());
-//		return insertSess.executeUpdate();
+//		try {
+//			return insertSess.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return -1;
 //	}
 //	
 //	public static void updateSessionsToDatabase(Map<String,SessionData> sessions) {
@@ -409,7 +585,12 @@
 //			Update update_session = new Update();
 //			update_session.table(Table.Sessions).columns(Sessions.LAST_ACCESSED_TIME).values(session.getValue().getLast_accessed_time().toString())
 //			.condition(Sessions.SESSION_ID, Operators.Equals, session_id);
-//			update_session.executeUpdate();
+//			try {
+//				update_session.executeUpdate();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}
 //		System.out.println("Completed updating sessions to database");
 //	}
@@ -417,7 +598,12 @@
 //	public static void registerServer(String servername, String port) {
 //		Insert insertServerInDatabase = new Insert();
 //		insertServerInDatabase.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT).values(servername,port);
-//		insertServerInDatabase.executeUpdate();
+//		try {
+//			insertServerInDatabase.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //	}
 //	
 //	public static void deregisterServer(String servername, String port) {
@@ -425,7 +611,12 @@
 //		removeServerInDatabase.table(Table.Servers).condition(Servers.SERVER_NAME, Operators.Equals, servername)
 //		.condition(Servers.PORT, Operators.Equals, port);
 //		System.out.println(removeServerInDatabase.build());
-//		removeServerInDatabase.executeUpdate();
+//		try {
+//			removeServerInDatabase.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //	}
 //	
 //	
@@ -435,7 +626,13 @@
 //		getservers.table(Table.Servers).columns(Servers.SERVER_NAME,Servers.PORT)
 //		.condition(Servers.PORT, Operators.NotEquals, "8080");
 //		System.out.println(getservers.build());
-//		List<HashMap<Columns, Object>> resultset = getservers.executeQuery();
+//		List<HashMap<Columns, Object>> resultset = null;
+//		try {
+//			resultset = getservers.executeQuery();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		return resultset;
 //	}
 //
@@ -444,7 +641,12 @@
 //		updateUser.table(Table.UserDetails).columns(UserDetails.USER_NAME,UserDetails.FIRST_NAME,UserDetails.LAST_NAME,UserDetails.CONTACT_TYPE)
 //		.values(userName,firstName,lastName,contactType)
 //		.condition(UserDetails.USER_ID, Operators.Equals, SessionFilter.user_id.get().toString());
-//		int status = updateUser.executeUpdate();
+//		try {
+//			int status = updateUser.executeUpdate();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		
 //	}
 //
@@ -452,7 +654,13 @@
 //		Select passwordObj = new Select();
 //		passwordObj.table(Table.Passwords)
 //		.condition(Passwords.USER_ID, Operators.Equals, user_id.toString());
-//		List<ResultObject> passwords = passwordObj.executeQuery(PasswordsObj.class);
+//		List<ResultObject> passwords = null;
+//		try {
+//			passwords = passwordObj.executeQuery(PasswordsObj.class);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 //		PasswordsObj password = (PasswordsObj) passwords.get(0);
 //		return password;
 //	}

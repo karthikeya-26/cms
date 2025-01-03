@@ -36,7 +36,10 @@ public enum ContactsSync implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
-
+	
+	public String getPrimaryKey() {
+		return USER_ID.toString() + " " + ACCOUNT_ID.value(); 
+	}
     public static ContactsSync getCol(String colName) {
         ContactsSync c = LOOKUP_MAP.get(colName);
         if (c == null) {

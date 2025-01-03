@@ -20,7 +20,7 @@ import java.util.Map;
 import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
 import com.dao.ContactsDao;
-import com.dao.NewDao;
+import com.dao.DaoException;
 import com.dao.UserDetailsDao;
 import com.dbObjects.*;
 import com.dbconn.Database;
@@ -35,7 +35,7 @@ import com.util.PasswordMigration;
 import com.util.PreExecuteTasks;
 
 public class Test {
-	public static void main(String args[]) {
+	public static void main(String args[]) throws DaoException {
 		
 		//dao queries
 		
@@ -54,7 +54,7 @@ public class Test {
 		
 //		Select checkifMailExists = new Select();
 //		checkifMailExists.table(Table.UserMails).columns(UserMails.MAIL).condition(UserGroups.USER_ID, Operators.Equals, "1");
-//		System.out.println(checkifMailExists.build());
+//		System.out.println(checkifMailExistsso.build());
 //		System.out.println();
 		
 //		Select userCOntacts = new Select();
@@ -332,7 +332,9 @@ public class Test {
 //			// photos to be processed later
 //		}
 		ContactsDao xx = new ContactsDao();
-		System.out.println(xx.getContactsWithUserIdSorted(1));
+//		System.out.println(xx.getContactsWithUserIdSorted(1));
+		UserDetailsObj usser = LoginHandler.validateUser("j@x.com", "password123");
+		System.out.println(usser);
 	}
 
 }

@@ -14,7 +14,7 @@ import org.apache.catalina.startup.SetContextPropertiesRule;
 import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
 import com.dao.ContactsDao;
-import com.dao.NewDao;
+import com.dao.DaoException;
 import com.dbObjects.ContactMailsObj;
 import com.dbObjects.ContactMobileNumbersObj;
 
@@ -52,7 +52,16 @@ public class ContactOp extends HttpServlet {
 			ContactMobileNumbersDao dao = new ContactMobileNumbersDao();
 			
 
-			List<ContactMobileNumbersObj> numbers = dao.getContactMobileNumbers(Integer.parseInt(request.getParameter("contact_id")));
+			List<ContactMobileNumbersObj> numbers = null;
+			try {
+				numbers = dao.getContactMobileNumbers(Integer.parseInt(request.getParameter("contact_id")));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			request.setAttribute("numbers", numbers);
 			request.getRequestDispatcher("numbers.jsp").forward(request, response);
 		
@@ -61,21 +70,36 @@ public class ContactOp extends HttpServlet {
 		if(action.equals("viewmails")) {
 			ContactMailsDao dao = new ContactMailsDao();
 			
-			List<ContactMailsObj> mails = dao.getMailsWithContactId(Integer.parseInt(request.getParameter("contact_id")));
+			List<ContactMailsObj> mails = null;
+			try {
+				mails = dao.getMailsWithContactId(Integer.parseInt(request.getParameter("contact_id")));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			request.setAttribute("mails", mails);
 			request.getRequestDispatcher("mails.jsp").forward(request, response);
 			return;
 		}
 		if(action.equals("viewGroups")) {
 			
-			List<String> groupnames = NewDao.getContactGroups(Integer.parseInt(request.getParameter("contact_id")));
-			request.setAttribute("groupnames", groupnames);
+//			List<String> groupnames = NewDao.getContactGroups(Integer.parseInt(request.getParameter("contact_id")));
+//			request.setAttribute("groupnames", groupnames);
 			request.getRequestDispatcher("groups.jsp").forward(request, response);
-			
+		
 			return;
 		}
 		if(action.equals("deleteContact")) {
-			NewDao.deleteContact(Integer.parseInt(request.getParameter("contact_id")));
+			ContactsDao dao  = new ContactsDao();
+			try {
+				dao.deleteContact(Integer.parseInt(request.getParameter("contact_id")));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DaoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			response.sendRedirect("usercontacts.jsp");
 		}
 	}

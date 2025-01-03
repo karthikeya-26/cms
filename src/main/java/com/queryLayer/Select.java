@@ -1,11 +1,10 @@
 package com.queryLayer;
 
-import java.sql.SQLException;
 import java.util.*;
-
 
 import com.dbObjects.ResultObject;
 import com.enums.*;
+import com.queryBuilder.BuildException;
 import com.queryBuilder.SqlSelectQueryBuilder;
 import com.queryBuilder.postgres.SelectQueryBuilder;
 
@@ -247,9 +246,10 @@ public class Select extends Query {
 		return this;
 	}
 
-	public String build() {
+	public String build() throws BuildException{
+		
 
-		// proxy object to build query based on the db name
+// 		proxy object to build query based on the db name
 //    	SqlSelectQueryBuilder s = new SqlSelectQueryBuilder(this);
 		if (prop.getProperty("database_name").equals("mysql")) {
 			this.query = new SqlSelectQueryBuilder(this).build();
@@ -263,14 +263,12 @@ public class Select extends Query {
 		return query;
 	}
 	
-	public List<ResultObject> executeQuery(Class<? extends ResultObject> clazz) throws Exception {
+	public List<ResultObject> executeQuery(Class<? extends ResultObject> clazz) throws QueryException {
 		return super.executeQuery(this, clazz);
 	}
 	
-	public List<HashMap<Columns, Object>> executeQuery() throws SQLException{
-		if (this.query == null) {
-			this.query = this.build();
-		}
+	public List<HashMap<Columns, Object>> executeQuery() throws QueryException{
+
 		return super.executeQuery(this, fields);
 	}
 

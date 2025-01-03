@@ -37,7 +37,11 @@ public enum Sessions implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
-
+    
+    public String getPrimaryKey() {
+    	return SESSION_ID.value();
+    }
+    
     public static Sessions getCol(String colName) {
         Sessions session = LOOKUP_MAP.get(colName);
         if (session == null) {

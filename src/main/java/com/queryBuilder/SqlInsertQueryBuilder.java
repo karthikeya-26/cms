@@ -13,14 +13,14 @@ public class SqlInsertQueryBuilder implements Builder{
 		this.insertObj = insert;
 	}
 	
-	public String build() throws Exception {
+	public String build() throws BuildException {
 		query = "Insert into ";
 		
 		//table name
 		query += this.insertObj.getTableName()+" ";
 		//columns if columns not present then values
 		if (this.insertObj.getColumns().isEmpty()&& this.insertObj.getValues().isEmpty()) {
-			throw new Exception("insufficient data of columns and values");
+			throw new BuildException("insufficient data of columns and values");
 		}
 		
 		else if (this.insertObj.getColumns().isEmpty() && ! this.insertObj.getValues().isEmpty()) {
@@ -32,7 +32,7 @@ public class SqlInsertQueryBuilder implements Builder{
 		}                                                                                                                                                                                                                                                        
 		else if (!this.insertObj.getColumns().isEmpty() && !this.insertObj.getValues().isEmpty()) {
 			if (this.insertObj.getColumns().size() != this.insertObj.getValues().size()) {
-				throw new Exception("column and values size didn't match please check your query");
+				throw new BuildException("column and values size didn't match please check your query");
 			}else {
 				StringJoiner columnJoiner = new StringJoiner(",","(",")");
 				for(Columns col : this.insertObj.getColumns()) {

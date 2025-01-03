@@ -39,6 +39,10 @@ public enum UserGroups implements Columns {
     public Class<?> getDataType() {
         return dataType;
     }
+    
+    public String getPrimaryKey() {
+    	return GROUP_ID.value();
+    }
 
     public static Columns getCol(String colName) {
         Columns userGroup = LOOKUP_MAP.get(colName);
