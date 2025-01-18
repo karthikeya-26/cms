@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import com.dbObjects.*;
 import com.dto.SessionData;
 
@@ -54,8 +57,13 @@ public class SessionDataManager {
 //				session_data.get(session_id).setLast_accessed_at(lastUpdatedTime);
 			return session_data.remove(session_id)!=null;
 		}
-		public synchronized static SessionsObj getUserwithId(String s_id) {
-			return session_data.get(s_id);
+		public synchronized static  int getUserwithId(HttpServletRequest request) {
+			Cookie [] cookies = request.getCookies();
+			String s_id = null;
+			for(Cookie c : cookies) {
+				if(c.getName().equals("session_id")) {s_id=c.getValue();};
+			}
+			return session_data.get(s_id).getUserId();
 		}
 		
 		public static synchronized void clearSessionData() {

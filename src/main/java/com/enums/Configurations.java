@@ -10,9 +10,9 @@ public enum Configurations implements Columns{
 	NAME("name", String.class),
 	VALUE("value", Object.class),
 	CREATED_AT("created_at", Long.class),
-	MODIFIED_AT("modified_at", Long.class);
+	MODIFIED_AT("modified_at", Long.class),
+	ALL_COLS("*",null);
 	
-	//create A mAP	
 	public final static HashMap<Columns,Object> appConfig = new HashMap<>();
 	
 	private final static HashMap<String, Configurations> LOOKUP_MAP = new HashMap<>();

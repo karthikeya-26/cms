@@ -49,7 +49,10 @@ public class UserGroupsDao {
     }
 
     // UPDATE
-    public boolean updateGroupName(Integer groupId, String groupName) throws DaoException {
+    public boolean updateGroupName(Integer userId,Integer groupId, String groupName) throws DaoException {
+    	if(!checkIfGroupBelongsToUser(userId, groupId)) {
+    		throw new DaoException("Group doesn't belong to user");
+    	}
         try {
             Update update = new Update();
             update.table(Table.UserGroups)
@@ -63,8 +66,11 @@ public class UserGroupsDao {
     }
 
     // DELETE
-    public boolean deleteGroupForUser(Integer groupId) throws DaoException {
-        try {
+    public boolean deleteGroupForUser(Integer userId,Integer groupId) throws DaoException {
+        if(!checkIfGroupBelongsToUser(userId, groupId)) {
+        	throw new DaoException("Group doesn't belong to the user");
+        }
+    	try {
             Delete deleteGroup = new Delete();
             deleteGroup.table(Table.UserGroups)
                         .condition(UserGroups.GROUP_ID, Operators.Equals, groupId.toString());

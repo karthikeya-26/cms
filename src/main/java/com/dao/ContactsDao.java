@@ -9,6 +9,7 @@ import com.dbObjects.ResultObject;
 import com.enums.Contacts;
 import com.enums.Operators;
 import com.enums.Table;
+import com.google.gson.Gson;
 import com.enums.Columns;
 import com.queryLayer.Delete;
 import com.queryLayer.Insert;
@@ -162,5 +163,9 @@ public class ContactsDao {
 		return 0;
 	}
 	
+	public static void main(String[] args) throws DaoException {
+		ContactsDao dao = new ContactsDao();
+		System.out.println(new Gson().toJson(dao.getContactsWithUserId(1)));
+	}
 
 }

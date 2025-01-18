@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import com.dbObjects.ResultObject;
 import com.dbconn.Database;
@@ -24,6 +25,7 @@ import com.util.PostExecuteTasks;
 import com.util.PreExecuteTasks;
 
 public class Query {
+	private static AppLogger logger = new AppLogger(Query.class.getCanonicalName());
     private static List<Table> tablesWithoutTasks;
     
     static {
@@ -65,18 +67,18 @@ public class Query {
                     }
                 }
                 resultList.add(r);
-            }
+            }	
         } catch (SQLException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Database error occurred while executing the query: " + e.getMessage(), e);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Error occurred while instantiating the result object class: " + clazz.getName(), e);
         } catch (ReflectiveOperationException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Reflection error occurred while mapping result set to object: " + e.getMessage(), e);
         } catch (Exception e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("An unexpected error occurred: " + e.getMessage(), e);
         }
 
@@ -123,10 +125,10 @@ public class Query {
                 resultObj.add(row);
             }
         } catch (SQLException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Database error occurred while executing the query: " + e.getMessage(), e);
         } catch (Exception e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("An unexpected error occurred: " + e.getMessage(), e);
         }
 
@@ -145,7 +147,7 @@ public class Query {
                     try {
                         m.invoke(pretasks, query);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        AppLogger.ApplicationLog(e);
+                    	logger.log(Level.WARNING, e.getMessage(),e);
                         throw new QueryException("Error executing pre-tasks for query: " + query.getTableName(), e);
                     }
                 }
@@ -157,8 +159,9 @@ public class Query {
 
         try {
             sqlStatement = query.build(); // Convert BuildException to QueryException here.
+            System.out.println(sqlStatement);
         } catch (BuildException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Error building query for table: " + query.getTableName(), e);
         }
 
@@ -166,7 +169,7 @@ public class Query {
              PreparedStatement ps = c.prepareStatement(sqlStatement)) {
             status = ps.executeUpdate();
         } catch (SQLException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Database error occurred while executing the query for table: " + query.getTableName() + " | Query: " + sqlStatement, e);
         }
 
@@ -181,7 +184,7 @@ public class Query {
                     m.setAccessible(true);
                     m.invoke(posttasks, query, pretasks.getResultMap());
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    AppLogger.ApplicationLog(e);
+                	logger.log(Level.WARNING, e.getMessage(),e);
                     throw new QueryException("Error executing post-tasks for query for table: " + query.getTableName() + " | Query: " + sqlStatement, e);
                 }
             }
@@ -203,7 +206,7 @@ public class Query {
                     try {
                         m.invoke(pretasks, query);
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        AppLogger.ApplicationLog(e);
+                    	logger.log(Level.WARNING, e.getMessage(),e);
                         throw new QueryException("Error executing pre-tasks for query: " + query.getTableName(), e);
                     }
                 }
@@ -217,7 +220,7 @@ public class Query {
         try {
             sqlStatement = query.build();
         } catch (BuildException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Error building query for table: " + query.getTableName(), e);
         }
 
@@ -233,13 +236,13 @@ public class Query {
                         genKey = rs.getInt(1);
                     }
                 } catch (SQLException e) {
-                    AppLogger.ApplicationLog(e);
+                	logger.log(Level.WARNING, e.getMessage(),e);
                     throw new QueryException("Error retrieving generated key for query: " + query.getTableName() + " | Query: " + sqlStatement, e);
                 }
             }
 
         } catch (SQLException e) {
-            AppLogger.ApplicationLog(e);
+        	logger.log(Level.WARNING, e.getMessage(),e);
             throw new QueryException("Database error occurred while executing update for query: " + query.getTableName() + " | Query: " + sqlStatement, e);
         }
 
@@ -256,7 +259,7 @@ public class Query {
                 try {
                     m.invoke(posttasks, query, pretasks.getResultMap());
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    AppLogger.ApplicationLog(e);
+                	logger.log(Level.WARNING, e.getMessage(),e);
                     throw new QueryException("Error executing post-tasks for query: " + query.getTableName() + " | Query: " + sqlStatement, e);
                 }
             }

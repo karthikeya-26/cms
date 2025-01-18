@@ -1,6 +1,7 @@
 package com.servlets;
-
+import com.loggers.*;
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -8,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,13 +30,14 @@ import com.loggers.AppLogger;
 @WebServlet("/goauth")
 public class GoogleOauthCallback extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static AppLogger logger = new AppLogger("GoogleOauthCallback");
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public GoogleOauthCallback() {
         super();
-        // TODO Auto-generated constructor stub
+
     }
 
 	/**
@@ -81,7 +84,8 @@ public class GoogleOauthCallback extends HttpServlet {
 					while((inputLine = in.readLine())!= null) {
 						errorResponse.append(inputLine);
 					}
-					AppLogger.ApplicationLog(errorResponse.toString());
+					logger.log(Level.WARNING, inputLine);
+					return;
 				}
 			}
 			
@@ -103,7 +107,8 @@ public class GoogleOauthCallback extends HttpServlet {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			AppLogger.ApplicationLog(e);
+
+			logger.log(Level.WARNING, e.getMessage(),e);
 		}
 	}
 

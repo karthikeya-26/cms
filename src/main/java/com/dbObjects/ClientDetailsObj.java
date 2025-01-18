@@ -1,10 +1,15 @@
 package com.dbObjects;
 
-public class ClientDetailsObj {
+import java.util.HashSet;
+import java.util.Set;
+
+public class ClientDetailsObj  extends ResultObject{
 	private String client_id;
 	private Integer user_id;
 	private String client_name;
 	private String client_type;
+	private String client_secret;
+	private String scopes;
 	private Long created_at;
 	private Long modified_at;
 	public String getClient_id() {
@@ -31,9 +36,38 @@ public class ClientDetailsObj {
 	public void setClient_type(String client_type) {
 		this.client_type = client_type;
 	}
+	public String getClientSecret() {
+		return client_secret;
+	}
+	
+	
+	public void setScopes(int... scopeIds) {
+	    StringBuilder s = new StringBuilder();
+	    for (int id : scopeIds) {
+	        if (s.length() > 0) {
+	            s.append(","); 
+	        }
+	        s.append(id);
+	    }
+	    
+	    scopes = s.toString();
+	}
+	
+	public Set<Integer> getScopes() {
+        Set<Integer> scopeIds = new HashSet<>();
+        if (scopes != null && !scopes.isEmpty()) {
+            String[] ids = scopes.split(","); 
+            for (String id : ids) {
+                scopeIds.add(Integer.parseInt(id.trim()));
+            }
+        }
+        return scopeIds;
+    }
+
 	public Long getCreated_at() {
 		return created_at;
 	}
+	
 	public void setCreated_at(Long created_at) {
 		this.created_at = created_at;
 	}
@@ -46,7 +80,10 @@ public class ClientDetailsObj {
 	@Override
 	public String toString() {
 		return "ClientDetailsObj [client_id=" + client_id + ", user_id=" + user_id + ", client_name=" + client_name
-				+ ", client_type=" + client_type + ", created_at=" + created_at + ", modified_at=" + modified_at + "]";
+				+ ", client_type=" + client_type + ", client_secret=" + client_secret + ", scopes=" + scopes
+				+ ", created_at=" + created_at + ", modified_at=" + modified_at + "]";
 	}
+	
+	
 	
 }

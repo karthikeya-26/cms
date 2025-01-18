@@ -24,6 +24,15 @@
         margin-bottom: 5px;
         display: inline-block;
     }
+    .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+    .checkbox-container label {
+        font-weight: normal;
+        margin: 0;
+    }
     .add-button {
         width: auto;
         margin: 5px 0;
@@ -53,6 +62,15 @@
             <input type="url" name="redirectUris[]" placeholder="Enter a redirect URI" required>
         </div>
         <button type="button" class="add-button" onclick="addField('redirectUrisContainer', 'redirectUris[]', 5)">+ Add URI</button>
+
+        <!-- Scopes --><br>
+        <label>Scopes</label>
+        <div class="checkbox-container">
+            <label><input id="profile-scope" type="checkbox" name="scopes" value="profile"> Profile</label>
+            <label><input id="profile-readscope" type="checkbox" name="scopes" value="profile.read"> Profile Read</label>
+            <label><input id="contacts-scope" type="checkbox" name="scopes" value="contacts"> Contacts</label>
+            <label><input id="contacts-readscope" type="checkbox" name="scopes" value="contacts.read"> Contacts Read</label>
+        </div>
 
         <!-- Submit -->
         <button type="submit">Create</button>

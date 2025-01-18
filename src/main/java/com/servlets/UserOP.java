@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -31,6 +32,7 @@ import com.session.SessionDataManager;
 @WebServlet("/userOp")
 public class UserOP extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static AppLogger logger = new AppLogger(UserOP.class.getName());
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -85,8 +87,7 @@ public class UserOP extends HttpServlet {
 					contacts.add(cdao.getContactWithId(gc.getContactId()));
 				} catch (DaoException e) {
 					e.printStackTrace();
-					AppLogger.ApplicationLog(e.getMessage());
-					AppLogger.ApplicationLog(e);
+					logger.log(Level.WARNING, e.getMessage(),e);
 				}
 			}
 			request.setAttribute("contacts", contacts);
@@ -103,7 +104,7 @@ public class UserOP extends HttpServlet {
 			try {
 				dao.addContact(request.getParameter("firstName"), request.getParameter("lastName"), SessionFilter.user_id.get());
 			} catch (DaoException e) {
-				AppLogger.ApplicationLog(e.getMessage());
+				logger.log(Level.WARNING, e.getMessage(),e);
 				e.printStackTrace();
 			}
 			
@@ -114,7 +115,7 @@ public class UserOP extends HttpServlet {
 			try {
 				dao.addMailForUser(SessionFilter.user_id.get(), request.getParameter("email"));
 			} catch (DaoException e) {
-				AppLogger.ApplicationLog(e.getMessage());
+				logger.log(Level.WARNING, e.getMessage(),e);
 				e.printStackTrace();
 			}
 			response.sendRedirect("useremails.jsp");
@@ -129,20 +130,18 @@ public class UserOP extends HttpServlet {
 						request.getParameter("contactType"));
 			} catch (DaoException e) {
 				e.printStackTrace();
-				AppLogger.ApplicationLog("Failed to update profile");
-				AppLogger.ApplicationLog(e);
+				logger.log(Level.WARNING, e.getMessage(),e);
 ;			}
 			SessionDataManager.users_data.remove(SessionFilter.user_id.get());
 			response.sendRedirect("profile.jsp");
-			Integer i = 2;
-			int j = i;
+		
 			return;
 		}
 		else if("deleteGroup".equals(action)) {
 			UserGroupsDao dao = new UserGroupsDao();
 			Integer groupId = Integer.parseInt(request.getParameter("group_id"));
 			try {
-				dao.deleteGroupForUser(groupId);
+				dao.deleteGroupForUser(SessionFilter.user_id.get(),groupId);
 			} catch (DaoException e) {	
 				response.sendError(500, e.getMessage());
 			}

@@ -3,12 +3,14 @@ package com.notifier;
 import java.net.HttpURLConnection;
 
 import java.net.URL;
+import java.util.logging.Level;
 
 import com.dao.ServersDao;
 import com.dbObjects.ServersObj;
 import com.loggers.AppLogger;
 
 public class UserDetailsUpdateNotifier {
+	private static AppLogger logger = new AppLogger(UserDetailsUpdateNotifier.class.getCanonicalName());
 
 	public static void removeUserFromCache(String userId) {
 		HttpURLConnection connection = null;
@@ -21,15 +23,14 @@ public class UserDetailsUpdateNotifier {
 				connection.setRequestMethod("POST");
 				Integer response_code = connection.getResponseCode();
 				if(response_code == 200) {
-					AppLogger.ApplicationLog("Removed user "+userId+" from all servers cache successfully.");
+					logger.log(Level.INFO, "s");
 				}else {
-					AppLogger.ApplicationLog("Something went wrong while removing user "+userId+" from servers cache. Response code :"+response_code);
+					logger.log(Level.INFO, "Some thing went wrong while modifying cache in server :"+server.getServerId());
 				}
 				
 			}
 		}catch(Exception e){
-			AppLogger.ApplicationLog("Remove User from Cache method");
-			AppLogger.ApplicationLog(e);
+			logger.log(Level.WARNING, e.getMessage(),e);
 		}finally {
 			if(connection != null) {
 				connection.disconnect();

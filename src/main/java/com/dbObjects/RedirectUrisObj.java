@@ -1,6 +1,6 @@
 package com.dbObjects;
 
-public class RedirectUrisObj {
+public class RedirectUrisObj extends ResultObject {
 	private Integer uri_id;
 	private String client_id;
 	private String uri;

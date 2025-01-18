@@ -5,6 +5,7 @@ import java.sql.Connection;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -26,7 +27,7 @@ import com.session.SessionUpdater;
  */
 @WebListener
 public class UpdateSessionDetails implements ServletContextListener {
-
+	private static AppLogger logger = new AppLogger(UpdateSessionDetails.class.getCanonicalName());
     /**
      * Default constructor. 
      */
@@ -50,8 +51,8 @@ public class UpdateSessionDetails implements ServletContextListener {
     		try {
 				dao.updateSession(session.getKey(), session.getValue().getLastAccessedTime());
 			} catch (DaoException e) {
+				logger.log(Level.WARNING, e.getMessage(),e);
 				e.printStackTrace();
-				AppLogger.ApplicationLog("updating session in database failed, session object"+session.getValue());
 			}
     	}
 //    	NewDao.updateSessionsToDatabase(session_map);
@@ -72,12 +73,11 @@ public class UpdateSessionDetails implements ServletContextListener {
     	try(Connection c =Database.getConnection()){
     		
     	}catch(SQLException e) {
+    		logger.log(Level.WARNING, e.getMessage(),e);
     		e.printStackTrace();
     	}
     	
 //    	RegServer.readProp();
-    	
-    	AppLogger.ApplicationLog("Created app log file");
 //    	RegServer.register_server_in_db();
     	
     	SessionFetcher.getSessionsFromDatabase();

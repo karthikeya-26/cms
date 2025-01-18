@@ -30,7 +30,9 @@ public class ReqLogger {
         	
 		}
     }
-
+//    public static void main(String[] args) {
+//		Re
+//	}
     public static void AccessLog(String message) {
     	logger.info(message);
     }

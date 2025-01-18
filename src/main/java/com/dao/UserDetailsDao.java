@@ -71,12 +71,31 @@ public class UserDetailsDao {
 
     // UPDATE
     public boolean updateUser(Integer userId, String userName, String firstName, String lastName, String contactType) throws DaoException {
+    
+    	if(userId == null) {
+    		throw new DaoException("UserId cant be null");
+    	}
+    
         try {
             Update u = new Update();
-            u.table(Table.UserDetails)
-             .columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE)
-             .values(userName, firstName, lastName, contactType)
-             .condition(UserDetails.USER_ID, Operators.Equals, userId.toString());
+            u.table(Table.UserDetails);            
+            if(userName != null) {
+            	u.columns(UserDetails.USER_NAME);
+            	u.values(userName);
+            }
+            if(firstName != null) {
+            	u.columns(UserDetails.FIRST_NAME);
+            	u.values(firstName);
+            }
+            if(lastName != null) {
+            	u.columns(UserDetails.LAST_NAME);
+            	u.values(lastName);
+            }
+            if(contactType != null) {
+            	u.columns(UserDetails.CONTACT_TYPE);
+            	u.values(contactType);
+            }
+            u.condition(UserDetails.USER_ID, Operators.Equals, userId.toString());
             return u.executeUpdate() == 1;
         } catch (QueryException e) {
             throw new DaoException("Error updating user with ID: " + userId, e);

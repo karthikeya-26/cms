@@ -18,8 +18,13 @@ public enum Table {
 	Passwords("Passwords", com.enums.Passwords.getAllCols(), com.enums.Passwords.class),
 	ChangeLog("ChangeLog", com.enums.ChangeLog.getAllCols(), com.enums.ChangeLog.class),
 	Configurations("Configurations", com.enums.Configurations.getAllCols(), com.enums.Configurations.class),
-	ContactsSync("ContactsSync", com.enums.ContactsSync.getAllCols(), com.enums.ContactsSync.class);
-
+	ContactsSync("ContactsSync", com.enums.ContactsSync.getAllCols(), com.enums.ContactsSync.class),
+	ClientDetails("ClientDetails", com.enums.ClientDetails.getAllCols(), com.enums.ClientDetails.class),
+	RedirectUris("RedirectUris", com.enums.RedirectUris.getAllCols(), com.enums.RedirectUris.class),
+	AuthorizationCodes("AuthorizationCodes",com.enums.AuthorizationCodes.getAllCols(),com.enums.AuthorizationCodes.class),
+	AccessTokens("AccessTokens",com.enums.AccessTokens.getAllCols(),com.enums.AccessTokens.class),
+	RefreshTokens("RefreshTokens", com.enums.RefreshTokens.getAllCols(), com.enums.RefreshTokens.class);
+	
 	private static final Map<String, Table> TABLE_LOOKUP_MAP = new HashMap<>();
 
 	private final String tableName;

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
@@ -36,7 +37,7 @@ import com.queryLayer.QueryException;
 import com.session.Session;
 
 public class GoogleContactsSyncHandler {
-
+	private static AppLogger logger = new AppLogger(GoogleContactsSyncHandler.class.getCanonicalName());
 	private static final String clientId = "278443584424-q0nbt03i92268ici8ktj5uhi3ee65044.apps.googleusercontent.com";
 	private static final String clientSecret = "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";
 	private static final String scope = "https://www.googleapis.com/auth/userinfo.profile"
@@ -259,7 +260,7 @@ public class GoogleContactsSyncHandler {
 			
 			
 		}catch (Exception e) {
-			AppLogger.ApplicationLog(e.toString());
+			
 			return false;
 		}
 		return false;
@@ -390,7 +391,8 @@ public class GoogleContactsSyncHandler {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			AppLogger.ApplicationLog(e);
+			logger.log(Level.WARNING, e.getMessage(),e);
+			return false;
 		}
 
 		return false;
@@ -590,7 +592,7 @@ public class GoogleContactsSyncHandler {
 		}
 		
 		if(!refMobileNumbers.isEmpty()) {
-			for(String n : refMobileNumbers) {
+			for(String 	n : refMobileNumbers) {
 				deleteNumber(refNumbers.get(0).getContactId(), n);
 			}
 		}

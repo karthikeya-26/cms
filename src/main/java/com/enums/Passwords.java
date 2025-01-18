@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dbObjects.PasswordsObj;
+import com.queryLayer.QueryException;
+import com.queryLayer.Select;
+
 public enum Passwords implements Columns {
     USER_ID("user_id", Integer.class),
     PASSWORD("password", String.class),
@@ -54,4 +58,10 @@ public enum Passwords implements Columns {
     public static List<Columns> getAllCols(){
     	return Arrays.asList(Passwords.values());
     }
+    public static void main(String[] args) throws QueryException {
+		Select s = new Select();
+		s.table(Table.Passwords);
+		System.out.println(s.executeQuery(PasswordsObj.class));
+		
+	}
 }

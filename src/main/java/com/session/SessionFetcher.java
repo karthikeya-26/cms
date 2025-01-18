@@ -2,6 +2,7 @@ package com.session;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import com.dao.DaoException;
 import com.dao.SessionsDao;
@@ -11,6 +12,7 @@ import com.loggers.AppLogger;
 
 public class SessionFetcher {
 	
+	private static AppLogger logger = new AppLogger(SessionFetcher.class.getCanonicalName());
 	public static  void getSessionsFromDatabase() {
 		
 		SessionsDao dao = new SessionsDao();
@@ -20,7 +22,7 @@ public class SessionFetcher {
 				SessionDataManager.session_data.put(session.getSessionId(), session);
 			}
 		} catch (DaoException e) {
-			AppLogger.ApplicationLog("Falied to fetch sessions from database");
+			logger.log(Level.WARNING, e.getMessage(),e);
 		}
 	}
 }

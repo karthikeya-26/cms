@@ -8,16 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class Filefetcher
+ * Servlet implementation class ResourceContacts
  */
-@WebServlet("/Filefetcher")
-public class Filefetcher extends HttpServlet {
+@WebServlet("/ResourceContacts")
+public class ResourceContacts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Filefetcher() {
+    public ResourceContacts() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -27,14 +27,8 @@ public class Filefetcher extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		// validate and then return resource
-		
-		
-//		File f = new File("")
-				
-		
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
-	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
