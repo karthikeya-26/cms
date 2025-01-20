@@ -115,22 +115,106 @@ public class ResourceProfile extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String accessToken = request.getParameter("Bearer");
+//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		String accessToken = request.getParameter("Bearer");
+//		
+//		if(accessToken == null) {
+//			response.sendError(404, "Provide an access token.");
+//			return;
+//		}
+//		
+//		try {
+//			AccessTokensObj tokenObj = accessDao.getAccessTokenObject(accessToken);
+//		} catch (QueryException e) {
+//        	logger.log(Level.SEVERE, e.getMessage(),e);
+//			response.sendError(500,"Something went wrong, trry again later.");
+//			return;
+//		}
+//		
+//	}
+	
+	
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/json");
+		String accessToken = request.getHeader("Bearer");
+		JsonObject responseJson = new JsonObject();
+		
 		
 		if(accessToken == null) {
-			response.sendError(404, "Provide an access token.");
+			response.setStatus(400);
+			responseJson.addProperty("error","Access token header missing");
+			response.getWriter().print(responseJson);
+			return;
+		}
+		
+		if(request.getParameterMap().size()== 0) {
+			response.sendError(400, "no body found");
 			return;
 		}
 		
 		try {
-			AccessTokensObj tokenObj = accessDao.getAccessTokenObject(accessToken);
-		} catch (QueryException e) {
-        	logger.log(Level.SEVERE, e.getMessage(),e);
-			response.sendError(500,"Something went wrong, trry again later.");
+			AccessTokensObj tokenObject = accessDao.getAccessTokenObject(accessToken);
+			if(tokenObject== null) {
+//				responseJson.addProperty(, null);
+				response.sendError(400, "Invalid AccessToken");
+				return;
+			}
+			
+			boolean isAuthorized = tokenObject.getScopes().contains(SCOPES.get("profile"));
+			
+			if(!isAuthorized) {
+				responseJson.addProperty("error", "Unauthorized to perform this action");
+				response.getWriter().print(responseJson);
+				return;
+			}
+			
+			Integer userId = tokenObject.getUser_id();
+			String userName = request.getParameter("user_name");
+			String firstName = request.getParameter("first_name");
+			String lastName = request.getParameter("last_name");
+			String contactType = request.getParameter("contact_type");
+			
+			userDao.updateUser(userId, userName, firstName, lastName, contactType);
+			return;
+			
+		} catch (QueryException | DaoException e) {
+			logger.log(Level.WARNING, e.getMessage(),e);
+			e.printStackTrace();
+			response.setStatus(500);
+			responseJson.addProperty("error", "Something went wrong, try again later.");
+			response.getWriter().print(responseJson);
+			return;
+		}
+	}
+	
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/json");
+		JsonObject responseJson = new JsonObject();
+		
+		String accessToken = request.getHeader("Bearer");
+		if (accessToken == null) {
+			responseJson.addProperty("error", "Provide an accessToken");
+			response.setStatus(400);
+			response.getWriter().print(responseJson);
 			return;
 		}
 		
+		try {
+			AccessTokensObj tokenObject = accessDao.getAccessTokenObject(accessToken);
+			boolean isAuthorized = tokenObject.getScopes().contains(SCOPES.get("profile"));
+			
+			if(!isAuthorized) {
+				responseJson.addProperty("error", "Unauthorized to perform this action");
+				response.getWriter().print(responseJson);
+				return;
+			}
+		} catch (QueryException e) {
+			logger.log(Level.WARNING, e.getMessage(),e);
+			responseJson.addProperty("error", "Something went wrong, try again later.");
+			response.getWriter().print(responseJson);
+			e.printStackTrace();
+			return;
+		}
 		
 	}
 

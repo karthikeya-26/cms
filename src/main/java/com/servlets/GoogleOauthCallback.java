@@ -116,7 +116,7 @@ public class GoogleOauthCallback extends HttpServlet {
 		GoogleContactsSyncHandler h = new GoogleContactsSyncHandler();
 		HttpURLConnection conn;
 		try {
-			URL url = new URL(h.getAccountEndpoint());
+			URL url = new URL(GoogleContactsSyncHandler.getAccountsEndpoint());
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Authorization", "Bearer "+accessToken);

@@ -17,7 +17,7 @@ import com.dbconn.Database;
 
 
 public class AppLogger {
-    private Logger app_logger = Logger.getLogger(AppLogger.class.getName());
+    private Logger app_logger ;
     static FileHandler fh;
     
     static {
@@ -25,6 +25,7 @@ public class AppLogger {
     	String logFile = "/home/karthi-pt7680/contact_app_logs/"+OffsetDateTime.now(ZoneId.of("UTC"))+"-"+Database.prop.getProperty("server_name")+":"+Database.prop.getProperty("server_port")+"-app.log";
     	try {
 			fh = new FileHandler(logFile,true);
+			fh.setFormatter(new SimpleFormatter());
 		} catch (SecurityException | IOException e) {
 			System.out.println("Initialization of app logger failed.");
 			e.printStackTrace();
@@ -33,6 +34,7 @@ public class AppLogger {
     
     public AppLogger(String className) {
     	this.app_logger = Logger.getLogger(className);
+    	
     	this.app_logger.addHandler(fh);
     	this.app_logger.setUseParentHandlers(false);
     }
@@ -70,18 +72,19 @@ public class AppLogger {
     
 
     // Method to log exceptions
-    public void log(Level exceptionLevel, String message,Exception e) {
+    public synchronized void log(Level exceptionLevel, String message,Exception e) {
         this.app_logger.log(exceptionLevel,message,e);
     }
 
     // Method to log general messages
-    public  void log(Level exceptionLevel, String message) {
+    public synchronized void log(Level exceptionLevel, String message) {
         this.app_logger.log(exceptionLevel,message);
     }
-    
+
     public static void closeFileHandler() {
     	if(fh!=null) {
     		fh.close();
     	}
     }
+    
 }

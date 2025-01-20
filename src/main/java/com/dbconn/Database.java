@@ -1,5 +1,6 @@
 package com.dbconn;
 
+import com.loggers.AppLogger;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.Properties;
 public class Database {
     private static ComboPooledDataSource cpds = new ComboPooledDataSource();
     public static Properties prop = new Properties();
+    private AppLogger logger = new AppLogger(Database.class.getCanonicalName());
     
     
 
@@ -63,7 +65,9 @@ public class Database {
         try {
             connection = cpds.getConnection();
         } catch (SQLException e) {
+        	System.out.println("COnnegtion getting failed :"+e.getLocalizedMessage());
             e.printStackTrace(); // Proper logging is recommended
+            
         }
         return connection;
     }

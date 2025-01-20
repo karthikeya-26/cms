@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
@@ -335,6 +336,9 @@ public class Test {
 //		System.out.println(xx.getContactsWithUserIdSorted(1));
 		UserDetailsObj usser = LoginHandler.validateUser("j@x.com", "password123");
 		System.out.println(usser);
+		
+		AppLogger a = new AppLogger(Test.class.getCanonicalName());
+		a.log(Level.INFO, "logging info message");
 	}
 
 }

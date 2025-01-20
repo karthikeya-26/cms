@@ -20,9 +20,11 @@ import com.dao.ContactMailsDao;
 import com.dao.ContactMobileNumbersDao;
 import com.dao.ContactsDao;
 import com.dao.DaoException;
+import com.dao.UserDetailsDao;
 import com.dbObjects.ContactMailsObj;
 import com.dbObjects.ContactMobileNumbersObj;
 import com.dbObjects.ContactsObj;
+import com.dbObjects.UserDetailsObj;
 import com.enums.Contacts;
 import com.enums.Operators;
 import com.enums.Table;
@@ -40,11 +42,13 @@ public class GoogleContactsSyncHandler {
 	private static AppLogger logger = new AppLogger(GoogleContactsSyncHandler.class.getCanonicalName());
 	private static final String clientId = "278443584424-q0nbt03i92268ici8ktj5uhi3ee65044.apps.googleusercontent.com";
 	private static final String clientSecret = "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";
-	private static final String scope = "https://www.googleapis.com/auth/userinfo.profile"
-			+ " https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/contacts";
+	private static final String profileScope  = "https://www.googleapis.com/auth/userinfo.profile"
+			+ " https://www.googleapis.com/auth/userinfo.email";
+	private static final String contactScope = " https://www.googleapis.com/auth/contacts";
 	private static final String redirectUri = "http://localhost:8280/contacts/goauth";
 	private static String peopleContactsEndpoint = "https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers,emailAddresses,photos,metadata";
 	private static final String peopleAccountEndpoint = "https://people.googleapis.com/v1/people/me";
+	private static final String accountEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 	public static String getClientid() {
 		return clientId;
 	}
@@ -53,8 +57,12 @@ public class GoogleContactsSyncHandler {
 		return clientSecret;
 	}
 
-	public static String getScope() {
-		return scope;
+	public static String getProfileScope() {
+		return profileScope;
+	}
+	
+	public static String getContactsScope () {
+		return contactScope;
 	}
 
 	public static String getRedirecturi() {
@@ -65,7 +73,11 @@ public class GoogleContactsSyncHandler {
 		return state;
 	}
 	
-	public String getAccountEndpoint() {
+	public static String getAccountsEndpoint() {
+		return accountEndpoint;
+	}
+	
+	public static String getPeopleAccountEndpoint() {
 		return peopleAccountEndpoint;
 	}
 
@@ -75,7 +87,7 @@ public class GoogleContactsSyncHandler {
 
 		// auth endpoint of google -> https://accounts.google.com/o/oauth2/auth
 		String authUrl = "https://accounts.google.com/o/oauth2/v2/auth" + "?client_id=" + clientId + "&redirect_uri="
-				+ redirectUri + "&response_type=code" + "&scope=" + scope + "&access_type=offline" + "&state=" + state
+				+ redirectUri + "&response_type=code" + "&scope=" + profileScope+" "+contactScope + "&access_type=offline" + "&state=" + state
 				+ "&prompt=consent";
 
 		return authUrl;
@@ -256,6 +268,19 @@ public class GoogleContactsSyncHandler {
 				
 				String accountId  = jsonResponse.get("resourceName").getAsString();
 				
+				UserDetailsDao dao = new UserDetailsDao();
+				UserDetailsObj user = dao.getUserWithAccountId(accountId);
+				if(user == null) {
+					return false;
+				}else {
+					return true;
+				}
+				
+				
+			}else {
+				 jsonResponse.addProperty("error", "Something went wrong");
+				 return false;
+				
 			}
 			
 			
@@ -263,7 +288,6 @@ public class GoogleContactsSyncHandler {
 			
 			return false;
 		}
-		return false;
 	}
 
 	public boolean getAndCreateContacts(String refreshToken, String accesstoken, String nextPageToken) {

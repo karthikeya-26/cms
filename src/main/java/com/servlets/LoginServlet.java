@@ -25,6 +25,7 @@ import com.loggers.AppLogger;
 import com.session.Session;
 import com.session.SessionDataManager;
 import com.session.SessionFetcher;
+import com.util.IdGenerator;
 
 /**
  * Servlet implementation class LoginServlet
@@ -83,8 +84,8 @@ public class LoginServlet extends HttpServlet {
         	out.flush();
         	return ;
         }
-        
-        String sessionId = Session.getSessionId();
+        IdGenerator sessionIdGen = new IdGenerator();
+        String sessionId = sessionIdGen.generateSessionId();
         SessionsDao dao = new SessionsDao();
         Long time = Instant.now().toEpochMilli();
         SessionsObj session = new SessionsObj(sessionId, user.getUserId(), time, time);
@@ -100,6 +101,7 @@ public class LoginServlet extends HttpServlet {
         SessionDataManager.users_data.put(user.getUserId(), user);
         
         Cookie c = new Cookie("session_id", sessionId);
+        c.setMaxAge(3600);
         response.addCookie(c);
         responseJson.addProperty("status", "success");
         responseJson.addProperty("message", "Login successfull");

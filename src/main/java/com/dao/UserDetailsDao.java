@@ -55,6 +55,24 @@ public class UserDetailsDao {
         return user;
     }
     
+    //SELECT -> user with accountId
+    public UserDetailsObj getUserWithAccountId(String accountId) {
+    	UserDetailsObj user = null;
+    	try {
+    		Select getUserWithAcId = new Select();
+    		getUserWithAcId.table(Table.UserDetails)
+    		.condition(UserDetails.PROVIDER_AC_ID, Operators.Equals,accountId);
+    		List<ResultObject> users = getUserWithAcId.executeQuery(UserDetailsObj.class);
+    		if(users.size()>0) {
+    			user = (UserDetailsObj) users.get(0);
+    		}
+    	}catch(QueryException e) {
+    		return null;
+    	}
+    	return user;
+    }
+    
+    
 
     // INSERT
     public int createUser(String userName, String firstName, String lastName, String contactType) throws DaoException {
@@ -63,6 +81,17 @@ public class UserDetailsDao {
             i.table(Table.UserDetails)
              .columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE)
              .values(userName, firstName, lastName, contactType);
+            return i.executeUpdate();
+        } catch (QueryException e) {
+            throw new DaoException("Error creating user", e);
+        }
+    }
+    public int createUser(String userName, String firstName, String lastName, String contactType,String accountId) throws DaoException {
+        try {
+            Insert i = new Insert();
+            i.table(Table.UserDetails)
+             .columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME, UserDetails.CONTACT_TYPE,UserDetails.PROVIDER_AC_ID)
+             .values(userName, firstName, lastName, contactType,accountId);
             return i.executeUpdate();
         } catch (QueryException e) {
             throw new DaoException("Error creating user", e);

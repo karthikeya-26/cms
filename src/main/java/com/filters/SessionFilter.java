@@ -45,6 +45,8 @@ public class SessionFilter extends HttpFilter implements Filter {
         entryPages.add("/contacts/api/v1/oauth2/token");
         entryPages.add("/contacts/api/v1/resource/profile");
         entryPages.add("/contacts/testoauthcallback");
+        entryPages.add("/contacts/glogin");
+        entryPages.add("/contacts/glogincallback");
     }
 
     public SessionFilter() {

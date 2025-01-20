@@ -1,5 +1,9 @@
 package com.dbObjects;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class AccessTokensObj extends ResultObject{
 	private Integer accesstoken_id;
 	private String access_token;
@@ -20,11 +24,16 @@ public class AccessTokensObj extends ResultObject{
 	public void setAccess_token(String access_token) {
 		this.access_token = access_token;
 	}
-	public String getScopes() {
-		return scopes;
+	public List<Integer> getScopes() {
+		List<Integer> numbers = new ArrayList<Integer>();
+		String scopes = this.scopes.substring(1, this.scopes.length());
+		for(String scope : scopes.split(",")) {
+			numbers.add(Integer.valueOf(scope));
+		}
+		return numbers;
 	}
-	public void setScopes(String scopes) {
-		this.scopes = scopes;
+	public void setScopes(List<Integer> scopeIds) {
+		this.scopes = scopeIds.toString();
 	}
 	public Long getCreated_at() {
 		return created_at;

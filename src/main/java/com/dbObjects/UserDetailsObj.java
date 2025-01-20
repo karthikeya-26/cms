@@ -9,6 +9,7 @@ public class UserDetailsObj extends ResultObject {
     private String contact_type;
     private Long created_at;
     private Long modified_at;
+    private String provider_ac_id;
     
 
     public Integer getUserId() {
@@ -53,6 +54,12 @@ public class UserDetailsObj extends ResultObject {
     public void setModifiedAt(Long modifiedAt) {
         this.modified_at = modifiedAt;
     }
+	public String getProviderAcId() {
+		return provider_ac_id;
+	}
+	public void setProviderAcId(String provider_ac_id) {
+		this.provider_ac_id = provider_ac_id;
+	}
 	@Override
 	public String toString() {
 		return "UserDetailsObj [user_id=" + user_id + ", user_name=" + user_name + ", first_name=" + first_name

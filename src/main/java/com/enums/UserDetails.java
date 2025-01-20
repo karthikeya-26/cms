@@ -13,6 +13,7 @@ public enum UserDetails implements Columns {
     CONTACT_TYPE("contact_type", String.class),
     CREATED_AT("created_at", Long.class),
     MODIFIED_AT("modified_at", Long.class),
+    PROVIDER_AC_ID("provider_ac_id",String.class),
     ALL_COLS("*", null);
 
     private static final Map<String, UserDetails> LOOKUP_MAP = new HashMap<>();

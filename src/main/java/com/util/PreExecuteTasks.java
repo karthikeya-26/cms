@@ -89,7 +89,8 @@ public class PreExecuteTasks {
 				s.condition(c.getColumn(), c.getOperator(), c.getValue());
 			}
 			List<HashMap<Columns,Object>> result = s.executeQuery();
-			methodResults.put("getRefData", result.get(0));
+			
+			methodResults.put("getRefData", result.size()>0?result:null);
 		}
 	}
 	
