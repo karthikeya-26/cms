@@ -1,62 +1,84 @@
 package com.dbObjects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class AccessTokensObj extends ResultObject{
-	private Integer accesstoken_id;
-	private String access_token;
-	private String scopes;
-	private Long created_at;
-	private Integer user_id;
-	private String client_id;
-	
-	public Integer getAccessTokenId() {
-		return accesstoken_id;
-	}
-	public void setAccessTokenId(Integer tokenId) {
-		accesstoken_id = tokenId;
-	}
-	public String getAccess_token() {
-		return access_token;
-	}
-	public void setAccess_token(String access_token) {
-		this.access_token = access_token;
-	}
-	public List<Integer> getScopes() {
-		List<Integer> numbers = new ArrayList<Integer>();
-		String scopes = this.scopes.substring(1, this.scopes.length());
-		for(String scope : scopes.split(",")) {
-			numbers.add(Integer.valueOf(scope));
-		}
-		return numbers;
-	}
-	public void setScopes(List<Integer> scopeIds) {
-		this.scopes = scopeIds.toString();
-	}
-	public Long getCreated_at() {
-		return created_at;
-	}
-	public void setCreated_at(Long created_at) {
-		this.created_at = created_at;
-	}
-	public Integer getUser_id() {
-		return user_id;
-	}
-	public void setUser_id(Integer user_id) {
-		this.user_id = user_id;
-	}
-	public String getClient_id() {
-		return client_id;
-	}
-	public void setClient_id(String client_id) {
-		this.client_id = client_id;
-	}
-	@Override
-	public String toString() {
-		return "AccessTokensObj [accesstoken_id="+accesstoken_id +" access_token=" + access_token + ", scopes=" + scopes + ", created_at=" + created_at
-				 + ", user_id=" + user_id + ", client_id=" + client_id + "]";
-	}
-	
+public class AccessTokensObj extends ResultObject {
+    
+    @Column("accesstoken_id")
+    private Integer accessTokenId;
+
+    @Column("access_token")
+    private String accessToken;
+
+    @Column("scopes")
+    private String scopes;
+
+    @Column("created_at")
+    private Long createdAt;
+
+    @Column("user_id")
+    private Integer userId;
+
+    @Column("client_id")
+    private String clientId;
+
+    public Integer getAccessTokenId() {
+        return accessTokenId;
+    }
+
+    public void setAccessTokenId(Integer accessTokenId) {
+        this.accessTokenId = accessTokenId;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public List<Integer> getScopes() {
+        List<Integer> numbers = new ArrayList<>();
+        String scopeStr = this.scopes.substring(1, this.scopes.length());
+        for (String scope : scopeStr.split(",")) {
+            numbers.add(Integer.valueOf(scope.trim()));
+        }
+        return numbers;
+    }
+
+    public void setScopes(List<Integer> scopeIds) {
+        this.scopes = scopeIds.toString();
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    @Override
+    public String toString() {
+        return "AccessTokensObj [accessTokenId=" + accessTokenId + ", accessToken=" + accessToken + ", scopes=" + scopes
+                + ", createdAt=" + createdAt + ", userId=" + userId + ", clientId=" + clientId + "]";
+    }
 }

@@ -2,6 +2,7 @@ package com.queryLayer;
 
 import java.util.ArrayList;
 
+
 import java.util.List;
 
 import com.enums.Columns;
@@ -9,7 +10,6 @@ import com.enums.Operators;
 import com.enums.Table;
 import com.queryBuilder.BuildException;
 import com.queryBuilder.SqlDeleteQueryBuilder;
-import com.queryBuilder.postgres.DeleteQueryBuilder;
 public class Delete extends Query {
 	
 	private Table tableName;
@@ -41,8 +41,7 @@ public class Delete extends Query {
 			}
 			else if (prop.getProperty("databse_name").equals("postgres")) {
 				// pg select query builder
-				this.query = new DeleteQueryBuilder(this).build();
-				return query;
+				
 			}
 		}
 		return query;

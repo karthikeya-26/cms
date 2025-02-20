@@ -1,32 +1,43 @@
 package com.dbObjects;
 
 public class GroupContactsObj extends ResultObject {
-    private Integer group_id;
-    private Integer contact_id;
-    private Long created_at;
+
+    @Column("group_id")
+    private Integer groupId;
+
+    @Column("contact_id")
+    private Integer contactId;
+
+    @Column("created_at")
+    private Long createdAt;
 
     public Integer getGroupId() {
-        return group_id;
+        return groupId;
     }
+
     public void setGroupId(Integer groupId) {
-        this.group_id = groupId;
+        this.groupId = groupId;
     }
+
     public Integer getContactId() {
-        return contact_id;
+        return contactId;
     }
+
     public void setContactId(Integer contactId) {
-        this.contact_id = contactId;
+        this.contactId = contactId;
     }
+
     public Long getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
+
     public void setCreatedAt(Long createdAt) {
-        this.created_at = createdAt;
+        this.createdAt = createdAt;
     }
-	@Override
-	public String toString() {
-		return "GroupContactsObj [group_id=" + group_id + ", contact_id=" + contact_id + ", created_at=" + created_at
-				+ "]";
-	}
-    
+
+    @Override
+    public String toString() {
+        return "GroupContactsObj [groupId=" + groupId + ", contactId=" + contactId + ", createdAt=" + createdAt + "]";
+    }
+
 }

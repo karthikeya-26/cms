@@ -14,8 +14,8 @@
 </head>
 
 <%
-Integer userId = SessionFilter.user_id.get();
-UserDetailsObj user = SessionDataManager.users_data.get(userId);
+Integer userId = SessionFilter.USER_ID.get();
+UserDetailsObj user = SessionDataManager.usersData.get(userId);
 ContactsDao dao = new ContactsDao();
 List<ContactsObj> userContactsSortedByFirstName = dao.getContactsWithUserIdSorted(userId);
 %>

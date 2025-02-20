@@ -66,7 +66,7 @@ public class SessionsDao {
                     .columns(Sessions.LAST_ACCESSED_TIME)
                     .values(lastAccessedTime.toString())
                     .condition(Sessions.SESSION_ID, Operators.Equals, sessionId);
-            return u.executeUpdate() > 0;
+            return u.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error updating session with ID: " + sessionId, e);
         }

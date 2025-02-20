@@ -2,6 +2,7 @@ package com.queryLayer;
 
 
 import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 
@@ -27,16 +28,20 @@ import com.dbObjects.*;
 import com.dbconn.Database;
 import com.enums.*;
 import com.filters.SessionFilter;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.handlers.LoginHandler;
 import com.loggers.AppLogger;
+import com.queryBuilder.BuildException;
 import com.util.PasswordMigration;
 import com.util.PreExecuteTasks;
+import com.util.SchedulerTasks;
+
 
 public class Test {
-	public static void main(String args[]) throws DaoException {
+	public static void main(String args[]) throws DaoException, BuildException, QueryException, InterruptedException {
 		
 		//dao queries
 		
@@ -251,17 +256,17 @@ public class Test {
 //		.values("jd","jackie","chan","public")
 //		.condition(UserDetails.USER_ID, Operators.Equals,"1" );
 //		u.executeUpdate();
-		ContactsDao dao = new ContactsDao();
-//		System.out.println(dao.getExistingContacts(1));
-		PreExecuteTasks p = new PreExecuteTasks();
-		Insert i = new Insert();
-		i.table(Table.Contacts).columns(Contacts.CREATED_AT).values("qe34241");
-		try {
-			p.addTimeToQueries(i);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		ContactsDao dao = new ContactsDao();
+////		System.out.println(dao.getExistingContacts(1));
+//		PreExecuteTasks p = new PreExecuteTasks();
+//		Insert i = new Insert();
+//		i.table(Table.Contacts).columns(Contacts.CREATED_AT).values("qe34241");
+//		try {
+//			p.addTimeToQueries(i);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 //		private void createContact(JsonObject contact) {
 //			String resourceName = contact.get("resourceName").getAsString();
@@ -332,13 +337,32 @@ public class Test {
 //
 //			// photos to be processed later
 //		}
-		ContactsDao xx = new ContactsDao();
+//		ContactsDao xx = new ContactsDao();
 //		System.out.println(xx.getContactsWithUserIdSorted(1));
-		UserDetailsObj usser = LoginHandler.validateUser("j@x.com", "password123");
-		System.out.println(usser);
+//		UserDenew tailsObj usser = LoginHandler.validateUser("j@x.com", "password123");
+//		System.out.println(usser);
 		
-		AppLogger a = new AppLogger(Test.class.getCanonicalName());
-		a.log(Level.INFO, "logging info message");
+//		AppLogger a = new AppLogger(Test.class.getCanonicalName());
+//		a.log(Level.INFO, "logging info message");
+//		UserMailsObj obj = new UserMailsObj();
+//		System.out.println(new Gson().toJsonTree(obj).toString());
+//		UserDetailsDao user = new UserDetailsDao();
+//		System.out.println(user.getUserWithId(2));
+//		Insert i = new Insert();
+//		i.table(Table.Contacts).columns(Contacts.FIRST_NAME,Contacts.LAST_NAME,Contacts.USER_ID).values("Arya","ar","2");
+//		int contactId = i.executeUpdate(true);
+//		System.out.println(contactId);
+		
+//		Thread t1 = new Thread(SchedulerTasks.contactsBackGroundSync);
+//		t1.start();
+//		
+//		t1.join();
+		
+//		ContactsDao cdao = new ContactsDao();
+//		
+//		System.out.println(cdao.getExistingContacts(2,"1//0g_NHDXrIDmfLCgYIARAAGBASNwF-L9Ir45JaC9GUD4xeLdXmeC5H0qYj1Cg2en59gebCnkYRJQ0v7aCdjw5viwJ1PmXLHCqS6Vc"));
+		
+		
 	}
 
 }

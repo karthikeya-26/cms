@@ -1,0 +1,19 @@
+		// convert list to a hashmap to optimize time
+		// tc now : n square , n if hashmap used
+//		"phoneNumbers": [
+//		                 {
+//		                   "canonicalForm": "+917032555311", 
+//		                   "formattedType": "Mobile", 
+//		                   "type": "mobile", 
+//		                   "value": "+917032555311", 
+//		                   "metadata": {
+//		                     "source": {
+//		                       "type": "CONTACT", 
+//		                       "id": "5bc2a4cb08416dfc"
+//		                     }, 
+//		                     "primary": true, 
+//		                     "sourcePrimary": true
+//		                   }
+//		                 }
+//			]
+ZZ

@@ -2,17 +2,16 @@ package com.queryLayer;
 
 import java.util.*;
 
+
 import com.dbObjects.ResultObject;
 import com.enums.*;
 import com.queryBuilder.BuildException;
 import com.queryBuilder.SqlSelectQueryBuilder;
-import com.queryBuilder.postgres.SelectQueryBuilder;
 
 public class Select extends Query {
 	private String query;
 
 	private Table table;
-//	public String tableAlias;
 	private List<Columns> columns;
 	private List<AggregateColumn> aggregratecolumns;
 	private List<Condition> conditions;
@@ -247,18 +246,12 @@ public class Select extends Query {
 	}
 
 	public String build() throws BuildException{
-		
-
-// 		proxy object to build query based on the db name
-//    	SqlSelectQueryBuilder s = new SqlSelectQueryBuilder(this);
 		if (prop.getProperty("database_name").equals("mysql")) {
 			this.query = new SqlSelectQueryBuilder(this).build();
 			return query;
 		}
 		if (prop.getProperty("databse_name").equals("postgres")) {
-			// pg select query builder
-			this.query = new SelectQueryBuilder(this).build();
-			return query;
+			 
 		}
 		return query;
 	}
@@ -267,8 +260,7 @@ public class Select extends Query {
 		return super.executeQuery(this, clazz);
 	}
 	
-	public List<HashMap<Columns, Object>> executeQuery() throws QueryException{
-
+	public List<Map<Columns, Object>> executeQuery() throws QueryException{
 		return super.executeQuery(this, fields);
 	}
 

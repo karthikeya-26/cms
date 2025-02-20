@@ -1,0 +1,148 @@
+//		{
+//			  "phoneNumbers": [
+//			    {
+//			      "canonicalForm": "+917032555311", 
+//			      "formattedType": "Mobile", 
+//			      "type": "mobile", 
+//			      "value": "+917032555311", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "memberships": [
+//			    {
+//			      "contactGroupMembership": {
+//			        "contactGroupId": "myContacts", 
+//			        "contactGroupResourceName": "contactGroups/myContacts"
+//			      }, 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }
+//			      }
+//			    }
+//			  ], 
+//			  "photos": [
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/a/ACg8ocJmhwSCdhs26Yo7WJBNApuaEMK6JVtaEJy3f_ppSHsRNdsMEZm7bw=s100", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }, 
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/contacts/AG6tpzHyuSYx9Sa3dMapq5ajr18oxwse_AEKMwY9OHFY-VMe6aKpmQmF=s100", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }
+//			      }
+//			    }
+//			  ], 
+//			  "etag": "%EiEBAgMEBQYHCAkKCwwNDg8QERITFBUXGSIlLjQ1Nz0+P0AaBAECBQciDE9TYldFbU80Q3FRPQ==", 
+//			  "names": [
+//			    {
+//			      "displayNameLastFirst": "_26, Karthikeya", 
+//			      "displayName": "Karthikeya _26", 
+//			      "familyName": "_26", 
+//			      "unstructuredName": "Karthikeya _26", 
+//			      "givenName": "Karthikeya", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }, 
+//			    {
+//			      "unstructuredName": "Karthikeya", 
+//			      "givenName": "Karthikeya", 
+//			      "displayName": "Karthikeya", 
+//			      "displayNameLastFirst": "Karthikeya", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "genders": [
+//			    {
+//			      "formattedValue": "Male", 
+//			      "value": "male", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "CONTACT", 
+//			          "id": "5bc2a4cb08416dfc"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }
+//			  ], 
+//			  "resourceName": "people/100549746507535747515", 
+//			  "emailAddresses": [
+//			    {
+//			      "value": "karthikeya.00004@gmail.com", 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "ACCOUNT", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "verified": true, 
+//			        "primary": true, 
+//			        "sourcePrimary": true
+//			      }
+//			    }
+//			  ], 
+//			  "coverPhotos": [
+//			    {
+//			      "url": "https://lh3.googleusercontent.com/c5dqxl-2uHZ82ah9p7yxrVF1ZssrJNSV_15Nu0TUZwzCWqmtoLxCUJgEzLGtxsrJ6-v6R6rKU_-FYm881TTiMCJ_=s1600", 
+//			      "default": true, 
+//			      "metadata": {
+//			        "source": {
+//			          "type": "PROFILE", 
+//			          "id": "100549746507535747515"
+//			        }, 
+//			        "primary": true
+//			      }
+//			    }
+//			  ], 
+//			  "metadata": {
+//			    "sources": [
+//			      {
+//			        "updateTime": "2024-12-11T13:05:54.535295Z", 
+//			        "etag": "#+HdgwnYWm4o=", 
+//			        "type": "PROFILE", 
+//			        "id": "100549746507535747515", 
+//			        "profileMetadata": {
+//			          "userTypes": [
+//			            "GOOGLE_USER"
+//			          ], 
+//			          "objectType": "PERSON"
+//			        }
+//			      }, 
+//			      {
+//			        "updateTime": "2024-11-28T04:01:01.889332Z", 
+//			        "etag": "#OSbWEmO4CqQ=", 
+//			        "type": "CONTACT", 
+//			        "id": "5bc2a4cb08416dfc"
+//			      }
+//			    ], 
+//			    "objectType": "PERSON"
+//			  }
+//			}

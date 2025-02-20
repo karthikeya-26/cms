@@ -5,11 +5,11 @@
 <%@ page import="com.dbObjects.*" %>
 <%@ page import="com.session.*" %>
 <%@ page import="com.dao.*" %>
-<%   
-	Integer user_id = SessionFilter.user_id.get();
+<%
+Integer user_id = SessionFilter.USER_ID.get();
 	UserMailsDao dao = new UserMailsDao();
 	List<UserMailsObj> user_mails = dao.getUserMails(user_id);
-	UserDetailsObj user = SessionDataManager.users_data.get(user_id);
+	UserDetailsObj user = SessionDataManager.usersData.get(user_id);
 %>
 <!DOCTYPE html>
 <html>

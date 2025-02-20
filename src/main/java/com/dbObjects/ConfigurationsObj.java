@@ -1,45 +1,65 @@
 package com.dbObjects;
 
-public class ConfigurationsObj extends ResultObject{
+public class ConfigurationsObj extends ResultObject {
+
+    @Column("id")
     private Integer id;
+
+    @Column("name")
     private String name;
+
+    @Column("value")
     private String value;
-    private Long created_at;
-    private Long modified_at;
-    
+
+    @Column("created_at")
+    private Long createdAt;
+
+    @Column("modified_at")
+    private Long modifiedAt;
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getValue() {
         return value;
     }
+
     public void setValue(String value) {
         this.value = value;
     }
+
     public Long getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
+
     public void setCreatedAt(Long createdAt) {
-        this.created_at= createdAt;
+        this.createdAt = createdAt;
     }
+
     public Long getModifiedAt() {
-        return modified_at;
+        return modifiedAt;
     }
+
     public void setModifiedAt(Long modifiedAt) {
-        this.modified_at = modifiedAt;
+        this.modifiedAt = modifiedAt;
     }
+
     @Override
     public String toString() {
-        return "ConfigurationsObj [id=" + id + ", name=" + name + ", value=" + value + 
-               ", createdAt=" + created_at + ", modifiedAt=" + modified_at + "]";
+        return "ConfigurationsObj [id=" + id + ", name=" + name + ", value=" + value 
+                + ", createdAt=" + createdAt + ", modifiedAt=" + modifiedAt + "]";
     }
 }

@@ -59,7 +59,7 @@ public class ConfigurationsDao {
              .columns(Configurations.NAME, Configurations.VALUE)
              .values(name, value)
              .condition(Configurations.NAME, Operators.Equals, name);
-            return u.executeUpdate() > 0;
+            return u.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Failed to update configuration with name: " + name, e);
         }

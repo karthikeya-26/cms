@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.dao.DaoException;
 import com.dao.UserGroupsDao;
 import com.dbObjects.UserGroupsObj;
+import com.filters.SessionFilter;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -128,8 +129,7 @@ public class UserGroups extends HttpServlet {
     }
 
     private int getUserId() {
-        // Simulate retrieving the userId (hardcoded for now)
-        return 1;
+       return SessionFilter.USER_ID.get();
     }
 
     private int parseGroupId(JsonObject payload) throws IllegalArgumentException {

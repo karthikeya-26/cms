@@ -43,13 +43,14 @@ public class ContactMailsDao {
 	}
 	
 	// UPDATE 
-	public boolean updateMailForContact(Integer contactId, String mail) throws DaoException {
+	public boolean updateMailForContact(Integer contactId, String oldMail,String newMail) throws DaoException {
 		try {
 			Update u = new Update();
 			u.table(Table.ContactMails)
-			 .columns(ContactMails.CONTACT_ID, ContactMails.MAIL)
-			 .values(contactId.toString(), mail);
-			return u.executeUpdate() == 0;
+			 .columns( ContactMails.MAIL)
+			 .values( newMail).condition(ContactMails.CONTACT_ID, Operators.Equals, contactId.toString())
+			 .condition(ContactMails.MAIL, Operators.Equals, oldMail);
+			return u.executeUpdate() >= 0;
 		} catch (QueryException e) {
 			throw new DaoException("Failed to update mail for contact ID: " + contactId, e);
 		}

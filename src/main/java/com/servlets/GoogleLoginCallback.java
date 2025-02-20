@@ -10,20 +10,14 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.logging.Level;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.dao.SessionsDao;
-import com.dao.UserDetailsDao;
-import com.dao.UserMailsDao;
-import com.dbObjects.SessionsObj;
-import com.dbObjects.UserDetailsObj;
-import com.google.gson.Gson;
+import com.dao.*;
+import com.dbObjects.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.handlers.GoogleContactsSyncHandler;
@@ -31,190 +25,191 @@ import com.loggers.AppLogger;
 import com.session.SessionDataManager;
 import com.util.IdGenerator;
 
-/**
- * Servlet implementation class GoogleLoginCallback
- */
 @WebServlet("/glogincallback")
 public class GoogleLoginCallback extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+    private static final AppLogger logger = new AppLogger(GoogleLoginCallback.class.getCanonicalName());
+    private static final String REDIRECT_URI = "http://localhost:8280/contacts/glogincallback";
+    private static final String PEOPLE_API_URL = "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses";
+    private static final String TOKEN_URL = "https://oauth2.googleapis.com/token";
+    private static final int COOKIE_MAX_AGE = 3600;
+    
+    private final UserDetailsDao userDao = new UserDetailsDao();
+    private final UserMailsDao mailDao = new UserMailsDao();
+    private final SessionsDao sessionDao = new SessionsDao();
+    private final IdGenerator idGenerator = new IdGenerator();
 
-	private static AppLogger logger = new AppLogger(GoogleLoginCallback.class.getCanonicalName());
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String authCode = validateAuthCode(request, response);
+            if (authCode == null) return;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public GoogleLoginCallback() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+            String accessToken = getAccessToken(authCode, response);
+            if (accessToken == null) return;
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		System.out.println("Hi from do get of glogincallback");
-		String authCode = request.getParameter("code");
-		JsonObject responseJson = new JsonObject();
-		if (authCode == null) {
-			responseJson.addProperty("error", "please provide an authorization code");
-			response.setStatus(400);
-			response.getWriter().print(responseJson);
-			return;
-		}
-		String accessToken;
+            processUserData(accessToken, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error processing OAuth callback", e);
+            sendErrorResponse(response, "Authentication failed");
+        }
+    }
 
-		HttpURLConnection tokenConnection;
+    private String validateAuthCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authCode = request.getParameter("code");
+        if (authCode == null) {
+            sendErrorResponse(response, "Authentication failed");
+            return null;
+        }
+        return authCode;
+    }
 
-		try {
-			URL url = new URL("https://oauth2.googleapis.com/token");
-			String params = "code=" + URLEncoder.encode(request.getParameter("code"), "UTF-8") + "&client_id="
-					+ URLEncoder.encode(GoogleContactsSyncHandler.getClientid(), "UTF-8") + "&client_secret="
-					+ URLEncoder.encode(GoogleContactsSyncHandler.getClientsecret(), "UTF-8")
-					+ "&redirect_uri=http://localhost:8280/contacts/glogincallback" + "&grant_type=authorization_code";
+    private String getAccessToken(String authCode, HttpServletResponse response) throws IOException {
+        String params = buildTokenRequestParams(authCode);
+        HttpURLConnection conn = createConnection(TOKEN_URL, "POST");
+        
+        if (conn == null) {
+            sendErrorResponse(response, "Authentication failed");
+            return null;
+        }
 
-			tokenConnection = (HttpURLConnection) url.openConnection();
-			tokenConnection.setRequestMethod("POST");
-			tokenConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			tokenConnection.setDoOutput(true);
+        writeRequestBody(conn, params);
+        return handleTokenResponse(conn, response);
+    }
 
-			try (OutputStream os = tokenConnection.getOutputStream()) {
-				os.write(params.getBytes(StandardCharsets.UTF_8));
-				os.flush();
-			}
+    private String buildTokenRequestParams(String authCode) throws IOException {
+        return String.format("code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
+            URLEncoder.encode(authCode, "UTF-8"),
+            URLEncoder.encode(GoogleContactsSyncHandler.getClientid(), "UTF-8"),
+            URLEncoder.encode(GoogleContactsSyncHandler.getClientsecret(), "UTF-8"),
+            URLEncoder.encode(REDIRECT_URI, "UTF-8"));
+    }
 
-			int responseCode = tokenConnection.getResponseCode();
-			System.out.println(responseCode);
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				try (BufferedReader in = new BufferedReader(
-						new InputStreamReader(tokenConnection.getInputStream(), StandardCharsets.UTF_8))) {
-					StringBuilder res = new StringBuilder();
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-						res.append(inputLine);
-					}
-					responseJson = JsonParser.parseString(res.toString()).getAsJsonObject();
+    private void processUserData(String accessToken, HttpServletResponse response) throws IOException {
+        HttpURLConnection conn = createConnection(PEOPLE_API_URL, "GET");
+        if (conn == null) {
+            sendErrorResponse(response, "Authentication failed");
+            return;
+        }
 
-					accessToken = responseJson.get("access_token").getAsString();
-					System.out.println("accessToken :"+accessToken);
-				}
-			} else {
-				try (BufferedReader in = new BufferedReader(
-						new InputStreamReader(tokenConnection.getInputStream(), StandardCharsets.UTF_8))) {
-					StringBuffer errorResponse = new StringBuffer();
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-						errorResponse.append(inputLine);
-					}
-					
-					System.out.println(errorResponse.toString());
-					logger.log(Level.WARNING, errorResponse.toString());
-					return;
-				}
-			}
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+        JsonObject userData = readJsonResponse(conn);
+        
+        if (userData == null) {
+            sendErrorResponse(response, "Authentication failed");
+            return;
+        }
 
-		} catch (Exception e) {
-			responseJson.addProperty("error", e.getMessage());
-			response.getWriter().print(responseJson);
-			return;
-		}
+        handleUserAuthentication(userData, response);
+    }
 
-		HttpURLConnection conn;
+    private void handleUserAuthentication(JsonObject userData, HttpServletResponse response) throws IOException {
+        try {
+            String accountId = userData.get("resourceName").getAsString();
+            JsonObject names = userData.get("names").getAsJsonArray().get(0).getAsJsonObject();
+            JsonObject emailAddresses = userData.get("emailAddresses").getAsJsonArray().get(0).getAsJsonObject();
 
-		try {
-			
-			System.out.println("fetching user data");
-			URL url = new URL("https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses");
-			conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-			int resCode = conn.getResponseCode();
-			JsonObject data = new JsonObject();
-			System.out.println("Response code "+resCode);
-			if (resCode == HttpURLConnection.HTTP_OK) {
-				try (BufferedReader in = new BufferedReader(
-						new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-					StringBuilder res = new StringBuilder();
-					String inputLine;
-					while ((inputLine = in.readLine()) != null) {
-						res.append(inputLine);
-					}
-					data = JsonParser.parseString(res.toString()).getAsJsonObject();
-					System.out.println(new Gson().toJsonTree(data));
-					UserDetailsDao userDao = new UserDetailsDao();
-					String accountId = data.get("resourceName").getAsString();
-					JsonObject names = data.get("names").getAsJsonArray().get(0).getAsJsonObject();
-					JsonObject emailAddresses = data.get("emailAddresses").getAsJsonArray().get(0).getAsJsonObject();
-					UserDetailsObj user = userDao.getUserWithAccountId(accountId);
-					IdGenerator generator = new IdGenerator();
-					System.out.println("user :"+user);
-					if (user != null) {
-						
-						System.out.println("User exists");
-						Integer userId = user.getUserId();
-						String sessionId = generator.generateSessionId();
-						Long time = Instant.now().toEpochMilli();
-						SessionsDao sessionDao = new SessionsDao();
-						sessionDao.insertSession(sessionId, userId, time, time);
+            UserDetailsObj user = userDao.getUserWithAccountId(accountId);
+            if (user != null) {
+                handleExistingUser(user, response);
+            } else {
+                handleNewUser(names, emailAddresses, accountId, response);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error handling user authentication", e);
+            sendErrorResponse(response, "Authentication failed");
+        }
+    }
 
-						Cookie c = new Cookie("session_id", sessionId);
-						c.setMaxAge(3600);
+    private void handleExistingUser(UserDetailsObj user, HttpServletResponse response) throws IOException, DaoException {
+        String sessionId = createUserSession(user.getUserId());
+        setSessionCookie(sessionId, response);
+        response.sendRedirect("profile.jsp");
+    }
 
-						SessionsObj session = new SessionsObj(sessionId, user.getUserId(), time, time);
-						SessionDataManager.session_data.put(sessionId, session);
-						SessionDataManager.users_data.put(userId, user);
-						response.addCookie(c);
+    private void handleNewUser(JsonObject names, JsonObject emailAddresses, String accountId, HttpServletResponse response) throws IOException, DaoException {
+        int userId = userDao.createUser(
+            names.get("displayName").getAsString(),
+            names.get("givenName").getAsString(),
+            names.get("familyName").getAsString(),
+            "private",
+            accountId
+        );
 
-						response.sendRedirect("profile.jsp");
+        mailDao.addMailForUser(userId, emailAddresses.get("value").getAsString());
+        String sessionId = createUserSession(userId);
+        setSessionCookie(sessionId, response);
+        response.sendRedirect("profile.jsp");
+    }
 
-					} else {
-						
-						System.out.println("user doesnt exist");
-						int userId = userDao.createUser(names.get("displayName").getAsString(),
-								names.get("givenName").getAsString(), names.get("familyName").getAsString(), "private",
-								accountId);
-						UserMailsDao dao = new UserMailsDao();
-						dao.addMailForUser(userId, emailAddresses.get("value").getAsString());
+    private String createUserSession(int userId) throws DaoException {
+        String sessionId = idGenerator.generateSessionId();
+        Long currentTime = Instant.now().toEpochMilli();
+        
+        SessionsObj session = new SessionsObj(sessionId, userId, currentTime, currentTime);
+        SessionDataManager.sessionData.put(sessionId, session);
+        SessionDataManager.usersData.put(userId, userDao.getUserWithId(userId));
+        sessionDao.insertSession(sessionId, userId, currentTime, currentTime);
+        
+        return sessionId;
+    }
 
-						IdGenerator gen = new IdGenerator();
-						String sessionId = gen.generateSessionId();
-						Long time = Instant.now().toEpochMilli();
-						SessionsObj session = new SessionsObj(sessionId, userId, time, time);
-						SessionDataManager.session_data.put(sessionId, session);
-						SessionDataManager.users_data.put(userId, userDao.getUserWithId(userId));
-						SessionsDao sessionDao = new SessionsDao();
-						sessionDao.insertSession(sessionId, userId, time, time);
+    private void setSessionCookie(String sessionId, HttpServletResponse response) {
+        Cookie cookie = new Cookie("session_id", sessionId);
+        cookie.setMaxAge(COOKIE_MAX_AGE);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
 
-						Cookie c = new Cookie("session_id", sessionId);
-						c.setMaxAge(3600);
-						response.addCookie(c);
+    private HttpURLConnection createConnection(String urlString, String method) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setDoOutput(true);
+        return conn;
+    }
 
-						response.sendRedirect("profile.jsp");
-					}
+    private void writeRequestBody(HttpURLConnection conn, String body) throws IOException {
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(body.getBytes(StandardCharsets.UTF_8));
+            os.flush();
+        }
+    }
 
-				}
-			} else {
+    private String handleTokenResponse(HttpURLConnection conn, HttpServletResponse response) throws IOException {
+        JsonObject tokenResponse = readJsonResponse(conn);
+        if (tokenResponse != null && tokenResponse.has("access_token")) {
+            return tokenResponse.get("access_token").getAsString();
+        }
+        return null;
+    }
 
-			}
+    private JsonObject readJsonResponse(HttpURLConnection conn) throws IOException {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            return JsonParser.parseString(response.toString()).getAsJsonObject();
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error reading response", e);
+            return null;
+        }
+    }
 
-		} catch (Exception e) {
-			responseJson.addProperty("error", "Something went wrong , try again later");
-			response.setStatus(500);
-			response.getWriter().print(responseJson);
-			return;
-		}
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        JsonObject errorJson = new JsonObject();
+        errorJson.addProperty("error", message);
+        response.getWriter().print(errorJson);
+    }
 
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }

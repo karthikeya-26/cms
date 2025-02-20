@@ -1,27 +1,39 @@
 package com.dbObjects;
 
 public class UserMailsObj extends ResultObject {
-    private Integer mail_id;
-    private Integer user_id;
+
+    @Column("mail_id")
+    private Integer mailId;
+
+    @Column("user_id")
+    private Integer userId;
+
+    @Column("mail")
     private String mail;
-    private Integer is_primary;
-    private Long created_at;
-    private Long modified_at;
+
+    @Column("is_primary")
+    private Integer isPrimary;
+
+    @Column("created_at")
+    private Long createdAt;
+
+    @Column("modified_at")
+    private Long modifiedAt;
 
     public Integer getMailId() {
-        return mail_id;
+        return mailId;
     }
 
     public void setMailId(Integer mailId) {
-        this.mail_id = mailId;
+        this.mailId = mailId;
     }
 
     public Integer getUserId() {
-        return user_id;
+        return userId;
     }
 
     public void setUserId(Integer userId) {
-        this.user_id = userId;
+        this.userId = userId;
     }
 
     public String getMail() {
@@ -33,34 +45,32 @@ public class UserMailsObj extends ResultObject {
     }
 
     public Integer getIsPrimary() {
-        return is_primary;
+        return isPrimary;
     }
 
     public void setIsPrimary(Integer isPrimary) {
-        this.is_primary = isPrimary;
+        this.isPrimary = isPrimary;
     }
 
     public Long getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreatedAt(Long createdAt) {
-        this.created_at = createdAt;
+        this.createdAt = createdAt;
     }
 
     public Long getModifiedAt() {
-        return modified_at;
+        return modifiedAt;
     }
 
     public void setModifiedAt(Long modifiedAt) {
-        this.modified_at = modifiedAt;
+        this.modifiedAt = modifiedAt;
     }
 
-	@Override
-	public String toString() {
-		return "UserMailsObj [mail_id=" + mail_id + ", user_id=" + user_id + ", mail=" + mail + ", is_primary="
-				+ is_primary + ", created_at=" + created_at + ", modified_at=" + modified_at + "]";
-	}
-
-    
+    @Override
+    public String toString() {
+        return "UserMailsObj [mailId=" + mailId + ", userId=" + userId + ", mail=" + mail + ", isPrimary="
+                + isPrimary + ", createdAt=" + createdAt + ", modifiedAt=" + modifiedAt + "]";
+    }
 }

@@ -1,39 +1,40 @@
 package com.queryBuilder;
 
 import java.util.StringJoiner;
-
 import com.queryLayer.Condition;
 import com.queryLayer.Delete;
 
 public class SqlDeleteQueryBuilder {
-	Delete deleteObj;
-	
-	public SqlDeleteQueryBuilder(Delete delete) {
-		this.deleteObj = delete;
-	}
+    private final Delete deleteObj;
 
-	public String build()  throws BuildException{
-		String query = "DELETE FROM ";
-		
-		// tableName
-		query += this.deleteObj.getTableName();
-		
-		
-		//conditions
-		if (this.deleteObj.getConditions().isEmpty()) {
-			throw new BuildException("insufficient data to build the delete statement");
-		}
-		else {
-			StringJoiner conditionJoiner = new StringJoiner(" AND ");
-			for (Condition condition : this.deleteObj.getConditions()) {
-				conditionJoiner.add(String.format("%s %s %s", condition.column.value(), condition.operator.value(), ((CheckDataType.isFloat(condition.value)||CheckDataType.isInt(condition.value)||CheckDataType.isLong(condition.value))?condition.value:"'"+condition.value+"'")));
-			}
-			query += " WHERE " +conditionJoiner.toString();
-		}
-		
-		return query+";";
-	}
-	
-	
-	
+    public SqlDeleteQueryBuilder(Delete delete) {
+        this.deleteObj = delete;
+    }
+
+    public String build() throws BuildException {
+        if (deleteObj.getConditions().isEmpty()) {
+            throw new BuildException("Insufficient data to build the delete statement");
+        }
+        
+        StringBuilder query = new StringBuilder("DELETE FROM ")
+                .append(deleteObj.getTableName().value())
+                .append(" WHERE ");
+
+        StringJoiner conditionJoiner = new StringJoiner(" AND ");
+        for (Condition condition : deleteObj.getConditions()) {
+            String formattedValue = (CheckDataType.isFloat(condition.value) || 
+                                     CheckDataType.isInt(condition.value) || 
+                                     CheckDataType.isLong(condition.value)) 
+                                     ? condition.value 
+                                     : "'" + condition.value + "'";
+            
+            conditionJoiner.add(String.format("%s %s %s", 
+                                              condition.column.value(), 
+                                              condition.operator.value(), 
+                                              formattedValue));
+        }
+        
+        query.append(conditionJoiner);
+        return query.append(";").toString();
+    }
 }

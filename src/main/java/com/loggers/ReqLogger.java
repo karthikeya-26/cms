@@ -15,24 +15,20 @@ public class ReqLogger {
 
     static {	
         try {
-        	System.out.println("creating log file");
         	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String logFileName = "/home/karthi-pt7680/contact_logs/" 
                     + LocalDateTime.now().format(formatter) 
-                    + Database.prop.getProperty("serve_name")+"-"+Database.prop.getProperty("server_port") + "-request.log";
+                    + Database.AppProp.getProperty("serve_name")+"-"+Database.AppProp.getProperty("server_port") + "-request.log";
             fh = new FileHandler(logFileName,true);
             fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
             logger.setUseParentHandlers(false);
         }catch (Exception e) {
-			// TODO: handle exception
+        	e.printStackTrace();
         	System.out.println("could not initiate the logger file");
-        	
 		}
     }
-//    public static void main(String[] args) {
-//		Re
-//	}
+
     public static void AccessLog(String message) {
     	logger.info(message);
     }

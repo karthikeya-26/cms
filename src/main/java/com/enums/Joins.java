@@ -6,39 +6,36 @@ import java.util.List;
 import java.util.Map;
 
 public enum Joins {
-	
-	InnerJoin("Inner Join"),
-	LeftJoin("Left Join"),
-	RightJoin("Right Join"),
-	FullJoin("Full Join");
-	
+
+	InnerJoin("Inner Join"), LeftJoin("Left Join"), RightJoin("Right Join"), FullJoin("Full Join");
+
 	private static final Map<String, Joins> LOOKUP_MAP = new HashMap<>();
-	
+
 	static {
-		for(Joins join : Joins.values()) {
+		for (Joins join : Joins.values()) {
 			LOOKUP_MAP.put(join.value(), join);
 		}
 	}
-	
+
 	private String joinType;
-	
-	private Joins(String joinType){
+
+	private Joins(String joinType) {
 		this.joinType = joinType;
 	}
-	
+
 	public String value() {
 		return joinType;
 	}
-	
+
 	public static Joins getJoin(String joinName) {
 		Joins join = LOOKUP_MAP.get(joinName);
 		if (join == null) {
-			throw new IllegalArgumentException("Join name "+joinName+" does not exist");
+			throw new IllegalArgumentException("Join name " + joinName + " does not exist");
 		}
 		return join;
 	}
-	
-	public static List<Joins> getAllJoins(){
+
+	public static List<Joins> getAllJoins() {
 		return Arrays.asList(Joins.values());
 	}
 }

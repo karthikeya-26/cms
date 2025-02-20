@@ -20,35 +20,14 @@
 			<tr>
 				<th>First Name</th>
 				<th>Last Name</th>
-				<th>Address</th>
 				<th>Created At</th>
-				<th>View Numbers</th>
-				<th>View Mails</th>
-				<th>View Groups</th>
 			</tr>
 			<% for(ContactsObj contact : contacts){ %>
 			<tr>
 				<td><%=contact.getFirstName() %></td>
 				<td><%=contact.getLastName()%></td>
 				<td><%=LocalDateTime.ofInstant(Instant.ofEpochMilli(contact.getCreatedAt()), ZoneId.of("Asia/Kolkata")) %></td>
-				<td>
-					<form action="contactOp?action=viewnumbers" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
-						<input type="submit" value="click to view numbers">
-					</form>
-				</td>
-				<td>
-					<form action="contactOp?action=viewmails" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
-						<input type="submit" value="view Mails">
-					</form>
-				</td>
-				<td>
-					<form action="contactOp?action=viewGroups" method="post">
-						<input type="hidden" name="contact_id" value="<%=contact.getContactId()%>">
-						<input type="submit" value="view Groups">
-					</form>
-				</td>
+				
 			</tr>
 			<%} %>
 		</table>

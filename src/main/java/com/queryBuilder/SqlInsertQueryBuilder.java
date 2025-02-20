@@ -1,52 +1,41 @@
 package com.queryBuilder;
 
 import java.util.StringJoiner;
-
-import com.enums.Columns;
 import com.queryLayer.Insert;
 
-public class SqlInsertQueryBuilder implements Builder{
-	Insert insertObj;
-	String query = null;
-	
-	public SqlInsertQueryBuilder(Insert insert) {
-		this.insertObj = insert;
-	}
-	
-	public String build() throws BuildException {
-		query = "Insert into ";
-		
-		//table name
-		query += this.insertObj.getTableName()+" ";
-		//columns if columns not present then values
-		if (this.insertObj.getColumns().isEmpty()&& this.insertObj.getValues().isEmpty()) {
-			throw new BuildException("insufficient data of columns and values");
-		}
-		
-		else if (this.insertObj.getColumns().isEmpty() && ! this.insertObj.getValues().isEmpty()) {
-			StringJoiner valueJoiner = new StringJoiner(",","(",")");
-			for(String val : this.insertObj.getValues()) {
-				valueJoiner.add(val);
-			}
-			query += "VALUES "+valueJoiner.toString();
-		}                                                                                                                                                                                                                                                        
-		else if (!this.insertObj.getColumns().isEmpty() && !this.insertObj.getValues().isEmpty()) {
-			if (this.insertObj.getColumns().size() != this.insertObj.getValues().size()) {
-				throw new BuildException("column and values size didn't match please check your query");
-			}else {
-				StringJoiner columnJoiner = new StringJoiner(",","(",")");
-				for(Columns col : this.insertObj.getColumns()) {
-					columnJoiner.add(col.value());
-				}
-				StringJoiner valueJoiner = new StringJoiner(",","(",")");
-				for(String val : this.insertObj.getValues()) {
-					valueJoiner.add((CheckDataType.isFloat(val)||CheckDataType.isInt(val)||CheckDataType.isLong(val))?val:"'"+val+"'");
-				}
-				query += columnJoiner+" VALUES "+valueJoiner.toString();
-			}
-		}
-		return query+";";
-		
-	}
-	
+public class SqlInsertQueryBuilder implements Builder {
+    private final Insert insertObj;
+
+    public SqlInsertQueryBuilder(Insert insert) {
+        this.insertObj = insert;
+    }
+
+    public String build() throws BuildException {
+        if (insertObj.getColumns().isEmpty() && insertObj.getValues().isEmpty()) {
+            throw new BuildException("Insufficient data of columns and values");
+        }
+
+        StringBuilder query = new StringBuilder("INSERT INTO ")
+                .append(insertObj.getTableName().value()).append(" ");
+
+        if (insertObj.getColumns().isEmpty()) {
+            StringJoiner valueJoiner = new StringJoiner(",", "(", ")");
+            insertObj.getValues().forEach(valueJoiner::add);
+            query.append("VALUES ").append(valueJoiner);
+        } else {
+            if (insertObj.getColumns().size() != insertObj.getValues().size()) {
+                throw new BuildException("Column and values size didn't match, please check your query");
+            }
+
+            StringJoiner columnJoiner = new StringJoiner(",", "(", ")");
+            insertObj.getColumns().forEach(col -> columnJoiner.add(col.value()));
+
+            StringJoiner valueJoiner = new StringJoiner(",", "(", ")");
+            insertObj.getValues().forEach(val -> valueJoiner.add(
+                    (CheckDataType.isFloat(val) || CheckDataType.isInt(val) || CheckDataType.isLong(val)) ? val : "'" + val + "'"));
+
+            query.append(columnJoiner).append(" VALUES ").append(valueJoiner);
+        }
+        return query.append(";").toString();
+    }
 }

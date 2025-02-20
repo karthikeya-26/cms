@@ -10,12 +10,6 @@ public class Crypter {
 
     private static final String SECRET_KEY = "karthikeya123456";
 
-    /**
-     * Encrypts the given data using Blowfish encryption.
-     *
-     * @param data The plaintext data to encrypt.
-     * @return The encrypted data as a Base64-encoded string.
-     */
     public static String encrypt(String data) {
         try {
             SecretKey key = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "Blowfish");
@@ -29,12 +23,6 @@ public class Crypter {
         }
     }
 
-    /**
-     * Decrypts the given encrypted data using Blowfish encryption.
-     *
-     * @param encryptedData The Base64-encoded encrypted data.
-     * @return The decrypted plaintext data.
-     */
     public static String decrypt(String encryptedData) {
         try {
             SecretKey key = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "Blowfish");

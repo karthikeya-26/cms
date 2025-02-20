@@ -1,48 +1,67 @@
 package com.servlets;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.handlers.GoogleContactsSyncHandler;
+import com.loggers.AppLogger;
 
-/**
- * Servlet implementation class GoogleLogin
- */
 @WebServlet("/glogin")
 public class GoogleLogin extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public GoogleLogin() {
-        super();
-        // TODO Auto-generated constructor stub
+    private static final long serialVersionUID = 1L;
+    private static final AppLogger logger = new AppLogger(GoogleLogin.class.getCanonicalName());
+    private static final String REDIRECT_URI = "http://localhost:8280/contacts/glogincallback";
+    private static final String RESPONSE_TYPE = "code";
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            String authUrl = buildAuthorizationUrl();
+            response.sendRedirect(authUrl);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error initializing Google login", e);
+            handleError(response);
+        }
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String clientId = GoogleContactsSyncHandler.getClientid();
-		String redirecturi = GoogleContactsSyncHandler.getAccountsEndpoint()+"?client_id="+clientId+"&redirect_uri=http://localhost:8280/contacts/glogincallback"
-				+"&scope=openid "+GoogleContactsSyncHandler.getProfileScope()+"&response_type=code";
+    private String buildAuthorizationUrl() {
+        try {
+            return String.format("%s?%s",
+                GoogleContactsSyncHandler.getAccountsEndpoint(),
+                buildQueryParams());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error building authorization URL", e);
+            throw new RuntimeException("Failed to initialize authentication");
+        }
+    }
 
-		response.sendRedirect(redirecturi);
-		return;
-	}
+    private String buildQueryParams() {
+        try {
+            return String.format("client_id=%s&redirect_uri=%s&scope=%s&response_type=%s",
+                URLEncoder.encode(GoogleContactsSyncHandler.getClientid(), StandardCharsets.UTF_8.name()),
+                URLEncoder.encode(REDIRECT_URI, StandardCharsets.UTF_8.name()),
+                URLEncoder.encode("openid " + GoogleContactsSyncHandler.getProfileScope(), StandardCharsets.UTF_8.name()),
+                RESPONSE_TYPE);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error building query parameters", e);
+            throw new RuntimeException("Failed to build authentication parameters");
+        }
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		return ;
-		
-	}
+    private void handleError(HttpServletResponse response) throws IOException {
+        response.sendRedirect("error.jsp");
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+    }
 }

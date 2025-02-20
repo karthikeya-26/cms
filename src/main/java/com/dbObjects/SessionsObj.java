@@ -1,52 +1,64 @@
 package com.dbObjects;
 
 public class SessionsObj extends ResultObject {
-    
-    private String session_id;
-    private Integer user_id;
-    private Long created_time;
-    private Long last_accessed_time;
-    
+
+    @Column("session_id")
+    private String sessionId;
+
+    @Column("user_id")
+    private Integer userId;
+
+    @Column("created_time")
+    private Long createdTime;
+
+    @Column("last_accessed_time")
+    private Long lastAccessedTime;
+
     public SessionsObj() {
-    	
     }
-    
-    public  SessionsObj(String sessionId, Integer userId, Long createdTime, Long lastAccessedTime) {
-		this.session_id = sessionId;
-		this.user_id = userId;
-		this.created_time = createdTime;
-		this.last_accessed_time = lastAccessedTime;
-	}
-    
+
+    public SessionsObj(String sessionId, Integer userId, Long createdTime, Long lastAccessedTime) {
+        this.sessionId = sessionId;
+        this.userId = userId;
+        this.createdTime = createdTime;
+        this.lastAccessedTime = lastAccessedTime;
+    }
+
     public String getSessionId() {
-        return session_id;
+        return sessionId;
     }
+
     public void setSessionId(String sessionId) {
-        this.session_id = sessionId;
+        this.sessionId = sessionId;
     }
+
     public Integer getUserId() {
-        return user_id;
+        return userId;
     }
+
     public void setUserId(Integer userId) {
-        this.user_id = userId;
+        this.userId = userId;
     }
+
     public Long getCreatedTime() {
-        return created_time;
+        return createdTime;
     }
+
     public void setCreatedTime(Long createdTime) {
-        this.created_time = createdTime;
+        this.createdTime = createdTime;
     }
+
     public Long getLastAccessedTime() {
-        return last_accessed_time;
+        return lastAccessedTime;
     }
+
     public void setLastAccessedTime(Long lastAccessedTime) {
-        this.last_accessed_time = lastAccessedTime;
+        this.lastAccessedTime = lastAccessedTime;
     }
-	@Override
-	public String toString() {
-		return "SessionsObj [session_id=" + session_id + ", user_id=" + user_id + ", created_time=" + created_time
-				+ ", last_accessed_time=" + last_accessed_time + "]";
-	}
-    
-   
+
+    @Override
+    public String toString() {
+        return "SessionsObj [sessionId=" + sessionId + ", userId=" + userId + ", createdTime=" + createdTime
+                + ", lastAccessedTime=" + lastAccessedTime + "]";
+    }
 }

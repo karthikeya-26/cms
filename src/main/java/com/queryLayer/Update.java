@@ -38,7 +38,7 @@ public class Update extends Query {
 	}
 
 	public Update values(String... values) {
-		for(String value : values) {
+		for (String value : values) {
 			this.values.add(value);
 		}
 		return this;
@@ -48,27 +48,27 @@ public class Update extends Query {
 		conditions.add(new Condition(column, operator, value));
 		return this;
 	}
-	
-	public String build()  {
-		//update object will be sent to the specific query builder
-		Properties prop = Database.prop;
-    	if (prop.getProperty("database_name").equals("mysql")) {
-    		
-    		try {
-				this.query =  new SqlUpdateQueryBuilder(this).build();
+
+	public String build() {
+		Properties prop = Database.AppProp;
+		if (prop.getProperty("database_name").equals("mysql")) {
+
+			try {
+				this.query = new SqlUpdateQueryBuilder(this).build();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
-    		return this.query;
-    	}
-    	if(prop.getProperty("database_name").equals("postgres")) {
-    		//pg select query builder
-    	}
+			return this.query;
+		}
+		if (prop.getProperty("database_name").equals("postgres")) {
+			// pg select query builder
+		}
 		return null;
 	}
+
 	public int executeUpdate() throws QueryException {
-		
+
 		return super.executeUpdate(this);
 	}
 

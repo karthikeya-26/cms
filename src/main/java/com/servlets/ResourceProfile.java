@@ -2,220 +2,219 @@ package com.servlets;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.dao.AccessTokensDao;
-import com.dao.ClientDetailsDao;
-import com.dao.DaoException;
-import com.dao.UserDetailsDao;
-import com.dao.UserMailsDao;
+import com.dao.*;
 import com.dbObjects.AccessTokensObj;
 import com.dbObjects.UserDetailsObj;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.loggers.AppLogger;
-import com.queryLayer.QueryException;
 
-/**
- * Servlet implementation class ResourceProfile
- */
 @WebServlet("/api/v1/resource/profile")
 public class ResourceProfile extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private static AppLogger logger = new AppLogger(ResourceProfile.class.getName());
-	private static final HashMap<String, Integer> SCOPES = new HashMap<>();
-
+    private static final long serialVersionUID = 1L;
+    private static final String BEARER_HEADER = "Bearer";
+    private static final long TOKEN_EXPIRY_TIME = 60 * 60 * 1000; // 1 hour
+    private static final Gson GSON = new Gson();
+    
+    private static final Map<String, Integer> SCOPES = new HashMap<String, Integer>();
     static {
-        SCOPES.put("profile", 1);
-        SCOPES.put("profile.read", 2);
-        SCOPES.put("contacts.read", 3);
-        SCOPES.put("contacts", 4);
+    	SCOPES.put( "profile", 1);
+    	SCOPES.put("profile.read", 2);
+    	SCOPES.put("contacts.read", 3);
+    	SCOPES.put("contacts", 4);
     }
-	AccessTokensDao accessDao = new AccessTokensDao();
-	UserDetailsDao userDao = new UserDetailsDao();
-	UserMailsDao userMailDao = new UserMailsDao();
-	ClientDetailsDao clientDao = new ClientDetailsDao();
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+   
+    private final AppLogger logger;
+    private final AccessTokensDao accessDao;
+    private final UserDetailsDao userDao;
+    
     public ResourceProfile() {
-        super();
-        // TODO Auto-generated constructor stub
+        this.logger = new AppLogger(ResourceProfile.class.getName());
+        this.accessDao = new AccessTokensDao();
+        this.userDao = new UserDetailsDao();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
-		response.setContentType("application/json");
-		JsonObject responseJson = new JsonObject();
-		String accessToken = request.getHeader("Bearer");
-		System.out.println(accessToken);
-		if(accessToken == null) {
-			response.sendError(400,"Provide an access token in the request header.");
-		}
-		AccessTokensObj accessTokenObject= null;
-		try {
-			  accessTokenObject = accessDao.getAccessTokenObject(accessToken);
-			  System.out.println(accessTokenObject);
-			if(accessTokenObject == null) {
-				response.sendError(400, "Invalid authorization code");
-				return;
-			}
-			
-			if(accessTokenObject.getCreated_at() +60*60*1000 < Instant.now().toEpochMilli() ) {
-				response.sendError(400, "Expired access token");
-				accessDao.deleteAccessToken(accessToken);
-			}
-			
-			boolean isScoped = (accessTokenObject.getScopes().contains("1")||accessTokenObject.getScopes().contains("2"));
-			
-			if(!isScoped) {
-				response.sendError(403, "Not allowed to this operation.");
-				return;
-			}
-			
-		} catch (QueryException e) {
-			response.sendError(500, "Some error occured, try again later.");
-			return;
-		}
-		
-		
-		Map<String,String[]> reqParams = request.getParameterMap();
-		
-		if(reqParams.isEmpty()) {
-			Integer userId = accessTokenObject.getUser_id();
-			try {
-				UserDetailsObj user = userDao.getUserWithId(userId);
-				response.getWriter().print(new Gson().toJsonTree(user));
-				return;
-			} catch (DaoException e) {
-				response.sendError(500,"Something went wrong try again later");
-				return;
-			}
-		}else {
-			return;
-		}
-		
-		
-	}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            AccessTokensObj token = validateAccessToken(request, response);
+            if (token == null) {
+                return;
+            }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		String accessToken = request.getParameter("Bearer");
-//		
-//		if(accessToken == null) {
-//			response.sendError(404, "Provide an access token.");
-//			return;
-//		}
-//		
-//		try {
-//			AccessTokensObj tokenObj = accessDao.getAccessTokenObject(accessToken);
-//		} catch (QueryException e) {
-//        	logger.log(Level.SEVERE, e.getMessage(),e);
-//			response.sendError(500,"Something went wrong, trry again later.");
-//			return;
-//		}
-//		
-//	}
-	
-	
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("application/json");
-		String accessToken = request.getHeader("Bearer");
-		JsonObject responseJson = new JsonObject();
-		
-		
-		if(accessToken == null) {
-			response.setStatus(400);
-			responseJson.addProperty("error","Access token header missing");
-			response.getWriter().print(responseJson);
-			return;
-		}
-		
-		if(request.getParameterMap().size()== 0) {
-			response.sendError(400, "no body found");
-			return;
-		}
-		
-		try {
-			AccessTokensObj tokenObject = accessDao.getAccessTokenObject(accessToken);
-			if(tokenObject== null) {
-//				responseJson.addProperty(, null);
-				response.sendError(400, "Invalid AccessToken");
-				return;
-			}
-			
-			boolean isAuthorized = tokenObject.getScopes().contains(SCOPES.get("profile"));
-			
-			if(!isAuthorized) {
-				responseJson.addProperty("error", "Unauthorized to perform this action");
-				response.getWriter().print(responseJson);
-				return;
-			}
-			
-			Integer userId = tokenObject.getUser_id();
-			String userName = request.getParameter("user_name");
-			String firstName = request.getParameter("first_name");
-			String lastName = request.getParameter("last_name");
-			String contactType = request.getParameter("contact_type");
-			
-			userDao.updateUser(userId, userName, firstName, lastName, contactType);
-			return;
-			
-		} catch (QueryException | DaoException e) {
-			logger.log(Level.WARNING, e.getMessage(),e);
-			e.printStackTrace();
-			response.setStatus(500);
-			responseJson.addProperty("error", "Something went wrong, try again later.");
-			response.getWriter().print(responseJson);
-			return;
-		}
-	}
-	
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("application/json");
-		JsonObject responseJson = new JsonObject();
-		
-		String accessToken = request.getHeader("Bearer");
-		if (accessToken == null) {
-			responseJson.addProperty("error", "Provide an accessToken");
-			response.setStatus(400);
-			response.getWriter().print(responseJson);
-			return;
-		}
-		
-		try {
-			AccessTokensObj tokenObject = accessDao.getAccessTokenObject(accessToken);
-			boolean isAuthorized = tokenObject.getScopes().contains(SCOPES.get("profile"));
-			
-			if(!isAuthorized) {
-				responseJson.addProperty("error", "Unauthorized to perform this action");
-				response.getWriter().print(responseJson);
-				return;
-			}
-		} catch (QueryException e) {
-			logger.log(Level.WARNING, e.getMessage(),e);
-			responseJson.addProperty("error", "Something went wrong, try again later.");
-			response.getWriter().print(responseJson);
-			e.printStackTrace();
-			return;
-		}
-		
-	}
+            if (!isTokenValid(token)) {
+                handleTokenExpiry(response, token.getAccessToken());
+                return;
+            }
 
+            if (!hasRequiredScope(token, "profile", "profile.read")) {
+                sendError(response, HttpServletResponse.SC_FORBIDDEN, 
+                         "Insufficient permissions for this operation");
+                return;
+            }
+
+            handleGetProfile(response, token.getUserId());
+        } catch (Exception e) {
+            handleException(response, e);
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            AccessTokensObj token = validateAccessToken(request, response);
+            if (token == null) {
+                return;
+            }
+
+            if (!hasRequiredScope(token, "profile")) {
+                sendError(response, HttpServletResponse.SC_FORBIDDEN, 
+                         "Insufficient permissions for this operation");
+                return;
+            }
+
+            ProfileUpdateRequest updateRequest = validateUpdateRequest(request);
+            if (updateRequest == null) {
+                sendError(response, HttpServletResponse.SC_BAD_REQUEST, 
+                         "Invalid or missing profile parameters");
+                return;
+            }
+
+            updateUserProfile(token.getUserId(), updateRequest);
+            sendResponse(response, HttpServletResponse.SC_OK, null);
+        } catch (Exception e) {
+            handleException(response, e);
+        }
+    }
+
+    private void handleGetProfile(HttpServletResponse response, int userId) 
+            throws IOException {
+        try {
+            UserDetailsObj user = userDao.getUserWithId(userId);
+            if (user == null) {
+                sendError(response, HttpServletResponse.SC_NOT_FOUND, "User not found");
+                return;
+            }
+            sendResponse(response, HttpServletResponse.SC_OK, user);
+        } catch (Exception e) {
+            throw new IOException("Error retrieving user profile", e);
+        }
+    }
+
+    private AccessTokensObj validateAccessToken(HttpServletRequest request, 
+            HttpServletResponse response) throws IOException {
+        String accessToken = request.getHeader(BEARER_HEADER);
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST, 
+                     "Access Token Header required");
+            return null;
+        }
+
+        try {
+            AccessTokensObj token = accessDao.getAccessTokenObject(accessToken);
+            if (token == null) {
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, 
+                         "Invalid access token");
+                return null;
+            }
+            return token;
+        } catch (Exception e) {
+            throw new IOException("Error validating access token", e);
+        }
+    }
+
+    private boolean isTokenValid(AccessTokensObj token) {
+        return token.getCreatedAt() + TOKEN_EXPIRY_TIME >= Instant.now().toEpochMilli();
+    }
+
+    private void handleTokenExpiry(HttpServletResponse response, String token) 
+            throws IOException {
+        try {
+            accessDao.deleteAccessToken(token);
+            sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error deleting expired token", e);
+            throw new IOException("Error handling token expiry", e);
+        }
+    }
+
+    @SuppressWarnings("unlikely-arg-type")
+	private boolean hasRequiredScope(AccessTokensObj token, String... requiredScopes) {
+        for (String scope : requiredScopes) {
+            if (token.getScopes().contains(String.valueOf(SCOPES.get(scope)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static class ProfileUpdateRequest {
+        private final String userName;
+        private final String firstName;
+        private final String lastName;
+        private final String contactType;
+
+        private ProfileUpdateRequest(HttpServletRequest request) {
+            this.userName = sanitizeInput(request.getParameter("user_name"));
+            this.firstName = sanitizeInput(request.getParameter("first_name"));
+            this.lastName = sanitizeInput(request.getParameter("last_name"));
+            this.contactType = sanitizeInput(request.getParameter("contact_type"));
+        }
+
+        private boolean isValid() {
+            return userName != null || firstName != null || lastName != null;
+        }
+    }
+
+    private ProfileUpdateRequest validateUpdateRequest(HttpServletRequest request) {
+        if (request.getParameterMap().isEmpty()) {
+            return null;
+        }
+        ProfileUpdateRequest updateRequest = new ProfileUpdateRequest(request);
+        return updateRequest.isValid() ? updateRequest : null;
+    }
+
+    private void updateUserProfile(int userId, ProfileUpdateRequest request) 
+            throws DaoException {
+        userDao.updateUser(userId, request.userName, request.firstName, 
+                          request.lastName, request.contactType);
+    }
+
+    private static String sanitizeInput(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("[^a-zA-Z0-9._-]", "");
+    }
+
+    private void sendResponse(HttpServletResponse response, int status, Object content) 
+            throws IOException {
+        response.setContentType("application/json");
+        response.setStatus(status);
+        response.getWriter().print(GSON.toJson(content));
+    }
+
+    private void sendError(HttpServletResponse response, int status, String message) 
+            throws IOException {
+        JsonObject error = new JsonObject();
+        error.addProperty("error", message);
+        sendResponse(response, status, error);
+    }
+
+    private void handleException(HttpServletResponse response, Exception e) 
+            throws IOException {
+        logger.log(Level.SEVERE, "Error processing request", e);
+        sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                 "An unexpected error occurred. Please try again later.");
+    }
 }

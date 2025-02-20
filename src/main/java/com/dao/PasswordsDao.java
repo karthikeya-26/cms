@@ -37,10 +37,10 @@ public class PasswordsDao {
     }
 
     // INSERT
-    public boolean createPassword(Integer userId, String password, Integer pwVersion, Long createdAt, Long modifiedAt) throws DaoException {
+    public boolean createPassword(Integer userId, String password, Integer pwVersion) throws DaoException {
         try {
             Insert i = new Insert();
-            i.table(Table.Passwords).values(userId.toString(), password, pwVersion.toString(), createdAt.toString(), modifiedAt.toString());
+            i.table(Table.Passwords).columns(Passwords.USER_ID,Passwords.PASSWORD,Passwords.PASSWORD_VERSION).values(userId.toString(), password, pwVersion.toString());
             return i.executeUpdate() != 0;
         } catch (QueryException e) {
             throw new DaoException("Error creating password for user ID: " + userId, e);
@@ -53,7 +53,7 @@ public class PasswordsDao {
             Update u = new Update();
             u.table(Table.Passwords).columns(Passwords.PASSWORD).values(newPassword)
                     .condition(Passwords.USER_ID, Operators.Equals, userId.toString());
-            return u.executeUpdate() > 0;
+            return u.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error changing password for user ID: " + userId, e);
         }

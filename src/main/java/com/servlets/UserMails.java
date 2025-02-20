@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.dao.DaoException;
 import com.dao.UserMailsDao;
 import com.dbObjects.UserMailsObj;
+import com.filters.SessionFilter;
 import com.google.gson.JsonObject;
 import com.google.gson.*;
 import com.loggers.AppLogger;
@@ -133,12 +134,7 @@ public class UserMails extends HttpServlet {
 				return;
 			}
 			
-			mailsDao.updateMail(1, null, getServletInfo());
-
-			
-			 
-			 
-			 
+			mailsDao.updateMail(mailId, SessionFilter.USER_ID.get(), requestPayLoad.get("emailAddress").getAsString());
 		 }catch(Exception e){
 			 response.sendError(400, "Invalid payload format");
 			 return;

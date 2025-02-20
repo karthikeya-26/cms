@@ -1,40 +1,90 @@
 package com.dbObjects;
 
 public class ContactsSyncObj extends ResultObject {
-	
-	private Integer user_id;
-	private String account_id;
-	private String refresh_token;
-	private String provider;
-	
-	public Integer getUser_id() {
-		return user_id;
-	}
-	public void setUser_id(Integer user_id) {
-		this.user_id = user_id;
-	}
-	public String getAccount_id() {
-		return account_id;
-	}
-	public void setAccount_id(String accountId) {
-		this.account_id = accountId;
-	}
-	public String getRefresh_token() {
-		return refresh_token;
-	}
-	public void setRefresh_token(String refresh_token) {
-		this.refresh_token = refresh_token;
-	}
-	public String getProvider() {
-		return provider;
-	}
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
-	
-	@Override
-	public String toString() {
-		return "ContactsSyncObj [user_id=" + user_id + "account_id="+account_id+", refresh_token=" + refresh_token + ", provider=" + provider
-				+ "]";
-	}
+
+    @Column("user_id")
+    private Integer userId;
+
+    @Column("account_id")
+    private String accountId;
+
+    @Column("refresh_token")
+    private String refreshToken;
+
+    @Column("provider")
+    private String provider;
+
+    @Column("last_updated_at")
+    private Long lastUpdatedAt;
+
+    @Column("created_at")
+    private Long createdAt;
+
+    @Column("modifed_at")
+    private Long modifiedAt;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public Long getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(Long lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Long modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "ContactsSyncObj [userId=" + userId + ", accountId=" + accountId + ", refreshToken=" + refreshToken
+                + ", provider=" + provider + ", lastUpdatedAt=" + lastUpdatedAt + ", createdAt=" + createdAt
+                + ", modifiedAt=" + modifiedAt + "]";
+    }
+
+
 }

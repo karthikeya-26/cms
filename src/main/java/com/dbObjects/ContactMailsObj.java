@@ -1,40 +1,54 @@
 package com.dbObjects;
 
 public class ContactMailsObj extends ResultObject {
-    private Integer contact_id;
-    private String mail;
-    private Long created_at;
-    private Long modified_at;
-    
+
+    @Column("contact_id")
+    private Integer contactId;
+
+    @Column("mail")
+    private String email;
+
+    @Column("created_at")
+    private Long createdAt;
+
+    @Column("modified_at")
+    private Long modifiedAt;
+
     public Integer getContactId() {
-        return contact_id;
+        return contactId;
     }
+
     public void setContactId(Integer contactId) {
-        this.contact_id = contactId;
+        this.contactId = contactId;
     }
+
     public String getEmail() {
-        return mail;
+        return email;
     }
+
     public void setEmail(String email) {
-        this.mail = email;
+        this.email = email;
     }
+
     public Long getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
+
     public void setCreatedAt(Long createdAt) {
-        this.created_at = createdAt;
+        this.createdAt = createdAt;
     }
+
     public Long getModifiedAt() {
-        return modified_at;
+        return modifiedAt;
     }
+
     public void setModifiedAt(Long modifiedAt) {
-        this.modified_at = modifiedAt;
+        this.modifiedAt = modifiedAt;
     }
-	@Override
-	public String toString() {
-		return "ContactMailsObj [contact_id=" + contact_id + ", mail=" + mail + ", created_at=" + created_at
-				+ ", modified_at=" + modified_at + "]";
-	}
-	
-   
+
+    @Override
+    public String toString() {
+        return "ContactMailsObj [contactId=" + contactId + ", email=" + email + ", createdAt=" + createdAt
+                + ", modifiedAt=" + modifiedAt + "]";
+    }
 }

@@ -54,7 +54,7 @@ public class RedirectUrisDao {
 		updateUri.table(Table.RedirectUris).columns(RedirectUris.URI).values(newUri)
 		.condition(RedirectUris.URI_ID, Operators.Equals, uriId.toString())
 		.condition(RedirectUris.URI, Operators.Equals, oldUri);
-		return updateUri.executeUpdate()>0;
+		return updateUri.executeUpdate()>=0;
 	}
 	
 	public boolean deleteUri(Integer uriId) throws QueryException {

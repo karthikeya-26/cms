@@ -1,0 +1,6 @@
+// {
+		// "connections" : [{},{}],
+		// "nextPageToken" : "xyz",
+		// "totalItems" : number,
+		// "totalPeople" :
+		// }

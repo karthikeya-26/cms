@@ -1,0 +1,14 @@
+//		 "emailAddresses": [
+//		                    {
+//		                      "value": "karthikeya.00004@gmail.com", 
+//		                      "metadata": {
+//		                        "source": {
+//		                          "type": "ACCOUNT", 
+//		                          "id": "100549746507535747515"
+//		                        }, 
+//		                        "verified": true, 
+//		                        "primary": true, 
+//		                        "sourcePrimary": true
+//		                      }
+//		                    }
+//		                  ]

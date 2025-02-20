@@ -2,135 +2,86 @@ package com.dbconn;
 
 import com.loggers.AppLogger;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class Database {
-    private static ComboPooledDataSource cpds = new ComboPooledDataSource();
-    public static Properties prop = new Properties();
-    private AppLogger logger = new AppLogger(Database.class.getCanonicalName());
-    
-    
 
-    static {
-        try (InputStream input = Database.class.getClassLoader().getResourceAsStream("resources/config.properties")){
-        	if(input == null) {
-        		System.out.println("Unable to fetch properties");
-        		throw new Exception("unable to find properties config");
-        	}
-        	prop.load(input);
-        	
-        	cpds.setDriverClass(prop.getProperty("database_driver"));
-        	cpds.setJdbcUrl(prop.getProperty("database_url"));
-            cpds.setUser(prop.getProperty("database_username"));
-            cpds.setPassword(prop.getProperty("database_password"));
-            
-            // Set connection pool properties
-            cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("database_initialPoolSize")));
-            cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("database_minPoolSize")));
-            cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("database_acquireIncrement")));
-            cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("database_maxPoolSize")));
-            cpds.setMaxStatements(Integer.parseInt(prop.getProperty("database_maxStatements")));
-            cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("database_unreturnedConnectionTimeout")));
-            cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("database_debugUnreturnedConnectionStackTraces")));
-            
-//            cpds.setDriverClass("com.mysql.cj.jdbc.Driver"); 
-//            cpds.setJdbcUrl("jdbc:mysql://localhost:3306/cms");   
-//            cpds.setUser("root");                 
-//            cpds.setPassword("karthik@sql");          
-//            cpds.setInitialPoolSize(10);
-//            cpds.setMinPoolSize(5);
-//            cpds.setAcquireIncrement(5);
-//            cpds.setMaxPoolSize(20);
-//            cpds.setMaxStatements(100);
-//            cpds.setUnreturnedConnectionTimeout(300);
-//            cpds.setDebugUnreturnedConnectionStackTraces(false);
-        } catch ( IOException |PropertyVetoException e) {
-            e.printStackTrace(); 
-        } catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private static final ComboPooledDataSource cpds = new ComboPooledDataSource();
+	public static final Properties AppProp = new Properties();
+	private static AppLogger logger;
+
+	static {
+		loadDatabaseConfig();
+		logger = new AppLogger(Database.class.getCanonicalName());
+	}
+
+	public static Connection getConnection() {
+		try {
+			return cpds.getConnection();
+		} catch (SQLException e) {
+			logger.log(Level.WARNING, "Failed to obtain a database connection: " + e.getMessage(), e);
+			return null;
 		}
-    }
+	}
 
-    private Database() {
-    }
+	public static void reloadDatabaseConfig() {
+		loadDatabaseConfig();
+	}
 
-    public static Connection getConnection() {
-        Connection connection = null;
-        try {
-            connection = cpds.getConnection();
-        } catch (SQLException e) {
-        	System.out.println("COnnegtion getting failed :"+e.getLocalizedMessage());
-            e.printStackTrace(); // Proper logging is recommended
-            
-        }
-        return connection;
-    }
-    public static void reloadDatabaseConfig() {
-    	loadDatabaseConfig();
-    }
-    private static void loadDatabaseConfig() {
-    	 try (InputStream input = Database.class.getClassLoader().getResourceAsStream("resources/config.properties")){
-         	if(input == null) {
-         		System.out.println("Unable to fetch properties");
-         		throw new Exception("unable to find properties config");
-         	}
-         	prop.load(input);
-         	
-         	cpds.setDriverClass(prop.getProperty("database_driver"));
-         	cpds.setJdbcUrl(prop.getProperty("database_url"));
-             cpds.setUser(prop.getProperty("database_username"));
-             cpds.setPassword(prop.getProperty("database_password"));
-             
-             // Set connection pool properties
-             cpds.setInitialPoolSize(Integer.parseInt(prop.getProperty("database_initialPoolSize")));
-             cpds.setMinPoolSize(Integer.parseInt(prop.getProperty("database_minPoolSize")));
-             cpds.setAcquireIncrement(Integer.parseInt(prop.getProperty("database_acquireIncrement")));
-             cpds.setMaxPoolSize(Integer.parseInt(prop.getProperty("database_maxPoolSize")));
-             cpds.setMaxStatements(Integer.parseInt(prop.getProperty("database_maxStatements")));
-             cpds.setUnreturnedConnectionTimeout(Integer.parseInt(prop.getProperty("database_unreturnedConnectionTimeout")));
-             cpds.setDebugUnreturnedConnectionStackTraces(Boolean.parseBoolean(prop.getProperty("database_debugUnreturnedConnectionStackTraces")));
-             
-//             cpds.setDriverClass("com.mysql.cj.jdbc.Driver"); 
-//             cpds.setJdbcUrl("jdbc:mysql://localhost:3306/cms");   
-//             cpds.setUser("root");                 
-//             cpds.setPassword("karthik@sql");          
-//             cpds.setInitialPoolSize(10);
-//             cpds.setMinPoolSize(5);
-//             cpds.setAcquireIncrement(5);
-//             cpds.setMaxPoolSize(20);
-//             cpds.setMaxStatements(100);
-//             cpds.setUnreturnedConnectionTimeout(300);
-//             cpds.setDebugUnreturnedConnectionStackTraces(false);
-         } catch ( IOException |PropertyVetoException e) {
-             e.printStackTrace(); 
-         } catch (Exception e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
-		
+	private static void loadDatabaseConfig() {
+		try (InputStream input = Database.class.getClassLoader().getResourceAsStream("config.properties")) {
+			if (input == null) {
+				throw new IOException("Properties file not found in resources folder.");
+			}
+			AppProp.load(input);
+
+			cpds.setDriverClass(AppProp.getProperty("database_driver"));
+			cpds.setJdbcUrl(AppProp.getProperty("database_url"));
+			cpds.setUser(AppProp.getProperty("database_username"));
+			cpds.setPassword(AppProp.getProperty("database_password"));
+			cpds.setInitialPoolSize(getIntProperty("database_initialPoolSize"));
+			cpds.setMinPoolSize(getIntProperty("database_minPoolSize"));
+			cpds.setAcquireIncrement(getIntProperty("database_acquireIncrement"));
+			cpds.setMaxPoolSize(getIntProperty("database_maxPoolSize"));
+			cpds.setMaxStatements(getIntProperty("database_maxStatements"));
+			cpds.setUnreturnedConnectionTimeout(getIntProperty("database_unreturnedConnectionTimeout"));
+			cpds.setDebugUnreturnedConnectionStackTraces(
+					getBooleanProperty("database_debugUnreturnedConnectionStackTraces"));
+
+		} catch (IOException | PropertyVetoException e) {
+			logger.log(Level.WARNING, "Failed to load database configuration: " + e.getMessage(), e);
+		}
+	}
+
+	private static int getIntProperty(String key) {
+		return Integer.parseInt(AppProp.getProperty(key, "0"));
+	}
+
+	private static boolean getBooleanProperty(String key) {
+		return Boolean.parseBoolean(AppProp.getProperty(key, "false"));
 	}
 
 	public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close(); // Returns the connection to the pool
-            } catch (SQLException e) {
-                e.printStackTrace(); // Proper logging is recommended
-            }
-        }
-    }
-	
-	public static void closePool() {
-		if(cpds != null) {
-			System.out.println("closing pool");
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				logger.log(Level.WARNING, "Failed to close connection: " + e.getMessage(), e);
+			}
+		}
+	}
+
+	public static void closeConnectionPool() {
+		if (cpds != null) {
 			cpds.close();
-			
+			logger.log(Level.INFO, "Connection pool closed.");
 		}
 	}
 }

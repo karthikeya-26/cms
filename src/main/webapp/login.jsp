@@ -19,7 +19,10 @@ $(document).ready(function(){
 	$('.google-sign-in').on('click',() =>{
 		window.location.href= '/contacts/glogin';
 	})
-	
+	$('.github-sign-in').on('click',() =>{
+		alert('Currently Not Available');
+	})
+
 	$('.login').on("click", login);
     async function login(event) {
         event.preventDefault(); // Prevent the default form submission
@@ -46,8 +49,6 @@ $(document).ready(function(){
 
             if (response.ok) {
                 const result = await response.json();
-                alert('Login successful: ' + JSON.stringify(result));
-                // Redirect or handle successful login
                 window.location.href = '/contacts/profile.jsp';
             } else {
                 const error = await response.text();
@@ -105,8 +106,7 @@ $(document).ready(function(){
 	*:focus {
 	    outline: none;
 	}
-	
-	
+
 	.button {
 	  padding: 10px;
 	  background: dodgerblue;
@@ -160,8 +160,8 @@ $(document).ready(function(){
 <body>
 	<div class="form-container">
 		<div class="input-container">
-			<input placeholder="Email" id="email" type="email" /> <input
-				placeholder="Password" id="password" type="password" />
+			<input placeholder="Email" id="email" type="email" /> 
+			<input placeholder="Password" id="password" type="password" />
 			<div class="button login">Login</div>
 			<div class="button signup">Sign up</div>
 		</div>

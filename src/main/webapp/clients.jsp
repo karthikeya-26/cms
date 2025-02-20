@@ -14,10 +14,10 @@
 </head>
 <body>
 
-	<% ClientDetailsDao dao = new ClientDetailsDao();
-	
-		List<ClientDetailsObj> userClients = dao.getUserClients(SessionFilter.user_id.get());
+	<%
+	ClientDetailsDao dao = new ClientDetailsDao();
 		
+			List<ClientDetailsObj> userClients = dao.getUserClients(SessionFilter.USER_ID.get());
 	%>
 	<% if(userClients == null || userClients.size()== 0){ %>
 		<p>NO client found</p>

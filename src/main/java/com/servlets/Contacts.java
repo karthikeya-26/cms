@@ -1,291 +1,255 @@
 package com.servlets;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.regex.Pattern;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.dao.ContactsDao;
+import com.dao.*;
+import com.dto.Contact;
 import com.dao.DaoException;
+import com.dbObjects.ContactMailsObj;
+import com.dbObjects.ContactMobileNumbersObj;
 import com.dbObjects.ContactsObj;
+import com.dbObjects.UserGroupsObj;
+import com.filters.SessionFilter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.session.SessionDataManager;
 
-/**
- * Servlet implementation class Contacts
- */
+import java.util.List;
+import java.util.regex.Pattern;
+
 @WebServlet("/contacts")
 public class Contacts extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ContactsDao dao = new ContactsDao();
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public Contacts() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?[0-9]{10,15}$");
+	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+	private static final String ERROR_MESSAGE = "Request could not be processed";
+	private final ContactsDao dao = new ContactsDao();
+	private final ContactMobileNumbersDao numbersDao = new ContactMobileNumbersDao();
+	private final ContactMailsDao mailsDao = new ContactMailsDao();
+	private final UserGroupsDao userGroupsDao = new UserGroupsDao();
+	private final Gson gson = new Gson();
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-	
-//		int userId = SessionDataManager.getUserwithId(request);
-		int userId =1;
-		String contactId = request.getParameter("contactId");
-		System.out.println("req param contactId :"+ contactId);
-		System.out.println("ConatctId : "+request.getInputStream().read());
-		response.setContentType("application/json");
-		JsonObject resJson = new JsonObject();
-		//session_id
-		if(contactId!= null && !contactId.isEmpty()) {
-			ContactsObj contact = null;
-			try {
-				contact = dao.getContactWithId(Integer.valueOf(contactId));
-			} catch (NumberFormatException  e) {
-				resJson.addProperty("status", 400);
-				resJson.addProperty("message", "not a valid contact Id");
-				response.getWriter().print(resJson.toString());
-				return;
-			} catch( DaoException e) {
-				resJson.addProperty("status", 500);
-				resJson.addProperty("message", "Something went wrong, please try again later");
-				response.getWriter().print(resJson.toString());
-				return;
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			int userId = SessionFilter.USER_ID.get();
+			String contactId = request.getParameter("contactId");
+			JsonObject resJson = new JsonObject();
+
+			if (contactId != null && !contactId.isEmpty()) {
+				handleSingleContact(contactId, resJson, response);
+			} else {
+				handleAllContacts(userId, resJson, response);
 			}
-			
-			resJson.addProperty("status", 200);
-			resJson.addProperty("message", "Contact fetched successfully");
-			resJson.addProperty("contact", new Gson().toJson(contact));
-			response.getWriter().print(resJson);
-			
-		}else {
-			List<ContactsObj> contacts = null;
-			try {
-				contacts = dao.getContactsWithUserId(userId);
-			} catch (DaoException e) {
-				response.sendError(500, "Try again later");
-			}
-			resJson.addProperty("contacts", new Gson().toJson(contacts));
-			response.getWriter().print(resJson.toString());
-			response.getWriter().flush();
-			return;
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    BufferedReader inputReader = request.getReader();
-	    StringBuilder inputString = new StringBuilder();
-	    String line;
-	    
-	    response.setContentType("application/json");
-	    PrintWriter out = response.getWriter();
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			JsonObject contact = parseRequestBody(request);
+			System.out.println(contact);
 
-	    while ((line = inputReader.readLine()) != null) {
-	        inputString.append(line);
-	    }
-	    System.out.println(inputString.toString());
-	    // Convert inputString to a JSON object
-	    JsonObject contact = JsonParser.parseString(inputString.toString()).getAsJsonObject();
+			JsonArray numbers = contact.get("phoneNumbers").getAsJsonArray();
+			JsonArray emails = contact.get("emails").getAsJsonArray();
 
-	    // Extract fields
-	    String firstName = contact.has("firstName") ? contact.get("firstName").getAsString() : null;
-	    String lastName = contact.has("lastName") ? contact.get("lastName").getAsString() : null;
-        JsonArray phoneNumbers = contact.has("phoneNumbers") ? contact.getAsJsonArray("phoneNumbers") : new JsonArray();
-        JsonArray emailAddresses = contact.has("emailAddresses") ? contact.getAsJsonArray("emailAddresses") : new JsonArray();
-	    JsonArray groups = contact.has("groups") ? contact.getAsJsonArray("groups") : new JsonArray();
-
-	    // Validation patterns
-	    Pattern phonePattern = Pattern.compile("^\\+?[0-9]{10,15}$"); // Valid phone numbers
-	    Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"); // Valid emails
-
-	    // Validate firstName
-	    if (firstName == null) {
-	        response.sendError(400, "First Name can't be empty");
-	        return;
-	    }
-
-	    // Validate lastName
-	    if (lastName == null) {
-	        response.sendError(400, "Last Name can't be empty");
-	        return;
-	    }
-
-	    // Validate phoneNumbers
-	    for (int i = 0; i < phoneNumbers.size(); i++) {
-	        String phone = phoneNumbers.get(i).getAsString();
-	        if (!phonePattern.matcher(phone).matches()) {
-	            response.sendError(400, "Invalid phone number: " + phone);
-	            return;
-	        }
-	    }
-
-	    // Validate emailAddresses
-	    for (int i = 0; i < emailAddresses.size(); i++) {
-	        String email = emailAddresses.get(i).getAsString();
-	        if (!emailPattern.matcher(email).matches()) {
-	            response.sendError(400, "Invalid email address: " + email);
-	            return;
-	        }
-	    }
-
-	    // Validate groups
-	    for (int i = 0; i < groups.size(); i++) {
-	        try {
-	            groups.get(i).getAsInt(); // Check if the value is an integer
-	        } catch (NumberFormatException | IllegalStateException e) {
-	            response.sendError(400, "Invalid group ID: " + groups.get(i));
-	            return;
-	        }
-	    }
-
-	    // If all validations pass
-	    JsonObject responseJson = new JsonObject();
-	    responseJson.addProperty("message", "contact added Successfully");
-	    out.print(responseJson);
-	    
-	}
-	
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		BufferedReader inputReader = request.getReader();
-	    StringBuilder inputString = new StringBuilder();
-	    String line;
-	    JsonObject responseJson = new JsonObject();
-	    
-	    response.setContentType("application/json");
-	    PrintWriter out = response.getWriter();
-
-	    while ((line = inputReader.readLine()) != null) {
-	        inputString.append(line);
-	    }
-//	    System.out.println(inputString.toString());
-	    // Convert inputString to a JSON object
-	    JsonObject contact = JsonParser.parseString(inputString.toString()).getAsJsonObject();
-
-	    // Extract fields
-	    int contactId = -1;
-	    if (contact.has("contactId")) {
-	        try {
-	            contactId = contact.get("contactId").getAsInt(); // Directly try to parse as an integer
-	        } catch (IllegalStateException e) {
-	           
-	            try {
-	                contactId = Integer.parseInt(contact.get("contactId").getAsString());
-	            } catch (NumberFormatException ex) {
-	                // Log and keep the default value -1
-	               responseJson.addProperty("message", "provie a valid contact");
-	            }
-	        }
-	    }
-	    
-	    String firstName = contact.has("firstName") ? contact.get("firstName").getAsString() : null;
-	    String lastName = contact.has("lastName") ? contact.get("lastName").getAsString() : null;
-        JsonArray phoneNumbers = contact.has("phoneNumbers") ? contact.getAsJsonArray("phoneNumbers") : new JsonArray();
-        JsonArray emailAddresses = contact.has("emailAddresses") ? contact.getAsJsonArray("emailAddresses") : new JsonArray();
-	    JsonArray groups = contact.has("groups") ? contact.getAsJsonArray("groups") : new JsonArray();
-
-	    // Validation patterns
-	    Pattern phonePattern = Pattern.compile("^\\+?[0-9]{10,15}$"); // Valid phone numbers
-	    Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"); // Valid emails
-
-	    if(contactId == -1) {
-	    	response.sendError(400, "Provide a valid contactId");
-	    	return;
-	    }
-	    // Validate firstName
-	    if (firstName == null || firstName.isEmpty()) {
-	        response.sendError(400, "First Name can't be empty");
-	        return;
-	    }
-
-	    // Validate lastName
-	    if (lastName == null || lastName.isEmpty()) {
-	        response.sendError(400, "Last Name can't be empty");
-	        return;
-	    }
-
-	    // Validate phoneNumbers
-	    for (int i = 0; i < phoneNumbers.size(); i++) {
-	        String phone = phoneNumbers.get(i).getAsString();
-	        if (!phonePattern.matcher(phone).matches()) {
-	            response.sendError(400, "Invalid phone number: " + phone);
-	            return;
-	        }
-	    }
-
-	    // Validate emailAddresses
-	    for (int i = 0; i < emailAddresses.size(); i++) {
-	        String email = emailAddresses.get(i).getAsString();
-	        if (!emailPattern.matcher(email).matches()) {
-	            response.sendError(400, "Invalid email address: " + email);
-	            return;
-	        }
-	    }
-
-	    // Validate groups
-	    for (int i = 0; i < groups.size(); i++) {
-	        try {
-	            groups.get(i).getAsInt(); // Check if the value is an integer
-	        } catch (NumberFormatException | IllegalStateException e) {
-	            response.sendError(400, "Invalid group ID: " + groups.get(i));
-	            return;
-	        }
-	    }
-
-	    // If all validations pass
-	    
-	    responseJson.addProperty("message", "contact updated Successfully");
-	    out.print(responseJson);
-	}
-	
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException , IOException {
-		BufferedReader inputReader = request.getReader();
-	    StringBuilder inputString = new StringBuilder();
-	    String line;
-	    
-	    response.setContentType("application/json");
-	    PrintWriter out = response.getWriter();
-
-	    while ((line = inputReader.readLine()) != null) {
-	        inputString.append(line);
-	    }
-
-	    // Convert inputString to a JSON object
-	    JsonObject contact = JsonParser.parseString(inputString.toString()).getAsJsonObject();
-	    
-	    if(contact.size()<= 0 || contact.size()>1) {
-	    	response.sendError(400,"Invalid data format recieved");
-	    	return;
-	    }
-	    
-	    int contactId ;
-	    try {
-	    	contactId = contact.get("contactId").getAsInt();
-	    }catch(NumberFormatException e) {
-	    	response.sendError(400,"Invalid contactId format recieved ");
-	    }
-	    
-	    JsonObject jsonResponse = new JsonObject();
-	    jsonResponse.addProperty("message", "contact delted successfully");
-	    
-	    
-	    out.write(jsonResponse.toString());
-	    
+			if (!validateContact(contact, response)) {
+				return;
+			}
+			System.out.println("contact got validated");
+			int contactId = dao.addContact(contact.get("firstName").getAsString(),
+					contact.get("lastName").getAsString(), SessionFilter.USER_ID.get());
+			System.out.println(contactId);
+			for (JsonElement number : numbers) {
+				String num = number.getAsString();
+				System.out.println(num);
+				numbersDao.addNumberToContactId(contactId, num);
+			}
+			for (JsonElement mail : emails) {
+				String mai = mail.getAsString();
+				System.out.println(mai);
+				mailsDao.addMailToContact(contactId, mai);
+			}
+			sendSuccessResponse(response, "Operation completed");
+		} catch (Exception e) {
+			System.out.println("exception");
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+		}
 	}
 
+	@Override
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			JsonObject contact = parseRequestBody(request);
+			if (!validateContactForUpdate(contact, response)) {
+				return;
+			}
+			System.out.println(contact);
+			
+			dao.updateContact(contact.get("contactId").getAsInt(), contact.get("firstName").getAsString(), contact.get("lastName").getAsString());
+			JsonArray oldNumbers = contact.get("oldContactNumbers").getAsJsonArray();
+			JsonArray newNumbers = contact.get("newContactNumbers").getAsJsonArray();
+			JsonArray oldMails = contact.get("oldMails").getAsJsonArray();
+			JsonArray newMails = contact.get("newMails").getAsJsonArray();
+			
+			sendSuccessResponse(response, "Operation completed");
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			JsonObject contact = parseRequestBody(request);
+			if (!validateContactId(contact, response)) {
+				return;
+			}
+			System.out.println(contact.get("contactId").getAsString());
+			dao.deleteContact(Integer.valueOf(contact.get("contactId").getAsString()));
+			sendSuccessResponse(response, "Operation completed");
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+	private JsonObject parseRequestBody(HttpServletRequest request) throws IOException {
+		return JsonParser.parseReader(request.getReader()).getAsJsonObject();
+	}
+
+	private void handleSingleContact(String contactId, JsonObject resJson, HttpServletResponse response)
+			throws IOException {
+		try {
+			ContactsObj contactDetails = dao.getContactWithId(Integer.valueOf(contactId));
+			Contact contact = new Contact();
+			contact.contactDetails = contactDetails;
+			List<ContactMobileNumbersObj> numbers = numbersDao.getContactMobileNumbers(Integer.valueOf(contactId));
+			List<ContactMailsObj> mails = mailsDao.getMailsWithContactId(Integer.valueOf(contactId));
+			List<UserGroupsObj> groups = userGroupsDao.getContactGroups(Integer.valueOf(contactId));
+			if (!numbers.isEmpty()) {
+				contact.numbers = numbers;
+			}
+			if (!mails.isEmpty()) {
+				contact.mails = mails;
+			}
+			if (!groups.isEmpty()) {
+				contact.groups = groups;
+			}
+			resJson.add("contact", gson.toJsonTree(contact));
+			sendJsonResponse(response, resJson);
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+	private void handleAllContacts(int userId, JsonObject resJson, HttpServletResponse response) throws IOException {
+		try {
+			List<ContactsObj> contacts = dao.getContactsWithUserId(userId);
+			resJson.add("contacts", gson.toJsonTree(contacts));
+
+			sendJsonResponse(response, resJson);
+		} catch (DaoException e) {
+			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	private boolean validateContact(JsonObject contact, HttpServletResponse response) throws IOException {
+		if (!validateBasicFields(contact, response))
+			return false;
+		if (!validateArrayField(contact, "phoneNumbers", PHONE_PATTERN, response))
+			return false;
+		if (!validateArrayField(contact, "emails", EMAIL_PATTERN, response))
+			return false;
+		return validateGroups(contact, response);
+	}
+
+	private boolean validateContactForUpdate(JsonObject contact, HttpServletResponse response) throws IOException {
+		if (!validateContactId(contact, response))
+			return false;
+		return validateContact(contact, response);
+	}
+
+	private boolean validateBasicFields(JsonObject contact, HttpServletResponse response) throws IOException {
+		String firstName = contact.has("firstName") ? contact.get("firstName").getAsString() : null;
+		String lastName = contact.has("lastName") ? contact.get("lastName").getAsString() : null;
+
+		if (firstName == null || firstName.isEmpty() || lastName == null || lastName.isEmpty()) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validateArrayField(JsonObject contact, String fieldName, Pattern pattern,
+			HttpServletResponse response) throws IOException {
+		JsonArray array = contact.has(fieldName) ? contact.getAsJsonArray(fieldName) : new JsonArray();
+		for (int i = 0; i < array.size(); i++) {
+			if (!pattern.matcher(array.get(i).getAsString()).matches()) {
+				sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean validateGroups(JsonObject contact, HttpServletResponse response) throws IOException {
+		JsonArray groups = contact.has("groups") ? contact.getAsJsonArray("groups") : new JsonArray();
+		try {
+			for (int i = 0; i < groups.size(); i++) {
+				groups.get(i).getAsInt();
+			}
+			return true;
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+			return false;
+		}
+	}
+
+	private boolean validateContactId(JsonObject contact, HttpServletResponse response) throws IOException {
+		try {
+			if (!contact.has("contactId") || contact.get("contactId").getAsInt() <= 0) {
+				sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+			return false;
+		}
+	}
+
+	private void sendJsonResponse(HttpServletResponse response, JsonObject json) throws IOException {
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().print(json.toString());
+	}
+
+	private void sendSuccessResponse(HttpServletResponse response, String message) throws IOException {
+		JsonObject json = new JsonObject();
+		json.addProperty("status", "success");
+		json.addProperty("message", message);
+		sendJsonResponse(response, json);
+	}
+
+	private void sendErrorResponse(HttpServletResponse response, int statusCode) throws IOException {
+		response.setStatus(statusCode);
+		JsonObject json = new JsonObject();
+		json.addProperty("status", "error");
+		json.addProperty("message", ERROR_MESSAGE);
+		sendJsonResponse(response, json);
+	}
 }

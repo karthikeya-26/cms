@@ -1,8 +1,9 @@
 package com.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
+import java.util.Map;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.UserMailsObj;
@@ -56,7 +57,7 @@ public class UserMailsDao {
                       .columns(UserMails.MAIL)
                       .values(newMail)
                       .condition(UserMails.MAIL_ID, Operators.Equals, mailId.toString());
-            return updateMail.executeUpdate() > 0;
+            return updateMail.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error updating mail with mailId: " + mailId, e);
         }
@@ -74,7 +75,7 @@ public class UserMailsDao {
                                 .condition(UserMails.IS_PRIMARY, Operators.Equals, "1");
                 
                 int success = unsetPrimaryMail.executeUpdate();
-                if (success > 0) {
+                if (success >= 0) {
                     Update setPrimaryMail = new Update();
                     setPrimaryMail.table(Table.UserMails)
                                   .columns(UserMails.IS_PRIMARY)
@@ -91,11 +92,13 @@ public class UserMailsDao {
     }
     
     // DELETE
-    public boolean deleteMailForUser(String mail) throws DaoException {
+    public boolean deleteMailForUser(Integer userId, String mailId) throws DaoException {
         try {
             Delete deleteMail = new Delete();
-            deleteMail.table(Table.UserMails).condition(UserMails.MAIL, Operators.Equals, mail);
-            return deleteMail.executeUpdate() > 0;
+            deleteMail.table(Table.UserMails)
+            .condition(UserMails.MAIL_ID, Operators.Equals, mailId)
+            .condition(UserMails.USER_ID, Operators.Equals, userId.toString());
+            return deleteMail.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error deleting mail for user", e);
         }
@@ -108,7 +111,7 @@ public class UserMailsDao {
             checkUserAndMail.table(Table.UserMails)
                             .condition(UserMails.USER_ID, Operators.Equals, userId.toString())
                             .condition(UserMails.MAIL_ID, Operators.Equals, mailId);
-            List<HashMap<Columns, Object>> res = checkUserAndMail.executeQuery();
+            List<Map<Columns, Object>> res = checkUserAndMail.executeQuery();
             return !res.isEmpty();
         } catch (QueryException e) {
             throw new DaoException("Error checking if mail belongs to userId: " + userId + " and mailId: " + mailId, e);

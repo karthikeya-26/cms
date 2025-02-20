@@ -51,7 +51,7 @@ public class ContactMobileNumbersDao {
          .condition(ContactMobileNumbers.CONTACT_ID, Operators.Equals, contactId.toString())
          .condition(ContactMobileNumbers.NUMBER, Operators.Equals, oldNumber);
         try {
-            return u.executeUpdate() > 0;
+            return u.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error updating number for contactId: " + contactId, e);
         }

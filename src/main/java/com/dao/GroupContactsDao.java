@@ -33,7 +33,7 @@ public class GroupContactsDao {
     }
 
     // INSERT
-    public boolean addContactToGroup(Integer groupId, Integer contactId, Long addedAt) throws DaoException {
+    public boolean addContactToGroup(Integer groupId, Integer contactId) throws DaoException {
         try {
             Insert insertContactIntoGroup = new Insert();
             insertContactIntoGroup.table(Table.GroupContacts)

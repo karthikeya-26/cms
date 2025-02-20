@@ -1,15 +1,18 @@
 package com.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.dbObjects.ResultObject;
 import com.dbObjects.UserGroupsObj;
 import com.enums.Columns;
+import com.enums.GroupContacts;
+import com.enums.Joins;
 import com.enums.Operators;
 import com.enums.Table;
 import com.enums.UserGroups;
+import com.queryBuilder.BuildException;
 import com.queryLayer.Delete;
 import com.queryLayer.Insert;
 import com.queryLayer.QueryException;
@@ -34,7 +37,31 @@ public class UserGroupsDao {
         }
         return userGroups;
     }
-
+    //Select -> contact groups
+    public List<UserGroupsObj> getContactGroups(int contactId) throws DaoException, BuildException{
+    	List<UserGroupsObj> contactGroups =new ArrayList<UserGroupsObj>();
+    	Select getContactGroups = new Select();
+    	getContactGroups.table(Table.UserGroups)
+    	.join(Joins.InnerJoin, Table.GroupContacts, GroupContacts.GROUP_ID, Operators.Equals, Table.UserGroups, UserGroups.GROUP_ID)
+    	.condition(GroupContacts.CONTACT_ID, Operators.Equals, String.valueOf(contactId));
+    	
+    	System.out.println(getContactGroups.build());
+    	try {
+			List<ResultObject> resultList = getContactGroups.executeQuery(UserGroupsObj.class);
+			for (ResultObject group : resultList) {
+                contactGroups.add((UserGroupsObj) group);
+            }
+		} catch (QueryException e) {
+			e.printStackTrace();
+            throw new DaoException("Error fetching user groups for contact groups: " + contactId, e);
+		}
+    	return contactGroups;
+    }
+    
+    public static void main(String[] args) throws DaoException, BuildException {
+		UserGroupsDao dao = new UserGroupsDao();
+		System.out.println(dao.getContactGroups(2));
+	}
     // INSERT
     public boolean addGroupToUser(Integer userId, String groupName) throws DaoException {
         try {
@@ -59,7 +86,7 @@ public class UserGroupsDao {
                   .columns(UserGroups.GROUP_NAME)
                   .values(groupName)
                   .condition(UserGroups.GROUP_ID, Operators.Equals, groupId.toString());
-            return update.executeUpdate() > 0;
+            return update.executeUpdate() >= 0;
         } catch (QueryException e) {
             throw new DaoException("Error updating group name for groupId: " + groupId, e);
         }
@@ -90,7 +117,7 @@ public class UserGroupsDao {
                   .columns(UserGroups.GROUP_NAME)
                   .condition(UserGroups.USER_ID, Operators.Equals, userId.toString())
                   .condition(UserGroups.GROUP_NAME, Operators.Equals, groupName);
-            List<HashMap<Columns, Object>> userGroups = select.executeQuery();
+            List<Map<Columns, Object>> userGroups = select.executeQuery();
             return !userGroups.isEmpty();
         } catch (QueryException e) {
             throw new DaoException("Error checking if group exists for userId: " + userId, e);
