@@ -26,7 +26,7 @@ public class GoogleContactsSyncHandler {
     // Configuration constants
     private static final String CLIENT_ID = Database.AppProp.getProperty("google_client_id");
     private static final String CLIENT_SECRET = Database.AppProp.getProperty("google_client_secret");
-    private static final String PROFILE_SCOPE = Database.AppProp.getProperty("google_profile_scope") + 
+    private static final String PROFILE_SCOPE = Database.AppProp.getProperty("google_profile_scope") + " "+
                                               Database.AppProp.getProperty("google_email_scope");
     private static final String CONTACT_SCOPE = Database.AppProp.getProperty("google_contacts_scope");
     private static final String REDIRECT_URI = Database.AppProp.getProperty("google_contacts_sync_redirect_uri");
@@ -323,6 +323,7 @@ public class GoogleContactsSyncHandler {
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
+                System.out.println(JsonParser.parseString(response.toString()).getAsJsonObject());
                 return JsonParser.parseString(response.toString()).getAsJsonObject();
             }
         }
@@ -331,7 +332,7 @@ public class GoogleContactsSyncHandler {
 
 
 	public static String getAccountsEndpoint() {
-		return PEOPLE_ACCOUNT_ENDPOINT;
+		return ACCOUNT_ENDPOINT;
 	}
 
 

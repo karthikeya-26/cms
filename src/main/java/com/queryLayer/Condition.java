@@ -14,12 +14,6 @@ public class Condition {
 		this.value = value;
 	}
 	
-//	public Condition(String tableAlias, Columns column, Operators operator, String value) {
-//		this.column = column;
-//		this.operator = operator;
-//		this.value = value;
-//	}
-
 	public Columns getColumn() {
 		return this.column;
 	}
@@ -48,9 +42,4 @@ public class Condition {
 	public String toString() {
 		return "Condition [column=" + column + ", operator=" + operator + ", value=" + value + "]";
 	}
-	
-	
-	
-	
-	
 }

@@ -164,7 +164,7 @@ public class UserOP extends HttpServlet {
 		UserMailsDao dao = new UserMailsDao();
 		try {
 			dao.addMailForUser(SessionFilter.USER_ID.get(), request.getParameter("email"));
-			response.sendRedirect("useremails.jsp");
+			response.sendRedirect("usermails.jsp");
 		} catch (DaoException e) {
 			logger.warn("Failed to add email", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

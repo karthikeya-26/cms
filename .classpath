@@ -47,5 +47,6 @@
 	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/httpclient-4.3.3.jar"/>
 	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/log4j-api-2.0.2.jar"/>
 	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/home/karthi-pt7680/Downloads/mail-1.5.0-b01.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

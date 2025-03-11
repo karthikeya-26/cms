@@ -43,13 +43,21 @@ public class GoogleLoginCallback extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             String authCode = validateAuthCode(request, response);
-            if (authCode == null) return;
-
+            System.out.println("ho ");
+            if (authCode == null) {
+            System.out.println("sunni");
+            return;}
             String accessToken = getAccessToken(authCode, response);
-            if (accessToken == null) return;
-
+            System.out.println("sunni 2");
+            if (accessToken == null) {
+            	System.out.println("2222");
+            	return;
+            }
+            System.out.println(accessToken);
             processUserData(accessToken, response);
         } catch (Exception e) {
+        	System.out.println("Exception :"+e.getLocalizedMessage());
+        	e.printStackTrace();
             logger.log(Level.SEVERE, "Error processing OAuth callback", e);
             sendErrorResponse(response, "Authentication failed");
         }
@@ -88,18 +96,20 @@ public class GoogleLoginCallback extends HttpServlet {
     private void processUserData(String accessToken, HttpServletResponse response) throws IOException {
         HttpURLConnection conn = createConnection(PEOPLE_API_URL, "GET");
         if (conn == null) {
+        	System.out.println("connectio n null");
             sendErrorResponse(response, "Authentication failed");
             return;
         }
 
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         JsonObject userData = readJsonResponse(conn);
-        
+        System.out.println("user data :"+userData);
         if (userData == null) {
+        	System.out.println("null user");
             sendErrorResponse(response, "Authentication failed");
             return;
         }
-
+        System.out.println("handling user data");
         handleUserAuthentication(userData, response);
     }
 
@@ -110,12 +120,15 @@ public class GoogleLoginCallback extends HttpServlet {
             JsonObject emailAddresses = userData.get("emailAddresses").getAsJsonArray().get(0).getAsJsonObject();
 
             UserDetailsObj user = userDao.getUserWithAccountId(accountId);
+            System.out.println("user ;"+user);
             if (user != null) {
                 handleExistingUser(user, response);
             } else {
+            	System.out.println("new user");
                 handleNewUser(names, emailAddresses, accountId, response);
             }
         } catch (Exception e) {
+        	e.printStackTrace();
             logger.log(Level.SEVERE, "Error handling user authentication", e);
             sendErrorResponse(response, "Authentication failed");
         }
@@ -131,7 +144,7 @@ public class GoogleLoginCallback extends HttpServlet {
         int userId = userDao.createUser(
             names.get("displayName").getAsString(),
             names.get("givenName").getAsString(),
-            names.get("familyName").getAsString(),
+            names.get("displayNameLastFirst").getAsString().split(" ")[0],
             "private",
             accountId
         );

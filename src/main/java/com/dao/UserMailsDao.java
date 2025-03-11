@@ -36,6 +36,21 @@ public class UserMailsDao {
         return mails;
     }
     
+    public UserMailsObj getMail(String mail) throws DaoException {
+    	List<UserMailsObj> mails = new ArrayList<UserMailsObj>();
+    	try {
+    		Select s = new Select();
+    		s.table(Table.UserMails).condition(UserMails.MAIL, Operators.Equals, mail);
+    		List<ResultObject> resultList = s.executeQuery(UserMailsObj.class);
+    		for (ResultObject mail1 : resultList) {
+                mails.add((UserMailsObj) mail1);
+            }
+    	}catch(QueryException e){
+    		throw new DaoException("Error fetching mail :"+ mail,e);
+    	}
+    	return (mails.size()>0) ? mails.get(0) : null;
+    }
+    
     // INSERT
     public boolean addMailForUser(Integer userId, String mail) throws DaoException {
         try {

@@ -90,7 +90,7 @@ public class UserDetailsDao {
 					.columns(UserDetails.USER_NAME, UserDetails.FIRST_NAME, UserDetails.LAST_NAME,
 							UserDetails.CONTACT_TYPE, UserDetails.PROVIDER_AC_ID)
 					.values(userName, firstName, lastName, contactType, accountId);
-			return i.executeUpdate();
+			return i.executeUpdate(true);
 		} catch (QueryException e) {
 			throw new DaoException("Error creating user", e);
 		}

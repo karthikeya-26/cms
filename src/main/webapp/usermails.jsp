@@ -23,7 +23,7 @@ Integer user_id = SessionFilter.USER_ID.get();
 	<h3>Add Mail</h3>
 	<form action="userOp?action=addEmail" method="post">
 		<label for="email">Enter mail</label>
-		<input type="text" name="email" id="email">
+		<input type="email" name="email" id="email">
 		<input type="submit" value="Add mail">
 	</form>
 	

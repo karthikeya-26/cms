@@ -156,7 +156,7 @@ public class Query {
 			throw new QueryException("Database error occurred while executing the query for table: "
 					+ query.getTableName() + " | Query: " + sqlStatement, e);
 		}
-		if (status >= 0 ) {
+		if (status >= 0 && !query.getTableName().equals(Table.ChangeLog) ) {
 			postExecuteHelper(query, pretasks);
 		}
 		return status;
@@ -196,7 +196,7 @@ public class Query {
 					+ " | Query: " + sqlStatement, e);
 		}
 
-		if (genKey >= 0) {
+		if (genKey >= 0 && !query.getTableName().equals(Table.ChangeLog)) {
 			postExecuteHelper(query, preTasks);
 		}
 

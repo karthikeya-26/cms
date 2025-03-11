@@ -13,8 +13,6 @@ import com.queryBuilder.SqlDeleteQueryBuilder;
 public class Delete extends Query {
 	
 	private Table tableName;
-//	List<String> columns;
-//	List<String> values;
 	private List<Condition> conditions;
 	private String query;
 	

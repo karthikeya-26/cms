@@ -27,8 +27,8 @@ import com.util.StartUpTasks;
 
 @WebListener
 public class AppListener implements ServletContextListener {
-//	private static Logger logger = Logger.getLogger(AppListener.class.getCanonicalName());
-	private static Logger logger;
+	private static Logger logger = Logger.getLogger(AppListener.class.getCanonicalName());
+	
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 
 	public AppListener() {

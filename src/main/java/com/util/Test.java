@@ -12,22 +12,28 @@ import java.util.logging.Logger;
 
 import com.dao.ServersDao;
 import com.dbObjects.ServersObj;
+import com.dbObjects.UserGroupsObj;
 import com.dbconn.Database;
 import com.enums.Operators;
 import com.enums.Servers;
 import com.enums.Table;
+import com.google.gson.Gson;
 import com.queryLayer.Insert;
 import com.queryLayer.Select;
 
 public class Test {
     private static final Logger logger = Logger.getLogger(Test.class.getName());
     public static void main(String[] args) throws Exception {
-        Connection c = Database.getConnection(); // Obtain database connection
-
-        if (c == null) {
-            System.out.println("Failed to establish a connection!");
-            return;
-        }
+    	UserGroupsObj obj = new UserGroupsObj();
+    	obj.setGroupName("karthik");
+    	Gson gson = new Gson();
+    	System.out.println(gson.toJson(obj));
+//        Connection c = Database.getConnection(); // Obtain database connection
+//
+//        if (c == null) {
+//            System.out.println("Failed to establish a connection!");
+//            return;
+//        }
 
 //        String insertSQL = "INSERT INTO sampleImg (id, img) VALUES (?, ?)";
 //        String filePath = "/home/karthi-pt7680/Pictures/Screenshots/Screenshot from 2024-09-05 15-46-22.png";
@@ -81,17 +87,17 @@ public class Test {
 //        tasks.loadLoggingConfig();
 //        Logger logger = Logger.getLogger("Karthik");
 //        logger.log(Level.INFO,"My name is tomcat");
-        ServersDao dao = new ServersDao();
-		 Insert i = new Insert();
-        i.table(Table.Servers).columns(Servers.NAME, Servers.PORT).values("karthikeya", "8084");
-        PreExecuteTasks tasks = new PreExecuteTasks();
-        tasks.addTimeToQueries(i);
-        System.out.println(i.getColumns());
-        System.out.println(i.getValues());
-        int serverId = i.executeUpdate(true);
-        System.out.println("generated server id :"+ serverId);
-        Select s = new Select();
-        s.table(Table.Servers).condition(Servers.SERVER_ID, Operators.Equals, String.valueOf(serverId));
-        System.out.println(s.executeQuery(ServersObj.class));
+//        ServersDao dao = new ServersDao();
+//		 Insert i = new Insert();
+//        i.table(Table.Servers).columns(Servers.NAME, Servers.PORT).values("karthikeya", "8084");
+//        PreExecuteTasks tasks = new PreExecuteTasks();
+//        tasks.addTimeToQueries(i);
+//        System.out.println(i.getColumns());
+//        System.out.println(i.getValues());
+//        int serverId = i.executeUpdate(true);
+//        System.out.println("generated server id :"+ serverId);
+//        Select s = new Select();
+//        s.table(Table.Servers).condition(Servers.SERVER_ID, Operators.Equals, String.valueOf(serverId));
+//        System.out.println(s.executeQuery(ServersObj.class));
     }
 }

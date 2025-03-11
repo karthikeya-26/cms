@@ -15,7 +15,7 @@
 $(document).ready(function(){
 	$('.login').on("click",()=>{
 		window.location.href = '/contacts/login.jsp';
-	})
+	});
 	
 	$('.signup').on("click",signup);
 	async function signup(event) {
@@ -57,7 +57,7 @@ $(document).ready(function(){
 
 			if (response.ok) {
 				const result = await response.json();
-				window.location.href = '/contacts/profile.jsp';
+				alert('SignUp successful: ' + result);
 			} else {
 				const error = await response.json();
 				alert('SignUp failed: ' + error.error);

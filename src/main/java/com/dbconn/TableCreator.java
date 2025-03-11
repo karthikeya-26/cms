@@ -10,7 +10,7 @@ public class TableCreator {
 	public static void CreateDbTables() {
 	
 		
-		InputStream is = TableCreator.class.getClassLoader().getResourceAsStream("resources/schema.json");
+		InputStream is = TableCreator.class.getClassLoader().getResourceAsStream("schema.json");
 		
 		if(is == null) {
 			System.out.println("File Not Found");

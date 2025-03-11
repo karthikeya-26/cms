@@ -9,6 +9,6 @@
 <body>
 	<a href="fixcontactswithnumbers.jsp">Fix Contacts with numbers</a>
 	<a href="fixcontactswithmails.jsp">Fix contacts with mails</a>
-	<a href="fixcontactswithnames.jsp">Fix contacts with names</a>
+	<a href="fixcontactswithNames.jsp">Fix contacts with names</a>
 </body>
 </html>
